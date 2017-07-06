@@ -87,11 +87,20 @@ namespace Server
             }
         }
 
-        public void Connect() { }
+        public bool Connect(string username, string password)
+        {
+            bool authorized = false;
+            if (clients.Where(c => c.Name == username && c.Password == password).Count() > 0)
+            {
+                authorized = true;
+                UpdateLastSeen(username);
+            }
+            return authorized;
+        }
 
         public void CreateUser(string username, string password)
         {
-            if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
+            if (!ParametersHasEmpty(username, password))
             {
                 if (clients.Where(c => c.Name == username).Count() == 0)
                 {
@@ -110,11 +119,12 @@ namespace Server
 
         public void CreateGroup(string name, string description, string username)
         {
-            if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(description) && !string.IsNullOrEmpty(username))
+            if (!ParametersHasEmpty(name, description, username))
             {
                 if (groups.Where(c => c.Name == name).Count() == 0)
                 {
-                    groups.Add(new Models.Group { Name = name, Description = description, Administrator = clients.Where(c => c.Name == name).FirstOrDefault() });
+                    groups.Add(new Models.Group { Name = name, Description = description, Administrator = clients.Where(c => c.Name == name).FirstOrDefault()});
+                    UpdateLastSeen(username);
                 }
                 else
                 {
@@ -143,5 +153,35 @@ namespace Server
         public void GetNotification() { }
         public void ChangeAdministratorGroup() { }
         public void DeleteClientFromGroup() { }
+
+        private void UpdateLastSeen(string username)
+        {
+            clients.Where(c => c.Name == username).FirstOrDefault().LastSeen = DateTime.Now;
+        }
+
+        private bool HasAdminRights(string username, string groupName)
+        {
+            bool hasAdminRights = false;
+
+            string adminOfGroup = groups.Where(g => g.Name == groupName).FirstOrDefault().Administrator.Name;
+            if (adminOfGroup == username)
+            {
+                hasAdminRights = true;
+            }
+
+            return hasAdminRights;
+        }
+
+        private bool ParametersHasEmpty(params string[] parameters)
+        {
+            foreach (string p in parameters)
+            {
+                if (string.IsNullOrEmpty(p))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }
