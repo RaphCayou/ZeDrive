@@ -42,6 +42,8 @@
   <ItemGroup>
     <Compile Include="Client.cs" />
     <Compile Include="File.cs" />
+    <Compile Include="ITransmission.cs" />
+    <Compile Include="SyncTransmission.cs" />
     <Compile Include="Group.cs" />
     <Compile Include="Revision.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

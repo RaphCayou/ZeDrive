@@ -45,6 +45,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Job.cs" />
+    <Compile Include="JobExecuter.cs" />
     <Compile Include="ServerBusiness.cs" />
     <Compile Include="ServerForm.cs">
       <SubType>Form</SubType>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,9 +14,14 @@ namespace Server
         private string clientsSaveFileName;
         private List<Models.Group> groups;
         private List<Models.Client> clients;
+        private JobExecuter jobExecuter;
 
         public ServerBusiness(string groupsSaveFileName, string clientsSaveFileName)
         {
+            jobExecuter = new JobExecuter();
+            Task.Factory.StartNew(() => jobExecuter.Execute());
+
+
             this.groupsSaveFileName = groupsSaveFileName;
             this.clientsSaveFileName = clientsSaveFileName;
             try
@@ -139,12 +145,17 @@ namespace Server
 
         public void GetClientLists() { }
         public void GetGroupList() { }
+
         /// <summary>
         /// Update server history,
         /// Send Revision,
         /// Save history on disk
         /// </summary>
-        public void UpdateServerHistory() { }
+        public void UpdateServerHistory(Job job)
+        {
+            jobExecuter.Add(job);
+        }
+
         public void SendClientGroupInvitation() { }
         public void SendClientGroupRequest() { }
         /// <summary>
