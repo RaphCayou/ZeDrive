@@ -7,8 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Models;
-using Action = Models.Action;
+using Action = ShareLibrary.Action;
 
 namespace Client
 {

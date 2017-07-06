@@ -12,7 +12,7 @@ namespace ServerTests
         [TestInitialize]
         public void SetUp()
         {
-            business = new ServerBusiness();
+            business = new ServerBusiness("","");
         }
 
         [TestMethod]

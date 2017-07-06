@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+using ShareLibrary;
 
 namespace Server
 {
@@ -12,8 +13,8 @@ namespace Server
     {
         private string groupsSaveFileName;
         private string clientsSaveFileName;
-        private List<Models.Group> groups;
-        private List<Models.Client> clients;
+        private List<Group> groups;
+        private List<Client> clients;
         private JobExecuter jobExecuter;
 
         public ServerBusiness(string groupsSaveFileName, string clientsSaveFileName)
@@ -37,7 +38,7 @@ namespace Server
                 }
                 else
                 {
-                    groups = new List<Models.Group>();
+                    groups = new List<Group>();
                 }
                 if (System.IO.File.Exists(clientsSaveFileName))
                 {
@@ -45,7 +46,7 @@ namespace Server
                 }
                 else
                 {
-                    clients = new List<Models.Client>();
+                    clients = new List<Client>();
                 }
             }
             catch (Exception e)
@@ -79,8 +80,8 @@ namespace Server
         {
             using (var stream = System.IO.File.OpenRead(groupsSaveFileName))
             {
-                var serializer = new XmlSerializer(typeof(List<Models.Group>));
-                groups = serializer.Deserialize(stream) as List<Models.Group>;
+                var serializer = new XmlSerializer(typeof(List<Group>));
+                groups = serializer.Deserialize(stream) as List<Group>;
             }
         }
 
@@ -88,8 +89,8 @@ namespace Server
         {
             using (var stream = System.IO.File.OpenRead(clientsSaveFileName))
             {
-                var serializer = new XmlSerializer(typeof(List<Models.Client>));
-                clients = serializer.Deserialize(stream) as List<Models.Client>;
+                var serializer = new XmlSerializer(typeof(List<Client>));
+                clients = serializer.Deserialize(stream) as List<Client>;
             }
         }
 
@@ -110,7 +111,7 @@ namespace Server
             {
                 if (clients.Where(c => c.Name == username).Count() == 0)
                 {
-                    clients.Add(new Models.Client { Name = username, Password = password, LastSeen = DateTime.Now });
+                    clients.Add(new Client { Name = username, Password = password, LastSeen = DateTime.Now });
                 }
                 else
                 {
@@ -129,7 +130,7 @@ namespace Server
             {
                 if (groups.Where(c => c.Name == name).Count() == 0)
                 {
-                    groups.Add(new Models.Group { Name = name, Description = description, Administrator = clients.Where(c => c.Name == name).FirstOrDefault()});
+                    groups.Add(new Group { Name = name, Description = description, Administrator = clients.Where(c => c.Name == name).FirstOrDefault()});
                     UpdateLastSeen(username);
                 }
                 else

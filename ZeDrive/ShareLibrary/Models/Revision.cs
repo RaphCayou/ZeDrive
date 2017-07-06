@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Models
+﻿namespace ShareLibrary
 {
     public enum Action
     {
@@ -18,5 +11,6 @@ namespace Models
         public Action Action;
         public File File;
         public Group Group;
+        public byte[] Data;
     }
 }

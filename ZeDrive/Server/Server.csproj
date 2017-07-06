@@ -82,9 +82,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Models\Models.csproj">
+    <ProjectReference Include="..\ShareLibrary\ShareLibrary.csproj">
       <Project>{d7c49f67-b799-4508-bcb1-7362450264df}</Project>
-      <Name>Models</Name>
+      <Name>ShareLibrary</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

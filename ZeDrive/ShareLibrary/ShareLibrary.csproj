@@ -7,8 +7,8 @@
     <ProjectGuid>{D7C49F67-B799-4508-BCB1-7362450264DF}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Models</RootNamespace>
-    <AssemblyName>Models</AssemblyName>
+    <RootNamespace>ShareLibrary</RootNamespace>
+    <AssemblyName>ShareLibrary</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -40,12 +40,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Client.cs" />
-    <Compile Include="File.cs" />
-    <Compile Include="ITransmission.cs" />
-    <Compile Include="SyncTransmission.cs" />
-    <Compile Include="Group.cs" />
-    <Compile Include="Revision.cs" />
+    <Compile Include="Models\Client.cs" />
+    <Compile Include="Models\File.cs" />
+    <Compile Include="Summary\GroupSummary.cs" />
+    <Compile Include="Models\ITransmission.cs" />
+    <Compile Include="Models\SyncTransmission.cs" />
+    <Compile Include="Models\Group.cs" />
+    <Compile Include="Models\Revision.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
