@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataStore.cs" />
     <Compile Include="Job.cs" />
     <Compile Include="JobExecuter.cs" />
     <Compile Include="ServerBusiness.cs" />

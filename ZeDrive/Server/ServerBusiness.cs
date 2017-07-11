@@ -12,112 +12,32 @@ namespace Server
 {
     public class ServerBusiness
     {
-        private string groupsSaveFileName;
-        private string clientsSaveFileName;
-        private List<Group> groups;
-        private List<Client> clients;
         private JobExecuter jobExecuter;
+        private DataStore dataStore;
 
         public ServerBusiness(string groupsSaveFileName, string clientsSaveFileName)
         {
             jobExecuter = new JobExecuter();
             Task.Factory.StartNew(() => jobExecuter.Execute());
 
-
-            this.groupsSaveFileName = groupsSaveFileName;
-            this.clientsSaveFileName = clientsSaveFileName;
-            try
-            {
-                if (string.IsNullOrEmpty(groupsSaveFileName) || string.IsNullOrEmpty(clientsSaveFileName))
-                {
-                    throw new ArgumentNullException("Noms de fichiers invalides");
-                }
-
-                if (System.IO.File.Exists(groupsSaveFileName))
-                {
-                    LoadGroups();
-                }
-                else
-                {
-                    groups = new List<Group>();
-                }
-                if (System.IO.File.Exists(clientsSaveFileName))
-                {
-                    LoadClients();
-                }
-                else
-                {
-                    clients = new List<Client>();
-                }
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
+            dataStore = new DataStore(groupsSaveFileName, clientsSaveFileName);
         }
 
         ~ServerBusiness()
         {
-            Save();
-        }
-
-        public void Save()
-        {
-            using (var writer = new System.IO.StreamWriter(groupsSaveFileName))
-            {
-                var serializer = new XmlSerializer(groups.GetType());
-                serializer.Serialize(writer, groups);
-                writer.Flush();
-            }
-            using (var writer = new System.IO.StreamWriter(clientsSaveFileName))
-            {
-                var serializer = new XmlSerializer(clients.GetType());
-                serializer.Serialize(writer, clients);
-                writer.Flush();
-            }
-        }
-
-        private void LoadGroups()
-        {
-            using (var stream = System.IO.File.OpenRead(groupsSaveFileName))
-            {
-                var serializer = new XmlSerializer(typeof(List<Group>));
-                groups = serializer.Deserialize(stream) as List<Group>;
-            }
-        }
-
-        private void LoadClients()
-        {
-            using (var stream = System.IO.File.OpenRead(clientsSaveFileName))
-            {
-                var serializer = new XmlSerializer(typeof(List<Client>));
-                clients = serializer.Deserialize(stream) as List<Client>;
-            }
+            dataStore.Save();
         }
 
         public bool Connect(string username, string password)
         {
-            bool authorized = false;
-            if (clients.Where(c => c.Name == username && c.Password == password).Count() > 0)
-            {
-                authorized = true;
-                UpdateLastSeen(username);
-            }
-            return authorized;
+            return dataStore.CheckCredentials(username, password);
         }
 
         public void CreateUser(string username, string password)
         {
             if (!ParametersHasEmpty(username, password))
             {
-                if (clients.Where(c => c.Name == username).Count() == 0)
-                {
-                    clients.Add(new Client { Name = username, Password = password, LastSeen = DateTime.Now });
-                }
-                else
-                {
-                    throw new ArgumentException($"Le client {username} existe déjà.");
-                }
+                dataStore.CreateUser(username, password);
             }
             else
             {
@@ -129,15 +49,7 @@ namespace Server
         {
             if (!ParametersHasEmpty(name, description, username))
             {
-                if (groups.Where(c => c.Name == name).Count() == 0)
-                {
-                    groups.Add(new Group { Name = name, Description = description, Administrator = clients.Where(c => c.Name == name).FirstOrDefault()});
-                    UpdateLastSeen(username);
-                }
-                else
-                {
-                    throw new ArgumentException($"Le groupe {username} existe déjà.");
-                }
+                dataStore.CreateGroup(name, description, username);
             }
             else
             {
@@ -167,34 +79,14 @@ namespace Server
         public void ChangeAdministratorGroup() { }
         public void DeleteClientFromGroup() { }
 
-        private void UpdateLastSeen(string username)
-        {
-            clients.Where(c => c.Name == username).FirstOrDefault().LastSeen = DateTime.Now;
-        }
-
         private bool HasAdminRights(string username, string groupName)
         {
-            bool hasAdminRights = false;
-
-            string adminOfGroup = groups.Where(g => g.Name == groupName).FirstOrDefault().Administrator.Name;
-            if (adminOfGroup == username)
-            {
-                hasAdminRights = true;
-            }
-
-            return hasAdminRights;
+            return dataStore.CheckAdminRights(username, groupName);
         }
 
-        private bool ParametersHasEmpty(params string[] parameters)
+        private static bool ParametersHasEmpty(params string[] parameters)
         {
-            foreach (string p in parameters)
-            {
-                if (string.IsNullOrEmpty(p))
-                {
-                    return true;
-                }
-            }
-            return false;
+            return parameters.Any(string.IsNullOrEmpty);
         }
     }
 }
