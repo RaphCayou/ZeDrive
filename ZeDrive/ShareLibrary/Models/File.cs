@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ShareLibrary
+namespace ShareLibrary.Models
 {
     public class File
     {

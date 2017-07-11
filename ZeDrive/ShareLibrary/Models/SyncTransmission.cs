@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using ShareLibrary.Summary;
 
-namespace ShareLibrary
+namespace ShareLibrary.Models
 {
     public class SyncTransmission
     {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ShareLibrary
+namespace ShareLibrary.Models
 {
     public class Group
     {

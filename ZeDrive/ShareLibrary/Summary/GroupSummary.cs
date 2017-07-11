@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using ShareLibrary.Models;
+using File = ShareLibrary.Models.File;
 
-namespace ShareLibrary
+namespace ShareLibrary.Summary
 {
     public class GroupSummary
     {
@@ -49,8 +51,15 @@ namespace ShareLibrary
             return revisions;
         }
 
-        //Based on : https://stackoverflow.com/questions/20405965/how-to-ensure-there-is-trailing-directory-separator-in-paths
-        //Taken on 2017-07-06
+        /// <summary>
+        /// Adding the corresponding caracter to the path. (/ or \ depending of the rest of the path)
+        /// <note>
+        /// Based on : https://stackoverflow.com/questions/20405965/how-to-ensure-there-is-trailing-directory-separator-in-paths
+        /// Taken on 2017-07-06
+        /// </note>
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         public string PathAddBackslash(string path)
         {
             // They're always one character but EndsWith is shorter than

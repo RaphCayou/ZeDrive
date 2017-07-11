@@ -1,4 +1,4 @@
-﻿namespace ShareLibrary
+﻿namespace ShareLibrary.Models
 {
     public interface ITransmission
     {

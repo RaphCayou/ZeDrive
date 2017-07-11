@@ -15,6 +15,8 @@ namespace ShareLibraryTests
             string fileName = Path.GetRandomFileName();
 
             Directory.CreateDirectory(TESTING_PATH + "Group1");
+
+            //Summary testSummary = new Summary();
         }
     }
 }
