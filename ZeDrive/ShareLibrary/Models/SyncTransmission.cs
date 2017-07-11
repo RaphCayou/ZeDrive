@@ -5,7 +5,8 @@ namespace ShareLibrary.Models
 {
     public class SyncTransmission
     {
-        public List<Revision> RevisionList;
-        public GroupSummary GroupSummary;
+        public string Username;
+        public List<Revision> Revisions;
+        public List<GroupSummary> GroupSummaries;
     }
 }

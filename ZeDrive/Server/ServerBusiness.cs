@@ -14,13 +14,14 @@ namespace Server
     {
         private JobExecuter jobExecuter;
         private DataStore dataStore;
+        private Task jobExecuterTask;
 
         public ServerBusiness(string groupsSaveFileName, string clientsSaveFileName)
         {
-            jobExecuter = new JobExecuter();
-            Task.Factory.StartNew(() => jobExecuter.Execute());
-
             dataStore = new DataStore(groupsSaveFileName, clientsSaveFileName);
+
+            jobExecuter = new JobExecuter(dataStore);
+            jobExecuterTask = Task.Factory.StartNew(() => jobExecuter.Execute());
         }
 
         ~ServerBusiness()
@@ -75,6 +76,11 @@ namespace Server
         public void UpdateServerHistory(Job job)
         {
             jobExecuter.Add(job);
+            
+            if (jobExecuterTask.IsFaulted)
+            {
+                throw jobExecuterTask.Exception.Flatten();
+            }
         }
 
         public void SendClientGroupInvitation() { }
