@@ -41,7 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\Client.cs" />
-    <Compile Include="Models\File.cs" />
+    <Compile Include="Models\FileInfo.cs" />
     <Compile Include="Summary\GroupSummary.cs" />
     <Compile Include="Models\ITransmission.cs" />
     <Compile Include="Models\SyncTransmission.cs" />

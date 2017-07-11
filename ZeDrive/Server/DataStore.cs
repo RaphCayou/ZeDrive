@@ -62,7 +62,7 @@ namespace Server
                     Name = name,
                     Description = description,
                     Administrator = Clients.FirstOrDefault(c => c.Name == name),
-                    Files = new List<File>(),
+                    Files = new List<FileInfo>(),
                     Members = new List<Client>()
                 });
                 UpdateLastSeen(username);

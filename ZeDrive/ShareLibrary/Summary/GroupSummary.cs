@@ -1,14 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using ShareLibrary.Models;
-using File = ShareLibrary.Models.File;
+using FileInfo = ShareLibrary.Models.FileInfo;
 
 namespace ShareLibrary.Summary
 {
     public class GroupSummary
     {
         public string GroupName;
-        public List<File> Files;
+        public List<FileInfo> Files;
+        private string rootFolderpath;
 
         /// <summary>
         /// Constructor of GroupSummary with the group name and the root folder of all groups.
@@ -18,16 +20,18 @@ namespace ShareLibrary.Summary
         public GroupSummary(string groupName, string rootFolderPath)
         {
             GroupName = groupName;
-            IEnumerable<string> filePaths = Directory.EnumerateFiles(PathAddBackslash(rootFolderPath) + groupName);
+            rootFolderpath = PathAddSlash(rootFolderPath);
+            Files = new List<FileInfo>();
+            IEnumerable<string> filePaths = Directory.EnumerateFiles(rootFolderpath + groupName);
             foreach (string filePath in filePaths)
             {
-                File file = new File
+                FileInfo fileInfo = new FileInfo
                 {
                     Name = Path.GetFileName(filePath),
                     CreationDate = System.IO.File.GetCreationTime(filePath),
                     LastModificationDate = System.IO.File.GetLastWriteTime(filePath)
                 };
-                Files.Add(file);
+                Files.Add(fileInfo);
             }
         }
 
@@ -39,14 +43,48 @@ namespace ShareLibrary.Summary
         public List<Revision> GenerateRevisions(GroupSummary oldGroupSummary)
         {
             List<Revision> revisions = new List<Revision>();
+            List<string> oldFilesNames = oldGroupSummary.Files.Select(info => info.Name).ToList();
 
-            foreach (File file in Files)
+            foreach (FileInfo file in Files)
             {
-                File previousVersionFile = oldGroupSummary.Files.Find(f => f.Name == file.Name);
-                //TODO voir ça fait quoi si le fichier n'est pas la liste
-                //ensuite faire la liste de revision selon la différence entre les 2 listes
-                //TODO on va devoir trouver une façon de lister les fichiers qui ont été supprimé
+                FileInfo previousVersionFileInfo = oldGroupSummary.Files.Find(f => f.Name == file.Name);
+
+                //The file was not in the old version, so we need to create the add revision
+                if (previousVersionFileInfo == null)
+                {
+                    revisions.Add(new Revision
+                    {
+                        GroupName = this.GroupName,
+                        Action = Action.Create,
+                        Data = GetFileData(file.Name),
+                        File = file
+                    });
+                }
+                else
+                {
+                    //We remove the file from the old list to notify that we have found it.
+                    oldFilesNames.Remove(file.Name);
+
+                    //We can compare the modifry date to find if the file have been modify.
+                    if (file.LastModificationDate > previousVersionFileInfo.LastModificationDate)
+                    {
+                        revisions.Add(new Revision
+                        {
+                            Action = Action.Modify,
+                            GroupName = this.GroupName,
+                            Data = GetFileData(file.Name),
+                            File = file
+                        });
+                    }
+                }
             }
+            IEnumerable<FileInfo> removedFiles = oldGroupSummary.Files.Except(Files);
+            revisions.AddRange(removedFiles.Select(removedFile => new Revision
+            {
+                Action = Action.Delete,
+                GroupName = this.GroupName,
+                File = removedFile
+            }));
 
             return revisions;
         }
@@ -60,7 +98,7 @@ namespace ShareLibrary.Summary
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public string PathAddBackslash(string path)
+        public string PathAddSlash(string path)
         {
             // They're always one character but EndsWith is shorter than
             // array style access to last path character. Change this
@@ -94,6 +132,40 @@ namespace ShareLibrary.Summary
             // (for example if it's just a directory name). In this case I
             // default to normal as users expect.
             return path + separator1;
+        }
+
+        /// <summary>
+        /// Equality test of two instance of GroupSummary. Based on the group name
+        /// </summary>
+        /// <param name="a">Fisrt instance of a GroupSummary</param>
+        /// <param name="b">Second instance of a GroupSummary</param>
+        /// <returns>Return true if they have the same name.</returns>
+        public static bool operator ==(GroupSummary a, GroupSummary b)
+        {
+            // If both are null, or both are same instance, return true.
+            if (ReferenceEquals(a, b))
+            {
+                return true;
+            }
+
+            // If one is null, but not both, return false.
+            if ((object)a == null || (object)b == null)
+            {
+                return false;
+            }
+
+            // Return true if the fields match:
+            return a.GroupName == b.GroupName;
+        }
+
+        public static bool operator !=(GroupSummary a, GroupSummary b)
+        {
+            return !(a == b);
+        }
+
+        private byte[] GetFileData(string fileName)
+        {
+            return System.IO.File.ReadAllBytes(PathAddSlash(rootFolderpath + GroupName) + fileName);
         }
     }
 }

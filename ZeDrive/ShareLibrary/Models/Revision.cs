@@ -9,8 +9,8 @@
     public class Revision
     {
         public Action Action;
-        public File File;
-        public Group Group;
+        public FileInfo File;
+        public string GroupName;
         public byte[] Data;
     }
 }

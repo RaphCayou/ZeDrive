@@ -2,7 +2,7 @@
 
 namespace ShareLibrary.Models
 {
-    public class File
+    public class FileInfo
     {
         public string Name;
         public DateTime CreationDate;

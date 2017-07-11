@@ -8,6 +8,6 @@ namespace ShareLibrary.Models
         public string Description;
         public Client Administrator;
         public List<Client> Members;
-        public List<File> Files;
+        public List<FileInfo> Files;
     }
 }
