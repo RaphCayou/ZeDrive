@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
-using ShareLibrary;
 using ShareLibrary.Models;
 
 namespace Server
@@ -14,8 +10,8 @@ namespace Server
     {
         private readonly string _groupsSaveFileName;
         private readonly string _clientsSaveFileName;
-        private List<Group> _groups;
-        private List<Client> _clients;
+        public List<Group> Groups { get; private set; }
+        public List<Client> Clients { get; private set; }
 
         public DataStore(string groupsSaveFileName, string clientsSaveFileName)
         {
@@ -33,7 +29,7 @@ namespace Server
             }
             else
             {
-                _groups = new List<Group>();
+                Groups = new List<Group>();
             }
             if (System.IO.File.Exists(clientsSaveFileName))
             {
@@ -41,15 +37,15 @@ namespace Server
             }
             else
             {
-                _clients = new List<Client>();
+                Clients = new List<Client>();
             }
         }
 
         public void CreateUser(string username, string password)
         {
-            if (_clients.Count(c => c.Name == username) == 0)
+            if (Clients.Count(c => c.Name == username) == 0)
             {
-                _clients.Add(new Client { Name = username, Password = password, LastSeen = DateTime.Now });
+                Clients.Add(new Client { Name = username, Password = password, LastSeen = DateTime.Now });
             }
             else
             {
@@ -59,9 +55,16 @@ namespace Server
 
         public void CreateGroup(string name, string description, string username)
         {
-            if (_groups.Count(c => c.Name == name) == 0)
+            if (Groups.Count(c => c.Name == name) == 0)
             {
-                _groups.Add(new Group { Name = name, Description = description, Administrator = _clients.FirstOrDefault(c => c.Name == name) });
+                Groups.Add(new Group
+                {
+                    Name = name,
+                    Description = description,
+                    Administrator = Clients.FirstOrDefault(c => c.Name == name),
+                    Files = new List<File>(),
+                    Members = new List<Client>()
+                });
                 UpdateLastSeen(username);
             }
             else
@@ -75,7 +78,7 @@ namespace Server
             using (var stream = System.IO.File.OpenRead(_groupsSaveFileName))
             {
                 var serializer = new XmlSerializer(typeof(List<Group>));
-                _groups = serializer.Deserialize(stream) as List<Group>;
+                Groups = serializer.Deserialize(stream) as List<Group>;
             }
         }
 
@@ -84,51 +87,75 @@ namespace Server
             using (var stream = System.IO.File.OpenRead(_clientsSaveFileName))
             {
                 var serializer = new XmlSerializer(typeof(List<Client>));
-                _clients = serializer.Deserialize(stream) as List<Client>;
+                Clients = serializer.Deserialize(stream) as List<Client>;
             }
         }
 
         public bool CheckCredentials(string username, string password)
         {
             bool authorized = false;
-            if (_clients.Count(c => c.Name == username && c.Password == password) > 0)
+            if (Clients.Count(c => c.Name == username) > 0)
             {
-                authorized = true;
-                UpdateLastSeen(username);
+                if (Clients.Count(c => c.Password == password) > 0)
+                {
+                    authorized = true;
+                    UpdateLastSeen(username);
+                }
+            }
+            else
+            {
+                //TODO Crée client
             }
             return authorized;
         }
 
         public bool CheckAdminRights(string username, string groupName)
         {
-            bool hasAdminRights = false;
+            UpdateLastSeen(username);
+            return Groups.FirstOrDefault(g => g.Name == groupName).Administrator.Name == username;
+        }
 
-            string adminOfGroup = _groups.FirstOrDefault(g => g.Name == groupName).Administrator.Name;
-            if (adminOfGroup == username)
-            {
-                hasAdminRights = true;
-            }
+        public bool CheckUserInGroup(string username, string groupName)
+        {
+            UpdateLastSeen(username);
+            return Groups.FirstOrDefault(g => g.Name == groupName).Members.Count(c => c.Name == username) > 0;
+        }
 
-            return hasAdminRights;
+        public void ChangeAdminForGroup(string usernameOldAdmin, string usernameNewAdmin, string groupName)
+        {
+            UpdateLastSeen(usernameOldAdmin);
+            Groups.FirstOrDefault(g => g.Name == groupName).Administrator = Clients.FirstOrDefault(c => c.Name == usernameNewAdmin);
+        }
+
+        public void AddUserToGroup(string username, string groupName)
+        {
+            UpdateLastSeen(username);
+            Groups.FirstOrDefault(g => g.Name == groupName)?.Members.Add(Clients.FirstOrDefault(c => c.Name == username));
+        }
+
+        public void RemoveUserFromGroup(string usernameAdmin, string username, string groupName)
+        {
+            UpdateLastSeen(usernameAdmin);
+            Groups.FirstOrDefault(g => g.Name == groupName)?.Members.Remove(Groups.FirstOrDefault(g => g.Name == groupName)?.Members.FirstOrDefault(c => c.Name == username));
         }
 
         private void UpdateLastSeen(string username)
         {
-            _clients.FirstOrDefault(c => c.Name == username).LastSeen = DateTime.Now;
+            Clients.FirstOrDefault(c => c.Name == username).LastSeen = DateTime.Now;
         }
 
         public void Save()
         {
             using (var writer = new System.IO.StreamWriter(_groupsSaveFileName))
             {
-                var serializer = new XmlSerializer(_groups.GetType());
-                serializer.Serialize(writer, _groups);
+                var serializer = new XmlSerializer(Groups.GetType());
+                serializer.Serialize(writer, Groups);
                 writer.Flush();
             }
             using (var writer = new System.IO.StreamWriter(_clientsSaveFileName))
             {
-                var serializer = new XmlSerializer(_clients.GetType());
-                serializer.Serialize(writer, _clients);
+                var serializer = new XmlSerializer(Clients.GetType());
+                serializer.Serialize(writer, Clients);
                 writer.Flush();
             }
         }

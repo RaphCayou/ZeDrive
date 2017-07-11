@@ -57,8 +57,15 @@ namespace Server
             }
         }
 
-        public void GetClientLists() { }
-        public void GetGroupList() { }
+        public List<Client> GetClientLists()
+        {
+            return dataStore.Clients;
+        }
+
+        public List<Group> GetGroupList()
+        {
+            return dataStore.Groups;
+        }
 
         /// <summary>
         /// Update server history,
@@ -76,12 +83,39 @@ namespace Server
         /// Check for group join request and group invitation
         /// </summary>
         public void GetNotification() { }
-        public void ChangeAdministratorGroup() { }
-        public void DeleteClientFromGroup() { }
 
-        private bool HasAdminRights(string username, string groupName)
+        public void ChangeAdministratorGroup(string usernameCurrentAdmin, string usernameFutureAdmin, string groupName)
         {
-            return dataStore.CheckAdminRights(username, groupName);
+            if (!ParametersHasEmpty(usernameCurrentAdmin, usernameFutureAdmin, groupName))
+            {
+                if (!dataStore.CheckAdminRights(usernameCurrentAdmin, groupName)) return;
+                if (dataStore.CheckUserInGroup(usernameFutureAdmin, groupName))
+                {
+                    dataStore.ChangeAdminForGroup(usernameCurrentAdmin, usernameFutureAdmin, groupName);
+                }
+                else
+                {
+                    //invite user to group
+                }
+            }
+            else
+            {
+                throw new ArgumentException("Les paramètres ne doivent pas être vides.");
+            }
+        }
+
+        public void DeleteClientFromGroup(string adminUserName, string username, string groupName)
+        {
+            if (!ParametersHasEmpty(adminUserName, username, groupName))
+            {
+                if (!dataStore.CheckAdminRights(adminUserName, groupName)) return;
+                if (!dataStore.CheckUserInGroup(username, groupName)) return;
+                dataStore.RemoveUserFromGroup(adminUserName, username, groupName);
+            }
+            else
+            {
+                throw new ArgumentException("Les paramètres ne doivent pas être vides.");
+            }
         }
 
         private static bool ParametersHasEmpty(params string[] parameters)
