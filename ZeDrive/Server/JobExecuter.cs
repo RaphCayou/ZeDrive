@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using ShareLibrary;
 using ShareLibrary.Models;
 using ShareLibrary.Summary;
+using Action = ShareLibrary.Models.Action;
 
 namespace Server
 {
@@ -55,6 +56,19 @@ namespace Server
                         {
                             // Build revision list with client
                             List<Revision> revisions = serverGroupSummary.GenerateRevisions(clientGroupSummary);
+
+                            foreach (Revision rev in revisions)
+                            {
+                                switch (rev.Action)
+                                {
+                                    case Action.Create:
+                                        break;
+                                    case Action.Modify:
+                                        break;
+                                    case Action.Delete:
+                                        break;
+                                }
+                            }
                         }
                         else
                         {
@@ -64,15 +78,18 @@ namespace Server
                             // TODO Possibly filter for CREATE action too
                             List<Revision> clientRevisions =
                                 job.Parameters.Revisions.FindAll(r => r.GroupName == clientGroupSummary.GroupName);
+
                             Directory.CreateDirectory(Path.Combine(rootPath, clientGroupSummary.GroupName));
 
                             // Add every client file to the server
                             foreach (Revision clientRev in clientRevisions)
                             {
-                                string filePath =
-                                    Path.Combine(rootPath, clientGroupSummary.GroupName, clientRev.File.Name);
+                                string filePath = Path.Combine(rootPath, clientGroupSummary.GroupName, clientRev.File.Name);
                                 File.WriteAllBytes(filePath, clientRev.Data);
                             }
+
+                            // Create the server group summary because he didn't exist
+                            serverGroupSummaries.Add(new GroupSummary(clientGroupSummary.GroupName, rootPath));
                         }
                     }
                     else

@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using ShareLibrary;
@@ -73,14 +74,21 @@ namespace Server
         /// Send Revision,
         /// Save history on disk
         /// </summary>
-        public void UpdateServerHistory(Job job)
+        public SyncTransmission UpdateServerHistory(Job job)
         {
-            jobExecuter.Add(job);
-            
-            if (jobExecuterTask.IsFaulted)
+            AutoResetEvent stopWaitHandle = new AutoResetEvent(false);
+            SyncTransmission response = new SyncTransmission();
+
+            job.CallBack = syncT =>
             {
-                throw jobExecuterTask.Exception.Flatten();
-            }
+                response = syncT;
+                stopWaitHandle.Set();
+            };
+
+            jobExecuter.Add(job);
+            stopWaitHandle.WaitOne();
+
+            return response;
         }
 
         public void SendClientGroupInvitation() { }

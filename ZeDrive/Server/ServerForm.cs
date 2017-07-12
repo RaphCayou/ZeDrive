@@ -22,5 +22,11 @@ namespace Server
         {
 
         }
+
+        private void btnStart_Click(object sender, EventArgs e)
+        {
+            ServerBusiness business = new ServerBusiness("GroupsSave", "ClientSave");
+            btnStart.Enabled = false;
+        }
     }
 }
