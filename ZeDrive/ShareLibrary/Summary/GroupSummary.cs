@@ -12,6 +12,7 @@ namespace ShareLibrary.Summary
         public List<FileInfo> Files;
         private string rootFolderpath;
 
+        public GroupSummary() { }
         /// <summary>
         /// Constructor of GroupSummary with the group name and the root folder of all groups.
         /// </summary>
