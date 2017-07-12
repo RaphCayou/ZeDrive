@@ -128,5 +128,10 @@ namespace Server
         {
             return parameters.Any(string.IsNullOrEmpty);
         }
+
+        public Tuple<string, string> GetSaveFilesNames()
+        {
+            return dataStore.GetSaveFilesNames();
+        }
     }
 }

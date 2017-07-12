@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
 using ShareLibrary.Models;
+using FileInfo = ShareLibrary.Models.FileInfo;
 
 namespace Server
 {
@@ -15,13 +17,13 @@ namespace Server
 
         public DataStore(string groupsSaveFileName, string clientsSaveFileName)
         {
-            _groupsSaveFileName = groupsSaveFileName;
-            _clientsSaveFileName = clientsSaveFileName;
-
             if (string.IsNullOrEmpty(groupsSaveFileName) || string.IsNullOrEmpty(clientsSaveFileName))
             {
                 throw new ArgumentNullException("Noms de fichiers vides ou invalides");
             }
+
+            _groupsSaveFileName = Path.GetFileNameWithoutExtension(groupsSaveFileName) + ".xml";
+            _clientsSaveFileName = Path.GetFileNameWithoutExtension(clientsSaveFileName) + ".xml";
 
             if (System.IO.File.Exists(groupsSaveFileName))
             {
@@ -63,7 +65,7 @@ namespace Server
                     Description = description,
                     Administrator = Clients.FirstOrDefault(c => c.Name == name),
                     Files = new List<FileInfo>(),
-                    Members = new List<Client>()
+                    Members = new List<Client>{ Clients.FirstOrDefault(c => c.Name == username) }
                 });
                 UpdateLastSeen(username);
             }
@@ -158,6 +160,11 @@ namespace Server
                 serializer.Serialize(writer, Clients);
                 writer.Flush();
             }
+        }
+
+        public Tuple<string, string> GetSaveFilesNames()
+        {
+            return new Tuple<string, string>(_groupsSaveFileName, _clientsSaveFileName);
         }
     }
 }
