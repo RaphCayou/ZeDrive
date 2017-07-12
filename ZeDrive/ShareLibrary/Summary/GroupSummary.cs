@@ -21,8 +21,13 @@ namespace ShareLibrary.Summary
         {
             GroupName = groupName;
             rootFolderpath = PathAddSlash(rootFolderPath);
+            Update();
+        }
+
+        public void Update()
+        {
             Files = new List<FileInfo>();
-            IEnumerable<string> filePaths = Directory.EnumerateFiles(rootFolderpath + groupName);
+            IEnumerable<string> filePaths = Directory.EnumerateFiles(rootFolderpath + GroupName);
             foreach (string filePath in filePaths)
             {
                 FileInfo fileInfo = new FileInfo
@@ -33,6 +38,7 @@ namespace ShareLibrary.Summary
                 };
                 Files.Add(fileInfo);
             }
+
         }
 
         /// <summary>
