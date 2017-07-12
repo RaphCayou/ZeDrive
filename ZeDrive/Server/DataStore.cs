@@ -25,7 +25,7 @@ namespace Server
             _groupsSaveFileName = Path.GetFileNameWithoutExtension(groupsSaveFileName) + ".xml";
             _clientsSaveFileName = Path.GetFileNameWithoutExtension(clientsSaveFileName) + ".xml";
 
-            if (System.IO.File.Exists(groupsSaveFileName))
+            if (File.Exists(_groupsSaveFileName))
             {
                 LoadGroups();
             }
@@ -33,7 +33,7 @@ namespace Server
             {
                 Groups = new List<Group>();
             }
-            if (System.IO.File.Exists(clientsSaveFileName))
+            if (File.Exists(_clientsSaveFileName))
             {
                 LoadClients();
             }
@@ -77,7 +77,7 @@ namespace Server
 
         private void LoadGroups()
         {
-            using (var stream = System.IO.File.OpenRead(_groupsSaveFileName))
+            using (var stream = File.OpenRead(_groupsSaveFileName))
             {
                 var serializer = new XmlSerializer(typeof(List<Group>));
                 Groups = serializer.Deserialize(stream) as List<Group>;
@@ -86,7 +86,7 @@ namespace Server
 
         private void LoadClients()
         {
-            using (var stream = System.IO.File.OpenRead(_clientsSaveFileName))
+            using (var stream = File.OpenRead(_clientsSaveFileName))
             {
                 var serializer = new XmlSerializer(typeof(List<Client>));
                 Clients = serializer.Deserialize(stream) as List<Client>;
@@ -148,13 +148,13 @@ namespace Server
 
         public void Save()
         {
-            using (var writer = new System.IO.StreamWriter(_groupsSaveFileName))
+            using (var writer = new StreamWriter(_groupsSaveFileName))
             {
                 var serializer = new XmlSerializer(Groups.GetType());
                 serializer.Serialize(writer, Groups);
                 writer.Flush();
             }
-            using (var writer = new System.IO.StreamWriter(_clientsSaveFileName))
+            using (var writer = new StreamWriter(_clientsSaveFileName))
             {
                 var serializer = new XmlSerializer(Clients.GetType());
                 serializer.Serialize(writer, Clients);
