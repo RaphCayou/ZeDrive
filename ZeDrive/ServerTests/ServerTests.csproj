@@ -61,9 +61,14 @@
       <Name>Server</Name>
     </ProjectReference>
     <ProjectReference Include="..\ShareLibrary\ShareLibrary.csproj">
-      <Project>{d7c49f67-b799-4508-bcb1-7362450264df}</Project>
+      <Project>{D7C49F67-B799-4508-BCB1-7362450264DF}</Project>
       <Name>ShareLibrary</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Test1.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

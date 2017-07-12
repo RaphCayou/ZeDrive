@@ -11,6 +11,6 @@ namespace Server
     public class Job
     {
         public SyncTransmission Parameters;
-        public Action<ITransmission> CallBack;
+        public Action<SyncTransmission> CallBack;
     }
 }
