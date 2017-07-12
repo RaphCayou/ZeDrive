@@ -20,14 +20,14 @@ namespace ShareLibrary.Summary
         public GroupSummary(string groupName, string rootFolderPath)
         {
             GroupName = groupName;
-            rootFolderpath = PathAddSlash(rootFolderPath);
+            rootFolderpath = rootFolderPath;
             Update();
         }
 
         public void Update()
         {
             Files = new List<FileInfo>();
-            IEnumerable<string> filePaths = Directory.EnumerateFiles(rootFolderpath + GroupName);
+            IEnumerable<string> filePaths = Directory.EnumerateFiles(Path.Combine(rootFolderpath, GroupName));
             foreach (string filePath in filePaths)
             {
                 FileInfo fileInfo = new FileInfo
@@ -96,51 +96,6 @@ namespace ShareLibrary.Summary
         }
 
         /// <summary>
-        /// Adding the corresponding caracter to the path. (/ or \ depending of the rest of the path)
-        /// <note>
-        /// Based on : https://stackoverflow.com/questions/20405965/how-to-ensure-there-is-trailing-directory-separator-in-paths
-        /// Taken on 2017-07-06
-        /// </note>
-        /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        public string PathAddSlash(string path)
-        {
-            // They're always one character but EndsWith is shorter than
-            // array style access to last path character. Change this
-            // if performance are a (measured) issue.
-            string separator1 = Path.DirectorySeparatorChar.ToString();
-            string separator2 = Path.AltDirectorySeparatorChar.ToString();
-
-            // Trailing white spaces are always ignored but folders may have
-            // leading spaces. It's unusual but it may happen. If it's an issue
-            // then just replace TrimEnd() with Trim(). Tnx Paul Groke to point this out.
-            path = path.TrimEnd();
-
-            // Argument is always a directory name then if there is one
-            // of allowed separators then I have nothing to do.
-            if (path.EndsWith(separator1) || path.EndsWith(separator2))
-                return path;
-
-            // If there is the "alt" separator then I add a trailing one.
-            // Note that URI format (file://drive:\path\filename.ext) is
-            // not supported in most .NET I/O functions then we don't support it
-            // here too. If you have to then simply revert this check:
-            // if (path.Contains(separator1))
-            //     return path + separator1;
-            //
-            // return path + separator2;
-            if (path.Contains(separator2))
-                return path + separator2;
-
-            // If there is not an "alt" separator I add a "normal" one.
-            // It means path may be with normal one or it has not any separator
-            // (for example if it's just a directory name). In this case I
-            // default to normal as users expect.
-            return path + separator1;
-        }
-
-        /// <summary>
         /// Equality test of two instance of GroupSummary. Based on the group name
         /// </summary>
         /// <param name="a">Fisrt instance of a GroupSummary</param>
@@ -169,9 +124,14 @@ namespace ShareLibrary.Summary
             return !(a == b);
         }
 
+        /// <summary>
+        /// Read the bytes of a file
+        /// </summary>
+        /// <param name="fileName">The name of the file to read the bytes.</param>
+        /// <returns>The bytes of the file.</returns>
         private byte[] GetFileData(string fileName)
         {
-            return System.IO.File.ReadAllBytes(PathAddSlash(rootFolderpath + GroupName) + fileName);
+            return System.IO.File.ReadAllBytes(Path.Combine(rootFolderpath, GroupName, fileName));
         }
     }
 }
