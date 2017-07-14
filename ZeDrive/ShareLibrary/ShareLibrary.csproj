@@ -40,6 +40,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Communication\CommandHeader.cs" />
+    <Compile Include="Communication\IServerBusiness.cs" />
+    <Compile Include="Communication\Message.cs" />
+    <Compile Include="Communication\RequestMessageContent.cs" />
+    <Compile Include="Communication\MessageType.cs" />
+    <Compile Include="Communication\SocketUtils.cs" />
     <Compile Include="Models\Client.cs" />
     <Compile Include="Models\FileInfo.cs" />
     <Compile Include="Summary\GroupSummary.cs" />
