@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ShareLibrary.Models;
 using ShareLibrary.Summary;
@@ -17,7 +18,7 @@ namespace ShareLibraryTests
         private const string GROUP1 = "GROUP1";
         private const string GROUP2 = "GROUP2";
         private const int NUMBER_OF_TEST_FILE = 5;
-        private static readonly IList<string> GROUPS = new ReadOnlyCollection<string>( new List<string> { GROUP1, GROUP2 });
+        private static readonly IList<string> GROUPS = new ReadOnlyCollection<string>(new List<string> { GROUP1, GROUP2 });
         private List<string> TestFilesGroup1;
 
         [TestInitialize()]
@@ -60,13 +61,13 @@ namespace ShareLibraryTests
         [TestMethod]
         public void ConstructorTest()
         {
-            List<string> files = new List<string>{ Path.Combine(TESTING_PATH, GROUP2, "file1.jp"), Path.Combine(TESTING_PATH, GROUP2, "file2.jp"), Path.Combine(TESTING_PATH, GROUP2, "file3.jp") };
+            List<string> files = new List<string> { Path.Combine(TESTING_PATH, GROUP2, "file1.jp"), Path.Combine(TESTING_PATH, GROUP2, "file2.jp"), Path.Combine(TESTING_PATH, GROUP2, "file3.jp") };
 
             foreach (string file in files)
             {
                 File.Create(file).Close();
             }
-            List<DateTime> filesCreations = new List<DateTime>{ new DateTime(2021, 9, 12, 17, 12, 4), new DateTime(2000, 1, 1, 0, 0, 0), new DateTime(2017, 7, 12, 12, 15, 4) };
+            List<DateTime> filesCreations = new List<DateTime> { new DateTime(2021, 9, 12, 17, 12, 4), new DateTime(2000, 1, 1, 0, 0, 0), new DateTime(2017, 7, 12, 12, 15, 4) };
             List<DateTime> filesModifications = new List<DateTime> { new DateTime(2021, 9, 12, 17, 12, 4), new DateTime(2001, 1, 1, 0, 0, 0), new DateTime(2017, 7, 12, 12, 15, 5) };
 
             for (int i = 0; i < files.Count; i++)
@@ -76,12 +77,12 @@ namespace ShareLibraryTests
             }
 
             GroupSummary group2Summary = new GroupSummary(GROUP2, TESTING_PATH);
-            
+
             Assert.AreEqual(GROUP2, group2Summary.GroupName);
             Assert.AreEqual(3, group2Summary.Files.Count);
             for (int i = 0; i < group2Summary.Files.Count; i++)
             {
-                Assert.AreEqual($"file{i+1}.jp", group2Summary.Files[i].Name);
+                Assert.AreEqual($"file{i + 1}.jp", group2Summary.Files[i].Name);
                 Assert.AreEqual(filesCreations[i], group2Summary.Files[i].CreationDate);
                 Assert.AreEqual(filesModifications[i], group2Summary.Files[i].LastModificationDate);
             }
@@ -98,12 +99,12 @@ namespace ShareLibraryTests
             string fileAdded = Path.Combine(TESTING_PATH, GROUP1, Path.GetRandomFileName());
             File.Create(fileAdded).Close();
             groupSummary.Update();
-            Assert.AreEqual(NUMBER_OF_TEST_FILE+1, groupSummary.Files.Count);
+            Assert.AreEqual(NUMBER_OF_TEST_FILE + 1, groupSummary.Files.Count);
             Assert.IsTrue(groupSummary.Files.Exists(info => info.Name == Path.GetFileName(fileAdded)));
 
             File.Delete(fileAdded);
         }
-        
+
         [TestMethod]
         public void EqualValidation()
         {
@@ -165,8 +166,29 @@ namespace ShareLibraryTests
             File.Delete(fileAdded);
             File.Delete(fileModifed);
         }
+        
+        public void DataValidation()
+        {
+            string fileContent =
+                "Le TP 2/3 consiste à mettre en place un système de partage de fichier inspiré de systèmes comme\r\n" +
+                "Dropbox, GoogleDrive, etc. Le système permettra à différents clients de partager et de\r\n" +
+                "synchroniser des fichiers au sein de groupes définis. Le système est constitué de deux\r\n" +
+                "composantes : un serveur central et un client. Le serveur est accessible à une adresse fixe,\r\n" +
+                "connue de tous les clients. Le serveur a pour rôle de synchroniser, recevoir et transmettre les\r\n" +
+                "fichiers des clients, et gérer les groupes auxquels les clients peuvent se rattacher. Les clients\r\n" +
+                "doivent se synchroniser avec le serveur. Le système à implémenter est donc un système de clientserveur\r\n" +
+                "basé sur le protocole TCP.";
 
-        //TODO test le contenu des revision(genre le data des fichiers)
-        //public void 
+            string fileAdded = Path.Combine(TESTING_PATH, GROUP1, Path.GetRandomFileName());
+
+            GroupSummary oldSummary = new GroupSummary(GROUP1, TESTING_PATH);
+            File.WriteAllText(fileAdded, fileContent);
+            GroupSummary newSummary = new GroupSummary(GROUP1, TESTING_PATH);
+            byte[] extractData = newSummary.GenerateRevisions(oldSummary)[0].Data;
+            //WriteAllText write in UTF8 by default.
+            Assert.AreEqual(Encoding.UTF8.GetBytes(fileContent), extractData);
+
+            File.Delete(fileAdded);
+        }
     }
 }

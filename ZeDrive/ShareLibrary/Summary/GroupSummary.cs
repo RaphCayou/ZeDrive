@@ -85,7 +85,6 @@ namespace ShareLibrary.Summary
                     }
                 }
             }
-            //TODO trouver une façon plus clean de get les files qui sont removed
             IEnumerable<FileInfo> removedFiles = oldGroupSummary.Files.Where(info => oldFilesNames.Contains(info.Name));
             revisions.AddRange(removedFiles.Select(removedFile => new Revision
             {
