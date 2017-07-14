@@ -17,19 +17,20 @@ namespace ClientTests
         [TestMethod]
         public void TestUpdateLocalFiles()
         {
-            DateTime now = DateTime.Now;
-            string fileAdded = Path.Combine(TESTING_PATH, GROUP1, Path.GetRandomFileName());
-            Revision revisionCreate = new Revision()
-            {
-                File = new ShareLibrary.Models.FileInfo { Name = fileAdded, LastModificationDate = now, CreationDate = now },
-                GroupName = GROUP1,
-                Action = Action.Create,
-                Data = Encoding.UTF8.GetBytes(fileContent)
-            };
-            string fileDeleted = Path.Combine(TESTING_PATH, GROUP1, Path.GetRandomFileName());
-            string fileModifed = Path.Combine(TESTING_PATH, GROUP1, Path.GetRandomFileName());
-            File.Create(fileAdded).Close();
-            ClientBusiness client = new ClientBusiness(TESTING_PATH);
+            //TODO verifier que tout les revisions sont appliqués
+            //DateTime now = DateTime.Now;
+            //string fileAdded = Path.Combine(TESTING_PATH, GROUP1, Path.GetRandomFileName());
+            //Revision revisionCreate = new Revision()
+            //{
+            //    File = new ShareLibrary.Models.FileInfo { Name = fileAdded, LastModificationDate = now, CreationDate = now },
+            //    GroupName = GROUP1,
+            //    Action = Action.Create,
+            //    Data = Encoding.UTF8.GetBytes(fileContent)
+            //};
+            //string fileDeleted = Path.Combine(TESTING_PATH, GROUP1, Path.GetRandomFileName());
+            //string fileModifed = Path.Combine(TESTING_PATH, GROUP1, Path.GetRandomFileName());
+            //File.Create(fileAdded).Close();
+            //ClientBusiness client = new ClientBusiness(TESTING_PATH);
 
         }
     }

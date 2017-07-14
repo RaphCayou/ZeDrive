@@ -109,6 +109,7 @@ namespace ShareLibraryTests
         public void TestApplyDelete()
         {
             string fileDeleted = Path.Combine(TESTING_PATH, GROUP1, Path.GetRandomFileName());
+            //TODO faire ce test
         }
     }
 }
