@@ -135,38 +135,49 @@ namespace ShareLibraryTests
             string fileAdded = Path.Combine(TESTING_PATH, GROUP1, Path.GetRandomFileName());
             string fileDeleted = Path.Combine(TESTING_PATH, GROUP1, Path.GetRandomFileName());
             string fileModifed = Path.Combine(TESTING_PATH, GROUP1, Path.GetRandomFileName());
+            string fileModifedPast = Path.Combine(TESTING_PATH, GROUP1, Path.GetRandomFileName());
             File.Create(fileDeleted).Close();
             File.Create(fileModifed).Close();
+            File.Create(fileModifedPast).Close();
 
             GroupSummary oldSummary = new GroupSummary(GROUP1, TESTING_PATH);
             //When we create a file, a stream is created, so we need to close the stream because we are done with it.
             File.Create(fileAdded).Close();
             File.Delete(fileDeleted);
             File.SetLastWriteTime(fileModifed, DateTime.Now);
+            File.SetLastWriteTime(fileModifedPast, DateTime.Now - new TimeSpan(12, 0, 0, 0));
             GroupSummary newSummary = new GroupSummary(GROUP1, TESTING_PATH);
             List<Revision> result = newSummary.GenerateRevisions(oldSummary);
 
-            Assert.AreEqual(3, result.Count);
+            Assert.AreEqual(4, result.Count);
             //We are suppose to have only one new file.
             Assert.AreEqual(1, result.Count(revision => revision.Action == Action.Create));
             Revision createRevision = result.Find(revision => revision.Action == Action.Create);
             Assert.AreEqual(Path.GetFileName(fileAdded), createRevision.File.Name);
             Assert.AreEqual(GROUP1, createRevision.GroupName);
 
+            //Delete Test
             Assert.AreEqual(1, result.Count(revision => revision.Action == Action.Delete));
             Revision deleteRevision = result.Find(revision => revision.Action == Action.Delete);
             Assert.AreEqual(Path.GetFileName(fileDeleted), deleteRevision.File.Name);
             Assert.AreEqual(GROUP1, deleteRevision.GroupName);
 
-            Assert.AreEqual(1, result.Count(revision => revision.Action == Action.Modify));
-            Revision modifyRevision = result.Find(revision => revision.Action == Action.Modify);
+            //Modify test
+            Assert.AreEqual(2, result.Count(revision => revision.Action == Action.Modify));
+            Revision modifyRevision = result.Find(revision => revision.File.Name == Path.GetFileName(fileModifed));
             Assert.AreEqual(Path.GetFileName(fileModifed), modifyRevision.File.Name);
             Assert.AreEqual(GROUP1, modifyRevision.GroupName);
 
+            //Modify test past
+            Revision modifyRevisionpast = result.Find(revision => revision.File.Name == Path.GetFileName(fileModifedPast));
+            Assert.AreEqual(Path.GetFileName(fileModifedPast), modifyRevisionpast.File.Name);
+            Assert.AreEqual(GROUP1, modifyRevisionpast.GroupName);
+
             File.Delete(fileAdded);
             File.Delete(fileModifed);
+            File.Delete(fileModifedPast);
         }
-        
+
         public void DataValidation()
         {
             string fileContent =
