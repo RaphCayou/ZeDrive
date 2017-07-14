@@ -71,7 +71,7 @@ namespace ShareLibrary.Summary
                 {
                     //We remove the file from the old list to notify that we have found it.
                     oldFilesNames.Remove(file.Name);
-
+                    
                     //We can compare the modifry date to find if the file have been modify.
                     if (file.LastModificationDate > previousVersionFileInfo.LastModificationDate)
                     {
@@ -82,6 +82,17 @@ namespace ShareLibrary.Summary
                             Data = GetFileData(file.Name),
                             File = file
                         });
+                    }
+                    //Server Case
+                    else if (file.LastModificationDate < previousVersionFileInfo.LastModificationDate)
+                    {
+                        revisions.Add(new Revision
+                        {
+                            Action = Action.Modify,
+                            GroupName = this.GroupName,
+                            File = previousVersionFileInfo
+                        });
+
                     }
                 }
             }
