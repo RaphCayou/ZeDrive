@@ -106,7 +106,7 @@ namespace Server
             }
             else
             {
-                //TODO Crée client
+                CreateUser(username, password);
             }
             return authorized;
         }

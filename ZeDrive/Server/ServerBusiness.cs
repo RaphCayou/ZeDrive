@@ -15,6 +15,7 @@ namespace Server
     {
         private JobExecuter jobExecuter;
         private DataStore dataStore;
+        private List<PendingAction> pendingActions;
         private Task jobExecuterTask;
 
         public ServerBusiness(string groupsSaveFileName, string clientsSaveFileName)
@@ -23,6 +24,8 @@ namespace Server
 
             jobExecuter = new JobExecuter(dataStore);
             jobExecuterTask = Task.Factory.StartNew(() => jobExecuter.Execute());
+
+            pendingActions = new List<PendingAction>();
         }
 
         ~ServerBusiness()
@@ -41,10 +44,7 @@ namespace Server
             {
                 dataStore.CreateUser(username, password);
             }
-            else
-            {
-                throw new ArgumentException("Les paramètres ne doivent pas être vides.");
-            }
+            else throw new ArgumentException("Les paramètres ne doivent pas être vides.");
         }
 
         public void CreateGroup(string name, string description, string username)
@@ -53,10 +53,7 @@ namespace Server
             {
                 dataStore.CreateGroup(name, description, username);
             }
-            else
-            {
-                throw new ArgumentException("Les paramètres ne doivent pas être vides.");
-            }
+            else throw new ArgumentException("Les paramètres ne doivent pas être vides.");
         }
 
         public List<Client> GetClientLists()
@@ -91,45 +88,77 @@ namespace Server
             return response;
         }
 
-        public void SendClientGroupInvitation() { }
-        public void SendClientGroupRequest() { }
+        public void SendClientGroupInvitation(string adminUsername, string invitedUser, string groupName)
+        {
+            if (!ParametersHasEmpty(adminUsername, invitedUser, groupName))
+            {
+                if (!dataStore.CheckAdminRights(adminUsername, groupName))
+                {
+                    throw new ArgumentException("Vous n'avez pas les droits d'administrateur.");
+                }
+                if (!dataStore.CheckUserInGroup(invitedUser, groupName))
+                {
+                   pendingActions.Add(new PendingAction { clientName = invitedUser, groupName = groupName, action = ActionType.Action.Invite});
+                }
+                else throw new ArgumentException("L'utilisateur est déjà dans le groupe.");
+            }
+            else throw new ArgumentException("Les paramètres ne doivent pas être vides.");
+        }
+
+        public void SendClientGroupRequest(string username, string groupName)
+        {
+            if (!ParametersHasEmpty(username, groupName))
+            {
+                if (!dataStore.CheckUserInGroup(username, groupName))
+                {
+                    pendingActions.Add(new PendingAction { clientName = username, groupName = groupName, action = ActionType.Action.Request });
+                }
+                else throw new ArgumentException("L'utilisateur est déjà dans le groupe.");
+            }
+            else throw new ArgumentException("Les paramètres ne doivent pas être vides.");
+        }
+
+        public void KickUserFromGroup(string adminUsername, string username, string groupName)
+        {
+            if (!ParametersHasEmpty(adminUsername, username, groupName))
+            {
+                if (!dataStore.CheckAdminRights(adminUsername, groupName)) throw new ArgumentException("Vous n'avez pas les droits d'administrateur.");
+                if (!dataStore.CheckUserInGroup(username, groupName)) throw new ArgumentException("L'utilisateur n'est pas dans le groupe.");
+                dataStore.RemoveUserFromGroup(adminUsername, username, groupName);
+            }
+            else throw new ArgumentException("Les paramètres ne doivent pas être vides.");
+        }
+
         /// <summary>
         /// Check for group join request and group invitation
         /// </summary>
-        public void GetNotification() { }
+        public void GetNotification()
+        {
+            //TODO vérifie avec les pending voir si il faut effectuer une action
+        }
+
+        public void AcknowledgeRequest(string adminUsername, string username, string group, bool accept)
+        {
+            //TODO accepter la requete, faire l'Action et supprimer le pending
+        }
+
+        public void AcknowledgeInvite(string username, string group, bool accept)
+        {
+            //TODO accepter la requete, faire l'Action et supprimer le pending
+        }
 
         public void ChangeAdministratorGroup(string usernameCurrentAdmin, string usernameFutureAdmin, string groupName)
         {
             if (!ParametersHasEmpty(usernameCurrentAdmin, usernameFutureAdmin, groupName))
             {
-                if (!dataStore.CheckAdminRights(usernameCurrentAdmin, groupName)) return;
+                if (!dataStore.CheckAdminRights(usernameCurrentAdmin, groupName)) throw new ArgumentException("Vous n'avez pas les droits d'administrateur.");
                 if (dataStore.CheckUserInGroup(usernameFutureAdmin, groupName))
                 {
                     dataStore.ChangeAdminForGroup(usernameCurrentAdmin, usernameFutureAdmin, groupName);
                 }
-                else
-                {
-                    //invite user to group
-                }
+                else throw new ArgumentException("L'utilisateur n'est pas dans le groupe.");
             }
-            else
-            {
-                throw new ArgumentException("Les paramètres ne doivent pas être vides.");
-            }
-        }
-
-        public void DeleteClientFromGroup(string adminUserName, string username, string groupName)
-        {
-            if (!ParametersHasEmpty(adminUserName, username, groupName))
-            {
-                if (!dataStore.CheckAdminRights(adminUserName, groupName)) return;
-                if (!dataStore.CheckUserInGroup(username, groupName)) return;
-                dataStore.RemoveUserFromGroup(adminUserName, username, groupName);
-            }
-            else
-            {
-                throw new ArgumentException("Les paramètres ne doivent pas être vides.");
-            }
+            else throw new ArgumentException("Les paramètres ne doivent pas être vides.");
         }
 
         private static bool ParametersHasEmpty(params string[] parameters)
