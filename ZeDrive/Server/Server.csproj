@@ -48,6 +48,7 @@
     <Compile Include="DataStore.cs" />
     <Compile Include="Job.cs" />
     <Compile Include="JobExecuter.cs" />
+    <Compile Include="PendingAction.cs" />
     <Compile Include="ServerBusiness.cs" />
     <Compile Include="ServerForm.cs">
       <SubType>Form</SubType>

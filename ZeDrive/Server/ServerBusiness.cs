@@ -117,7 +117,7 @@ namespace Server
             }
             else throw new ArgumentException("Les paramètres ne doivent pas être vides.");
         }
-
+        
         public void KickUserFromGroup(string adminUsername, string username, string groupName)
         {
             if (!ParametersHasEmpty(adminUsername, username, groupName))
