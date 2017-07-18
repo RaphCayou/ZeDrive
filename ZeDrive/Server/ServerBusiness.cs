@@ -11,7 +11,7 @@ using ShareLibrary.Models;
 
 namespace Server
 {
-    public class ServerBusiness
+    public class ServerBusiness : IServerBusiness
     {
         private JobExecuter jobExecuter;
         private DataStore dataStore;

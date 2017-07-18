@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ShareLibrary.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,17 +9,18 @@ namespace Server
 {
     public interface IServerBusiness
     {
-        void Save();
         bool Connect(string username, string password);
         void CreateUser(string username, string password);
         void CreateGroup(string name, string description, string username);
-        void GetClientLists();
-        void GetGroupList();
-        void SendClientGroupInvitation();
-        void SendClientGroupRequest();
+        List<Client> GetClientLists();
+        List<Group> GetGroupList();
+        void SendClientGroupInvitation(string adminUsername, string invitedUser, string groupName);
+        void SendClientGroupRequest(string username, string groupName);
+        void KickUserFromGroup(string adminUsername, string username, string groupName);
         void GetNotification();
-        void ChangeAdministratorGroup();
-        void DeleteClientFromGroup();
-
+        void AcknowledgeRequest(string adminUsername, string username, string group, bool accept);
+        void AcknowledgeInvite(string username, string group, bool accept);
+        void ChangeAdministratorGroup(string usernameCurrentAdmin, string usernameFutureAdmin, string groupName);
+        Tuple<string, string> GetSaveFilesNames();
     }
 }

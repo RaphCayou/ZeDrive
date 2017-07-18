@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Server.TcpCommunication
 {
-    class ServerDispatcher
+    public class ServerDispatcher
     {
         private IServerBusiness business;
         private Socket socketListener;
@@ -51,7 +51,7 @@ namespace Server.TcpCommunication
 
                 if (message.Type == MessageType.Request)
                 {
-                    // Sychronously call the server method associated to the command
+                    // Synchronously call the server method associated to the command
                     object result = ExecuteCommand(message);
 
                     // Serialize the response

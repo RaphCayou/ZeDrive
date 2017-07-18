@@ -54,7 +54,7 @@ namespace ServerTests
         public void When_Creating_With_Existing_NonEmpty_Files_Then_Loads_Correctly()
         {
             business = new ServerBusiness("groupsSaveFile", "clientsSaveFile");
-            List<Client> clients = business.GetClientLists();
+            List<ShareLibrary.Models.Client> clients = business.GetClientLists();
             Assert.IsNotNull(clients);
             Assert.IsNotNull(clients.FirstOrDefault(c => c.Name == "Henry"));
         }

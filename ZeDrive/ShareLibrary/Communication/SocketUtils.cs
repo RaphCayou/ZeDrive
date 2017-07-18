@@ -15,23 +15,15 @@ namespace ShareLibrary.Communication
             // Receive message length
             byte[] messageLengthArray = new byte[Message.SizeOfLengthInHeader];
             s.Receive(messageLengthArray, messageLengthArray.Length, SocketFlags.Partial);
-
-            if (BitConverter.IsLittleEndian)
-            {
-                Array.Reverse(messageLengthArray);
-            }
+            
             int messageLength = BitConverter.ToInt32(messageLengthArray, 0);
 
 
             // Receive message type
             byte[] messageTypeArray = new byte[Message.SizeOfTypeInHeader];
             s.Receive(messageTypeArray, messageTypeArray.Length, SocketFlags.Partial);
-
-            if (BitConverter.IsLittleEndian)
-            {
-                Array.Reverse(messageTypeArray);
-            }
-            MessageType messageType = (MessageType)BitConverter.ToInt32(messageLengthArray, 0);
+            
+            MessageType messageType = (MessageType)BitConverter.ToInt32(messageTypeArray, 0);
 
 
             // Receive message content

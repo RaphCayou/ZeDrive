@@ -5,10 +5,11 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using ShareLibrary.Models;
 
 namespace Client
 {
-    class ClientServerAccess : IServerBusiness
+    public class ClientServerAccess : IServerBusiness
     {
         private ClientRPCManager RPCManager { get; set; }
 
@@ -17,14 +18,17 @@ namespace Client
             RPCManager = new ClientRPCManager(ipAddress, port);
         }
 
-        public void ChangeAdministratorGroup()
-        {
-            RPCManager.SendMessage(System.Reflection.MethodBase.GetCurrentMethod());
-        }
-
         public bool Connect(string username, string password)
         {
             return (bool)RPCManager.SendMessage(System.Reflection.MethodBase.GetCurrentMethod(),
+                username,
+                password
+                );
+        }
+
+        public void CreateUser(string username, string password)
+        {
+            RPCManager.SendMessage(System.Reflection.MethodBase.GetCurrentMethod(),
                 username,
                 password
                 );
@@ -39,45 +43,52 @@ namespace Client
                 );
         }
 
-        public void CreateUser(string username, string password)
+        public List<ShareLibrary.Models.Client> GetClientLists()
         {
-            RPCManager.SendMessage(System.Reflection.MethodBase.GetCurrentMethod(),
-                username,
-                password
-                );
+            return (List<ShareLibrary.Models.Client>)RPCManager.SendMessage(System.Reflection.MethodBase.GetCurrentMethod());
         }
 
-        public void DeleteClientFromGroup()
+        public List<Group> GetGroupList()
         {
             throw new NotImplementedException();
         }
 
-        public void GetClientLists()
+        public void SendClientGroupInvitation(string adminUsername, string invitedUser, string groupName)
         {
             throw new NotImplementedException();
         }
 
-        public void GetGroupList()
+        public void SendClientGroupRequest(string username, string groupName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void KickUserFromGroup(string adminUsername, string username, string groupName)
         {
             throw new NotImplementedException();
         }
 
         public void GetNotification()
         {
-            throw new NotImplementedException();
+            RPCManager.SendMessage(System.Reflection.MethodBase.GetCurrentMethod());
         }
 
-        public void Save()
+        public void AcknowledgeRequest(string adminUsername, string username, string group, bool accept)
         {
             throw new NotImplementedException();
         }
 
-        public void SendClientGroupInvitation()
+        public void AcknowledgeInvite(string username, string group, bool accept)
         {
             throw new NotImplementedException();
         }
 
-        public void SendClientGroupRequest()
+        public void ChangeAdministratorGroup(string usernameCurrentAdmin, string usernameFutureAdmin, string groupName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Tuple<string, string> GetSaveFilesNames()
         {
             throw new NotImplementedException();
         }

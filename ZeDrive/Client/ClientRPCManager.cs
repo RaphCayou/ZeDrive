@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Client
 {
-    class ClientRPCManager
+    public class ClientRPCManager
     {
         private Socket socketListener;
 
