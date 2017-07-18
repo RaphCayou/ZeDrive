@@ -37,10 +37,9 @@ namespace Server
             // Blocking call
             foreach (Job job in syncJobs.GetConsumingEnumerable())
             {
-                executionCount++;
-                Console.WriteLine("Execute Job {0}", executionCount);
+                Console.WriteLine("Execute Job {0}", ++executionCount);
 
-                // TODO Execute
+                List<Revision> returnRevisions = new List<Revision>();
 
                 // For each client group revision
                 foreach (GroupSummary clientGroupSummary in job.Parameters.GroupSummaries)
@@ -59,13 +58,39 @@ namespace Server
 
                             foreach (Revision rev in revisions)
                             {
+                                ShareLibrary.Models.FileInfo currentServerFile = serverGroupSummary.Files.Find(f => f.Name == rev.File.Name);
+                                ShareLibrary.Models.FileInfo currentClientFile = clientGroupSummary.Files.Find(f => f.Name == rev.File.Name);
+
                                 switch (rev.Action)
                                 {
                                     case Action.Create:
                                         break;
+
                                     case Action.Modify:
+                                        rev.Data = job.Parameters.Revisions.Find(r => r.File.Name == currentClientFile.Name).Data;
+
+                                        // Case 1 : Server modification date > client modification date
+                                        // Add revision to response with data
+                                        if (currentServerFile.LastModificationDate > currentClientFile.LastModificationDate)
+                                        {
+                                            returnRevisions.Add(rev);
+                                        }
+                                        // Case 2 : Server modification date < client modification date
+                                        // Update server history (replace the current file)
+                                        else
+                                        {
+                                            rev.Apply(rootPath);
+                                            serverGroupSummary.Update();
+                                        }
                                         break;
+
                                     case Action.Delete:
+
+                                        // Case 1 : The file was added by the current client.
+                                        // Update server history (add the current file)
+
+                                        // Case 2 : The file is deleted for real
+                                        // Add revision to response
                                         break;
                                 }
                             }
@@ -73,30 +98,26 @@ namespace Server
                         else
                         {
                             // Initial case when the server does not have the client group synced
-                            // Add the client client files (revisions) to the server files
-
-                            // TODO Possibly filter for CREATE action too
+                            // Add the client files (revisions) to the server files
+                            
                             List<Revision> clientRevisions =
                                 job.Parameters.Revisions.FindAll(r => r.GroupName == clientGroupSummary.GroupName);
 
+                            // Create the group directory
                             Directory.CreateDirectory(Path.Combine(rootPath, clientGroupSummary.GroupName));
 
                             // Add every client file to the server
                             foreach (Revision clientRev in clientRevisions)
                             {
-                                string filePath = Path.Combine(rootPath, clientGroupSummary.GroupName, clientRev.File.Name);
-                                File.WriteAllBytes(filePath, clientRev.Data);
+                                clientRev.Apply(rootPath);
                             }
 
                             // Create the server group summary because he didn't exist
                             serverGroupSummaries.Add(new GroupSummary(clientGroupSummary.GroupName, rootPath));
                         }
                     }
-                    else
-                    {
-                        throw new Exception("User not allowed in group");
-                    }
                 }
+                job.CallBack(returnRevisions);
             }
         }
 

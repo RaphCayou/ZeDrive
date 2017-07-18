@@ -14,43 +14,53 @@ namespace ServerTests
     public class JobExecuterTests
     {
         private ServerBusiness business;
-        private Job job1;
 
         [TestInitialize]
         public void SetUp()
         {
             business = new ServerBusiness("groupSave","clientSave");
-            business.CreateUser("Bob", "psw");
-            business.CreateGroup("A", "Desc", "Bob");
-
-            job1 = new Job()
+            try
             {
-                Parameters = new SyncTransmission()
+                business.CreateUser("Bob", "psw");
+                business.CreateGroup("A", "Desc", "Bob");
+            }
+            catch {}
+        }
+
+        public Job CreateJob(string filename, string username, string groupname)
+        {
+            return new Job
+            {
+                Parameters = new SyncTransmission
                 {
-                    Username = "Bob",
-                    Revisions = new List<Revision>()
+                    Username = username,
+                    Revisions = new List<Revision>
                     {
-                        new Revision()
+                        new Revision
                         {
-                            GroupName = "A",
+                            GroupName = groupname,
                             Action = Action.Create,
-                            File = new FileInfo()
+                            File = new FileInfo
                             {
-                                Name = "Test1.txt"
+                                CreationDate = File.GetCreationTime(filename),
+                                LastModificationDate = File.GetLastWriteTime(filename),
+                                Name = filename
                             },
-                            Data = File.ReadAllBytes("Test1.txt")
+                            Data = File.ReadAllBytes(filename)
                         }
                     },
-                    GroupSummaries = new List<GroupSummary>()
+                    GroupSummaries = new List<GroupSummary>
                     {
-                        new GroupSummary()
+                        new GroupSummary
                         {
-                            GroupName = "A",
-                            Files = new List<FileInfo>()
+                            GroupName = groupname,
+                            Files = new List<FileInfo>
                             {
-                                new FileInfo()
+                                new FileInfo
                                 {
-                                    Name = "Test1.txt"
+                                    CreationDate = File.GetCreationTime(filename),
+                                    LastModificationDate = File.GetLastWriteTime(filename),
+                                    Name = filename
                                 }
                             }
                         }
@@ -62,7 +72,37 @@ namespace ServerTests
         [TestMethod]
         public void TestAddJob()
         {
-            business.UpdateServerHistory(job1);
+            business.UpdateServerHistory(CreateJob("Test1.txt", "Bob", "A"));
+        }
+
+        [TestMethod]
+        public void TestModifyJob()
+        {
+            business.UpdateServerHistory(CreateJob("Test1.txt", "Bob", "A"));
+
+            using (StreamWriter w = File.AppendText("Test1.txt"))
+            {
+                w.WriteLine();
+                w.WriteLine("Hello from the other side");
+            }
+
+            business.UpdateServerHistory(CreateJob("Test1.txt", "Bob", "A"));
+        }
+
+        [TestMethod]
+        public void TestAddSecondJob()
+        {
+            business.UpdateServerHistory(CreateJob("Test1.txt", "Bob", "A"));
+
+            Job job = CreateJob("Test2.txt", "Bob", "A");
+            job.Parameters.GroupSummaries[0].Files.Add(new FileInfo
+            {
+                CreationDate = File.GetCreationTime("Test1.txt"),
+                LastModificationDate = File.GetLastWriteTime("Test1.txt"),
+                Name = "Test1.txt"
+            });
+
+            business.UpdateServerHistory(job);
         }
     }
 }

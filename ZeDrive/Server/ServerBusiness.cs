@@ -71,14 +71,14 @@ namespace Server
         /// Send Revision,
         /// Save history on disk
         /// </summary>
-        public SyncTransmission UpdateServerHistory(Job job)
+        public List<Revision> UpdateServerHistory(Job job)
         {
             AutoResetEvent stopWaitHandle = new AutoResetEvent(false);
-            SyncTransmission response = new SyncTransmission();
+            List<Revision> response = new List<Revision>();
 
-            job.CallBack = syncT =>
+            job.CallBack = revisionList =>
             {
-                response = syncT;
+                response = revisionList;
                 stopWaitHandle.Set();
             };
 
