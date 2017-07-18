@@ -109,7 +109,22 @@ namespace ShareLibraryTests
         public void TestApplyDelete()
         {
             string fileDeleted = Path.Combine(TESTING_PATH, GROUP1, Path.GetRandomFileName());
-            //TODO faire ce test
+            File.Create(fileDeleted).Close();
+            DateTime now = DateTime.Now;
+
+            Revision revisionDelete = new Revision()
+            {
+                File = new ShareLibrary.Models.FileInfo
+                {
+                    Name = Path.GetFileName(fileDeleted),
+                    LastModificationDate = now,
+                    CreationDate = now
+                },
+                GroupName = GROUP1,
+                Action = ShareLibrary.Models.Action.Delete
+            };
+            revisionDelete.Apply(TESTING_PATH);
+            Assert.IsFalse(File.Exists(fileDeleted));
         }
     }
 }
