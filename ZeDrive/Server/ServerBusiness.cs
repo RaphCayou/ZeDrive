@@ -133,6 +133,8 @@ namespace Server
             jobExecuter.Add(job);
             stopWaitHandle.WaitOne();
 
+            dataStore.UpdateLastSeen(job.Username);
+
             return response;
         }
 

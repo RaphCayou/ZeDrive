@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.Authentication;
 using System.Xml.Serialization;
 using ShareLibrary.Models;
+using ShareLibrary.Utils;
 using FileInfo = ShareLibrary.Models.FileInfo;
 
 namespace Server
@@ -106,11 +106,7 @@ namespace Server
         /// </summary>
         private void LoadGroups()
         {
-            using (var stream = File.OpenRead(_groupsSaveFileName))
-            {
-                var serializer = new XmlSerializer(typeof(List<Group>));
-                Groups = serializer.Deserialize(stream) as List<Group>;
-            }
+            Groups = DiskAccessUtils.LoadFromDisk<List<Group>>(_groupsSaveFileName);
         }
 
         /// <summary>
@@ -118,11 +114,7 @@ namespace Server
         /// </summary>
         private void LoadClients()
         {
-            using (var stream = File.OpenRead(_clientsSaveFileName))
-            {
-                var serializer = new XmlSerializer(typeof(List<Client>));
-                Clients = serializer.Deserialize(stream) as List<Client>;
-            }
+            Clients = DiskAccessUtils.LoadFromDisk<List<Client>>(_clientsSaveFileName);
         }
 
         /// <summary>
@@ -218,9 +210,11 @@ namespace Server
         /// Updates the last seen date for a user
         /// </summary>
         /// <param name="username">User to update the date</param>
-        private void UpdateLastSeen(string username)
+        public void UpdateLastSeen(string username)
         {
-            Clients.FirstOrDefault(c => c.Name == username).LastSeen = DateTime.Now;
+            var client = Clients.FirstOrDefault(c => c.Name == username);
+            if (client != null)
+                client.LastSeen = DateTime.Now;
         }
 
         /// <summary>
@@ -228,18 +222,8 @@ namespace Server
         /// </summary>
         public void Save()
         {
-            using (var writer = new StreamWriter(_groupsSaveFileName))
-            {
-                var serializer = new XmlSerializer(Groups.GetType());
-                serializer.Serialize(writer, Groups);
-                writer.Flush();
-            }
-            using (var writer = new StreamWriter(_clientsSaveFileName))
-            {
-                var serializer = new XmlSerializer(Clients.GetType());
-                serializer.Serialize(writer, Clients);
-                writer.Flush();
-            }
+            DiskAccessUtils.SaveToDisk(_groupsSaveFileName, Groups);
+            DiskAccessUtils.SaveToDisk(_clientsSaveFileName, Clients);
         }
 
         /// <summary>
