@@ -119,7 +119,7 @@ namespace Client
 
         public List<ShareLibrary.Models.Client> GetClientsList()
         {
-            return access.GetClientLists();
+            return access.GetClientList();
         }
     }
 }
