@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using ShareLibrary.Models;
 using Action = ShareLibrary.Models.Action;
 
 namespace Client
@@ -28,7 +29,8 @@ namespace Client
 
         private void syncTimer_Tick(object sender, EventArgs e)
         {
-            client.UpdateServerHistory();
+            client.SyncWithServer();
+
         }
 
         private void ConnectToServer_Click(object sender, EventArgs e)
@@ -84,13 +86,38 @@ namespace Client
 
         private void GroupList_DropDown(object sender, EventArgs e)
         {
-            // TODO Add the real groups informations
-            GroupList.DataSource = new List<string>{"1", "2", "3", "4", "5", "1", "1", "1"};
+            List<Group> allGroups = client.GetGroupList();
+            GroupList.DataSource = allGroups;
         }
 
         private void GroupList_SelectedValueChanged(object sender, EventArgs e)
         {
+            // TODO update the UI based on the new selected group.
+            Group currentGroup = (Group)GroupList.SelectedItem;
+            AdminGroup.Enabled = currentGroup.Administrator.Name == UserName.Text;
 
+        }
+
+        private void UpdateConnectedUser(List<ShareLibrary.Models.Client> onlineClients)
+        {
+            OnlineUsers.Clear();
+            foreach (ShareLibrary.Models.Client onlineClient in onlineClients)
+            {
+                if (onlineClient.LastSeen.AddMinutes(2) < DateTime.Now)
+                {
+                    OnlineUsers.SelectionColor = Color.Yellow;
+                }
+                else
+                {
+                    OnlineUsers.SelectionColor = Color.Green;
+                }
+                OnlineUsers.AppendText(onlineClient.Name);
+            }
+        }
+
+        private void ClientForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // TODO faire la sauvegarde des derniers group summaries.
         }
     }
 }

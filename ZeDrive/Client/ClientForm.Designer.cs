@@ -49,8 +49,10 @@
             this.label2 = new System.Windows.Forms.Label();
             this.AdminGroup = new System.Windows.Forms.GroupBox();
             this.GroupsInformationGroup = new System.Windows.Forms.GroupBox();
-            this.GroupList = new System.Windows.Forms.ComboBox();
             this.label6 = new System.Windows.Forms.Label();
+            this.GroupList = new System.Windows.Forms.ComboBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.OnlineUsers = new System.Windows.Forms.RichTextBox();
             this.CurrentUserGroup.SuspendLayout();
             this.ServerConnexionGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ServerPort)).BeginInit();
@@ -250,7 +252,7 @@
             // 
             this.AdminGroup.Location = new System.Drawing.Point(9, 215);
             this.AdminGroup.Name = "AdminGroup";
-            this.AdminGroup.Size = new System.Drawing.Size(1033, 216);
+            this.AdminGroup.Size = new System.Drawing.Size(805, 216);
             this.AdminGroup.TabIndex = 3;
             this.AdminGroup.TabStop = false;
             this.AdminGroup.Text = "Gestion d\'administrateur";
@@ -262,10 +264,19 @@
             this.GroupsInformationGroup.Controls.Add(this.AdminGroup);
             this.GroupsInformationGroup.Location = new System.Drawing.Point(12, 113);
             this.GroupsInformationGroup.Name = "GroupsInformationGroup";
-            this.GroupsInformationGroup.Size = new System.Drawing.Size(1048, 437);
+            this.GroupsInformationGroup.Size = new System.Drawing.Size(820, 437);
             this.GroupsInformationGroup.TabIndex = 4;
             this.GroupsInformationGroup.TabStop = false;
             this.GroupsInformationGroup.Text = "Gestion des groupes";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(6, 22);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(210, 13);
+            this.label6.TabIndex = 16;
+            this.label6.Text = "Choisissez un groupe pour faire une action.";
             // 
             // GroupList
             // 
@@ -278,25 +289,37 @@
             this.GroupList.DropDown += new System.EventHandler(this.GroupList_DropDown);
             this.GroupList.SelectedValueChanged += new System.EventHandler(this.GroupList_SelectedValueChanged);
             // 
-            // label6
+            // label7
             // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(6, 22);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(210, 13);
-            this.label6.TabIndex = 16;
-            this.label6.Text = "Choisissez un groupe pour faire une action.";
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(838, 119);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(132, 13);
+            this.label7.TabIndex = 15;
+            this.label7.Text = "Nom des usagers en ligne:";
+            // 
+            // OnlineUsers
+            // 
+            this.OnlineUsers.Location = new System.Drawing.Point(838, 135);
+            this.OnlineUsers.Name = "OnlineUsers";
+            this.OnlineUsers.ReadOnly = true;
+            this.OnlineUsers.Size = new System.Drawing.Size(222, 415);
+            this.OnlineUsers.TabIndex = 0;
+            this.OnlineUsers.Text = "";
             // 
             // ClientForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1072, 562);
+            this.Controls.Add(this.OnlineUsers);
+            this.Controls.Add(this.label7);
             this.Controls.Add(this.GroupsInformationGroup);
             this.Controls.Add(this.ServerConnexionGroup);
             this.Controls.Add(this.CurrentUserGroup);
             this.Name = "ClientForm";
             this.Text = "Client";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ClientForm_FormClosing);
             this.Load += new System.EventHandler(this.ClientForm_Load);
             this.CurrentUserGroup.ResumeLayout(false);
             this.CurrentUserGroup.PerformLayout();
@@ -306,6 +329,7 @@
             this.GroupsInformationGroup.ResumeLayout(false);
             this.GroupsInformationGroup.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -333,6 +357,8 @@
         private System.Windows.Forms.Label IsConnectText;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.ComboBox GroupList;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.RichTextBox OnlineUsers;
     }
 }
 

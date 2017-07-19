@@ -91,6 +91,7 @@ namespace Client
         public void SyncWithServer()
         {
             UpdateLocalFiles(UpdateServerHistory());
+            GetGroupsUpdate();
         }
 
         public void ChangeAdministratorGroup(string newAdmin, string groupName)
@@ -109,6 +110,16 @@ namespace Client
         public void GetGroupsUpdate()
         {
             // TODO JP call on access the getGroup list then apply the local modification based the group list
+        }
+
+        public List<Group> GetGroupList()
+        {
+            return access.GetGroupList();
+        }
+
+        public List<ShareLibrary.Models.Client> GetClientsList()
+        {
+            return access.GetClientLists();
         }
     }
 }

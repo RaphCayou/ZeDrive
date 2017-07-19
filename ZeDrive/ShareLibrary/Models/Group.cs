@@ -9,5 +9,10 @@ namespace ShareLibrary.Models
         public Client Administrator;
         public List<Client> Members;
         public List<FileInfo> Files;
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }
