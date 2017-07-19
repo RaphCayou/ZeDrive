@@ -42,10 +42,10 @@ namespace Server
                 List<Revision> returnRevisions = new List<Revision>();
 
                 // For each client group revision
-                foreach (GroupSummary clientGroupSummary in job.Parameters.GroupSummaries)
+                foreach (GroupSummary clientGroupSummary in job.GroupSummaries)
                 {
                     // Check user authorizations
-                    if (dataStore.CheckUserInGroup(job.Parameters.Username, clientGroupSummary.GroupName))
+                    if (dataStore.CheckUserInGroup(job.Username, clientGroupSummary.GroupName))
                     {
                         // Get the server GroupSummary equal to client GroupSummary
                         GroupSummary serverGroupSummary =
@@ -61,16 +61,35 @@ namespace Server
                                 ShareLibrary.Models.FileInfo currentServerFile = serverGroupSummary.Files.Find(f => f.Name == rev.File.Name);
                                 ShareLibrary.Models.FileInfo currentClientFile = clientGroupSummary.Files.Find(f => f.Name == rev.File.Name);
 
+                                // TODO check this shit :poop:
+                                Revision currentRelatedjobRevision = job.Revisions.Find(r => r.File?.Name == currentClientFile?.Name);
                                 switch (rev.Action)
                                 {
                                     case Action.Create:
+                                        // Rebind the currentRelatedjobRevision from the server instead of the client
+                                        currentRelatedjobRevision = job.Revisions.Find(r => r.File?.Name == currentServerFile?.Name);
+
+                                        // Case 1 : The file was deleted by the current client
+                                        // Update server history (delete the current file)
+                                        // TODO test this ...
+                                        if (currentRelatedjobRevision?.File.Name == rev.File.Name && currentRelatedjobRevision?.Action == Action.Delete)
+                                        {
+                                            currentRelatedjobRevision.Apply(rootPath);
+                                            serverGroupSummary.Update();
+                                        }
+                                        // Case 2 : There is a new file on the server and the current client doesn't have it. 
+                                        // Add revision to response with data (Create)
+                                        else
+                                        {
+                                            returnRevisions.Add(rev);
+                                        }
                                         break;
 
                                     case Action.Modify:
-                                        rev.Data = job.Parameters.Revisions.Find(r => r.File.Name == currentClientFile.Name).Data;
+                                        rev.Data = currentRelatedjobRevision.Data;
 
                                         // Case 1 : Server modification date > client modification date
-                                        // Add revision to response with data
+                                        // Add revision to response with data (Modify)
                                         if (currentServerFile.LastModificationDate > currentClientFile.LastModificationDate)
                                         {
                                             returnRevisions.Add(rev);
@@ -86,11 +105,19 @@ namespace Server
 
                                     case Action.Delete:
 
-                                        // Case 1 : The file was added by the current client.
+                                        // Case 1 : The file was created by the current client.
                                         // Update server history (add the current file)
-
-                                        // Case 2 : The file is deleted for real
-                                        // Add revision to response
+                                        if (currentRelatedjobRevision?.Action == Action.Create)
+                                        {
+                                            currentRelatedjobRevision.Apply(rootPath);
+                                            serverGroupSummary.Update();
+                                        }
+                                        // Case 2 : The file is deleted for real (deleted from an other client)
+                                        // Add revision to response (Delete)
+                                        else
+                                        {
+                                            returnRevisions.Add(rev);
+                                        }
                                         break;
                                 }
                             }
@@ -101,7 +128,7 @@ namespace Server
                             // Add the client files (revisions) to the server files
                             
                             List<Revision> clientRevisions =
-                                job.Parameters.Revisions.FindAll(r => r.GroupName == clientGroupSummary.GroupName);
+                                job.Revisions.FindAll(r => r.GroupName == clientGroupSummary.GroupName);
 
                             // Create the group directory
                             Directory.CreateDirectory(Path.Combine(rootPath, clientGroupSummary.GroupName));
@@ -117,6 +144,7 @@ namespace Server
                         }
                     }
                 }
+                // Return the truth
                 job.CallBack(returnRevisions);
             }
         }

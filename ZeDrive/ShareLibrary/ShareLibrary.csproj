@@ -51,8 +51,6 @@
     <Compile Include="Models\FileInfo.cs" />
     <Compile Include="Models\PendingAction.cs" />
     <Compile Include="Summary\GroupSummary.cs" />
-    <Compile Include="Models\ITransmission.cs" />
-    <Compile Include="Models\SyncTransmission.cs" />
     <Compile Include="Models\Group.cs" />
     <Compile Include="Models\Revision.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
