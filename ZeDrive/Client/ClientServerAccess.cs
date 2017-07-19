@@ -39,7 +39,12 @@ namespace Client
                 );
         }
 
-        public List<ShareLibrary.Models.Client> GetClientLists()
+        public List<ShareLibrary.Models.Client> GetClientList()
+        {
+            return (List<ShareLibrary.Models.Client>)RPCManager.SendMessage(System.Reflection.MethodBase.GetCurrentMethod());
+        }
+
+        public List<ShareLibrary.Models.Client> GetOnlineClientsList()
         {
             return (List<ShareLibrary.Models.Client>)RPCManager.SendMessage(System.Reflection.MethodBase.GetCurrentMethod());
         }

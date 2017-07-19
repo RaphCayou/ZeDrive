@@ -91,9 +91,18 @@ namespace Server
         /// Gets the list on clients from the server
         /// </summary>
         /// <returns>List of clients</returns>
-        public List<Client> GetClientLists()
+        public List<Client> GetClientList()
         {
             return dataStore.Clients;
+        }
+
+        /// <summary>
+        /// Gets the list on clients that were last seen less than 5mins ago
+        /// </summary>
+        /// <returns>List of online clients</returns>
+        public List<Client> GetOnlineClientsList()
+        {
+            return dataStore.Clients.Where(c => c.LastSeen >= DateTime.Now.AddMinutes(-5)).ToList();
         }
 
         /// <summary>
