@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Authentication;
 using System.Xml.Serialization;
 using ShareLibrary.Models;
 using FileInfo = ShareLibrary.Models.FileInfo;
@@ -12,9 +13,23 @@ namespace Server
     {
         private readonly string _groupsSaveFileName;
         private readonly string _clientsSaveFileName;
+
+        /// <summary>
+        /// List of Groups that gets saved to disk
+        /// </summary>
         public List<Group> Groups { get; private set; }
+
+        /// <summary>
+        /// List of Clients that gets saved to disk
+        /// </summary>
         public List<Client> Clients { get; private set; }
 
+        /// <summary>
+        /// Instanciates the datastore
+        /// Creates or loads existing Groups and Clients
+        /// </summary>
+        /// <param name="groupsSaveFileName">Groups save file name on disk</param>
+        /// <param name="clientsSaveFileName">Clients save file name on disk</param>
         public DataStore(string groupsSaveFileName, string clientsSaveFileName)
         {
             if (string.IsNullOrEmpty(groupsSaveFileName) || string.IsNullOrEmpty(clientsSaveFileName))
@@ -43,6 +58,11 @@ namespace Server
             }
         }
 
+        /// <summary>
+        /// Creates the user in datastore (adds a new client)
+        /// </summary>
+        /// <param name="username">Username of the user</param>
+        /// <param name="password">Password of the user</param>
         public void CreateUser(string username, string password)
         {
             if (Clients.Count(c => c.Name == username) == 0)
@@ -55,6 +75,12 @@ namespace Server
             }
         }
 
+        /// <summary>
+        /// Creates the group in datastore
+        /// </summary>
+        /// <param name="name">Name of the group</param>
+        /// <param name="description">Description of the group</param>
+        /// <param name="username">Username of the user creating the group (gets admin rights)</param>
         public void CreateGroup(string name, string description, string username)
         {
             if (Groups.Count(c => c.Name == name) == 0)
@@ -71,10 +97,13 @@ namespace Server
             }
             else
             {
-                throw new ArgumentException($"Le groupe {username} existe déjà.");
+                throw new ArgumentException($"Le groupe {name} existe déjà.");
             }
         }
 
+        /// <summary>
+        /// Loads the Groups save file from disk
+        /// </summary>
         private void LoadGroups()
         {
             using (var stream = File.OpenRead(_groupsSaveFileName))
@@ -84,6 +113,9 @@ namespace Server
             }
         }
 
+        /// <summary>
+        /// Loads the Clients save file from disk
+        /// </summary>
         private void LoadClients()
         {
             using (var stream = File.OpenRead(_clientsSaveFileName))
@@ -93,6 +125,12 @@ namespace Server
             }
         }
 
+        /// <summary>
+        /// Verifies that the user has entered credentials matching what is stored
+        /// </summary>
+        /// <param name="username">Username of the user</param>
+        /// <param name="password">Password of the user</param>
+        /// <returns>Whether user credentials match stored</returns>
         public bool CheckCredentials(string username, string password)
         {
             bool authorized = false;
@@ -104,53 +142,90 @@ namespace Server
                     UpdateLastSeen(username);
                 }
             }
-            else
-            {
-                CreateUser(username, password);
-            }
             return authorized;
         }
 
+        /// <summary>
+        /// Verifies that the user has admin rights for the group
+        /// </summary>
+        /// <param name="username">Username of the user</param>
+        /// <param name="groupName">Name of the group to validate rights on</param>
+        /// <returns>Whether user has admin rights for the group</returns>
         public bool CheckAdminRights(string username, string groupName)
         {
             UpdateLastSeen(username);
             return Groups.FirstOrDefault(g => g.Name == groupName).Administrator.Name == username;
         }
 
+        /// <summary>
+        /// Gets the username who owns admin rights for the group
+        /// </summary>
+        /// <param name="groupName">Name of the group</param>
+        /// <returns>Name of the group administrator</returns>
         public string GetGroupAdmin(string groupName)
         {
             return Groups.FirstOrDefault(g => g.Name == groupName).Administrator.Name;
         }
 
+        /// <summary>
+        /// Verifies that the user is in the group
+        /// </summary>
+        /// <param name="username">Username of the user</param>
+        /// <param name="groupName">Name of the group</param>
+        /// <returns>Whether user is in the group</returns>
         public bool CheckUserInGroup(string username, string groupName)
         {
             UpdateLastSeen(username);
             return Groups.FirstOrDefault(g => g.Name == groupName).Members.Count(c => c.Name == username) > 0;
         }
 
+        /// <summary>
+        /// Changes the administrator for the group
+        /// </summary>
+        /// <param name="usernameOldAdmin">Old administrator of the group</param>
+        /// <param name="usernameNewAdmin">New administrator for the group</param>
+        /// <param name="groupName">Name of the group</param>
         public void ChangeAdminForGroup(string usernameOldAdmin, string usernameNewAdmin, string groupName)
         {
             UpdateLastSeen(usernameOldAdmin);
             Groups.FirstOrDefault(g => g.Name == groupName).Administrator = Clients.FirstOrDefault(c => c.Name == usernameNewAdmin);
         }
 
+        /// <summary>
+        /// Adds a user to a group
+        /// </summary>
+        /// <param name="username">Name of the user</param>
+        /// <param name="groupName">Name of the group</param>
         public void AddUserToGroup(string username, string groupName)
         {
             UpdateLastSeen(username);
             Groups.FirstOrDefault(g => g.Name == groupName)?.Members.Add(Clients.FirstOrDefault(c => c.Name == username));
         }
 
+        /// <summary>
+        /// Removes a user from a group
+        /// </summary>
+        /// <param name="usernameAdmin">Name of the group administrator</param>
+        /// <param name="username">Name of the user</param>
+        /// <param name="groupName">Name of the group</param>
         public void RemoveUserFromGroup(string usernameAdmin, string username, string groupName)
         {
             UpdateLastSeen(usernameAdmin);
             Groups.FirstOrDefault(g => g.Name == groupName)?.Members.Remove(Groups.FirstOrDefault(g => g.Name == groupName)?.Members.FirstOrDefault(c => c.Name == username));
         }
 
+        /// <summary>
+        /// Updates the last seen date for a user
+        /// </summary>
+        /// <param name="username">User to update the date</param>
         private void UpdateLastSeen(string username)
         {
             Clients.FirstOrDefault(c => c.Name == username).LastSeen = DateTime.Now;
         }
 
+        /// <summary>
+        /// Saves the Groups and Clients lists on disk
+        /// </summary>
         public void Save()
         {
             using (var writer = new StreamWriter(_groupsSaveFileName))
@@ -167,6 +242,10 @@ namespace Server
             }
         }
 
+        /// <summary>
+        /// Gets the save files names on disk
+        /// </summary>
+        /// <returns>Save files names on disk</returns>
         public Tuple<string, string> GetSaveFilesNames()
         {
             return new Tuple<string, string>(_groupsSaveFileName, _clientsSaveFileName);

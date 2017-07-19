@@ -16,8 +16,8 @@ namespace ShareLibrary.Communication
         void SendClientGroupRequest(string username, string groupName);
         void KickUserFromGroup(string adminUsername, string username, string groupName);
         List<PendingAction> GetNotification(string username);
-        void AcknowledgeRequest(string adminUsername, string username, string group, bool accept);
-        void AcknowledgeInvite(string username, string group, bool accept);
+        void AcknowledgeRequest(string adminUsername, string username, string groupName, bool accept);
+        void AcknowledgeInvite(string username, string groupName, bool accept);
         void ChangeAdministratorGroup(string usernameCurrentAdmin, string usernameFutureAdmin, string groupName);
     }
 }
