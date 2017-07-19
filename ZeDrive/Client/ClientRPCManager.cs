@@ -97,13 +97,13 @@ namespace Client
                 // When server reply complete and valid, unpack the response
                 MemoryStream ms = new MemoryStream(response.Content);
                 result = bf.Deserialize(ms);
-            }
 
-            // If the response is an exception, return exception
-            bool isException = result.GetType().IsSubclassOf(typeof(Exception));
-            if (isException)
-            {
-                throw (Exception)result;
+                // If the response is an exception, return exception
+                bool isException = result.GetType().IsSubclassOf(typeof(Exception));
+                if (isException)
+                {
+                    throw (Exception)result;
+                }
             }
 
             // Return the response

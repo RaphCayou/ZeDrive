@@ -32,7 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
+    <Reference Include="System">
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -85,7 +87,7 @@
     <ProjectReference Include="..\ShareLibrary\ShareLibrary.csproj">
       <Project>{d7c49f67-b799-4508-bcb1-7362450264df}</Project>
       <Name>ShareLibrary</Name>
-      <Private>False</Private>
+      <Private>True</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

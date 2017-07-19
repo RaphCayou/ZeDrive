@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using ShareLibrary.Communication;
 using ShareLibrary.Models;
+using ShareLibrary.Summary;
 
 namespace Client
 {
@@ -51,42 +52,69 @@ namespace Client
 
         public List<Group> GetGroupList()
         {
-            throw new NotImplementedException();
+            return (List<Group>)RPCManager.SendMessage(System.Reflection.MethodBase.GetCurrentMethod());
         }
 
         public void SendClientGroupInvitation(string adminUsername, string invitedUser, string groupName)
         {
-            throw new NotImplementedException();
+            RPCManager.SendMessage(System.Reflection.MethodBase.GetCurrentMethod(),
+                adminUsername,
+                invitedUser,
+                groupName);
         }
 
         public void SendClientGroupRequest(string username, string groupName)
         {
-            throw new NotImplementedException();
+            RPCManager.SendMessage(System.Reflection.MethodBase.GetCurrentMethod(),
+                username,
+                groupName);
         }
 
         public void KickUserFromGroup(string adminUsername, string username, string groupName)
         {
-            throw new NotImplementedException();
+            RPCManager.SendMessage(System.Reflection.MethodBase.GetCurrentMethod(),
+                adminUsername,
+                username,
+                groupName);
         }
 
         public List<PendingAction> GetNotification(string username)
         {
-            return (List<PendingAction>)RPCManager.SendMessage(System.Reflection.MethodBase.GetCurrentMethod());
+            return (List<PendingAction>)RPCManager.SendMessage(System.Reflection.MethodBase.GetCurrentMethod(),
+                username);
         }
 
         public void AcknowledgeRequest(string adminUsername, string username, string group, bool accept)
         {
-            throw new NotImplementedException();
+            RPCManager.SendMessage(System.Reflection.MethodBase.GetCurrentMethod(),
+                adminUsername,
+                username, 
+                group,
+                accept);
         }
 
         public void AcknowledgeInvite(string username, string group, bool accept)
         {
-            throw new NotImplementedException();
+            RPCManager.SendMessage(System.Reflection.MethodBase.GetCurrentMethod(),
+                username,
+                group,
+                accept);
         }
 
         public void ChangeAdministratorGroup(string usernameCurrentAdmin, string usernameFutureAdmin, string groupName)
         {
-            throw new NotImplementedException();
+            RPCManager.SendMessage(System.Reflection.MethodBase.GetCurrentMethod(),
+                usernameCurrentAdmin,
+                usernameFutureAdmin,
+                groupName);
+        }
+
+        public List<Revision> UpdateServerHistory(string username, List<Revision> revisions, List<GroupSummary> groupSummaries)
+        {
+            return (List<Revision>)RPCManager.SendMessage(System.Reflection.MethodBase.GetCurrentMethod(),
+                username,
+                revisions,
+                groupSummaries);
         }
     }
 }

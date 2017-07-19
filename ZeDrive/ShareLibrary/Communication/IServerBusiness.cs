@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using ShareLibrary.Models;
 using Server;
+using ShareLibrary.Summary;
 
 namespace ShareLibrary.Communication
 {
@@ -20,5 +21,6 @@ namespace ShareLibrary.Communication
         void AcknowledgeRequest(string adminUsername, string username, string groupName, bool accept);
         void AcknowledgeInvite(string username, string groupName, bool accept);
         void ChangeAdministratorGroup(string usernameCurrentAdmin, string usernameFutureAdmin, string groupName);
+        List<Revision> UpdateServerHistory(string username, List<Revision> revisions, List<GroupSummary> groupSummaries);
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Server.TcpCommunication;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -13,6 +14,9 @@ namespace Server
 {
     public partial class ServerForm : Form
     {
+        ServerBusiness business;
+        ServerDispatcher dispatcher;
+
         public ServerForm()
         {
             InitializeComponent();
@@ -25,8 +29,9 @@ namespace Server
 
         private void btnStart_Click(object sender, EventArgs e)
         {
-            ServerBusiness business = new ServerBusiness("GroupsSave", "ClientSave");
             btnStart.Enabled = false;
+            business = new ServerBusiness("GroupsSave", "ClientSave");
+            dispatcher = new ServerDispatcher(business, "127.0.0.1", 4242);
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using ShareLibrary.Communication;
 using ShareLibrary.Models;
+using ShareLibrary.Summary;
 //using System.Threading.Tasks;
 
 namespace Server
@@ -115,15 +116,23 @@ namespace Server
         /// Send Revision,
         /// Save history on disk
         /// </summary>
-        public List<Revision> UpdateServerHistory(Job job)
+        public List<Revision> UpdateServerHistory(string username, 
+            List<Revision> revisions, 
+            List<GroupSummary> groupSummaries)
         {
             AutoResetEvent stopWaitHandle = new AutoResetEvent(false);
             List<Revision> response = new List<Revision>();
 
-            job.CallBack = revisionList =>
+            Job job = new Job
             {
-                response = revisionList;
-                stopWaitHandle.Set();
+                Username = username,
+                Revisions = revisions,
+                GroupSummaries = groupSummaries,
+                CallBack = revisionList =>
+                {
+                    response = revisionList;
+                    stopWaitHandle.Set();
+                }
             };
 
             _jobExecuter.Add(job);

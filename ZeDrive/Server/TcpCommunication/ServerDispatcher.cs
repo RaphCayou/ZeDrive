@@ -57,7 +57,8 @@ namespace Server.TcpCommunication
                 Message message = null;
                 try
                 {
-                    message = SocketUtils.ReceiveMessage(handler, 20000, 8000);
+                    // TODO change 0 for actual valid time out
+                    message = SocketUtils.ReceiveMessage(handler, 0, 8000);
                 }
                 catch (NoNewMessageException ex)
                 {
