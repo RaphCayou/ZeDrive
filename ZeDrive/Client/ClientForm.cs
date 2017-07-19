@@ -15,6 +15,7 @@ namespace Client
     public partial class ClientForm : Form
     {
         private ClientBusiness client;
+        private Group currentGroup;
         private string rootPath;
         public ClientForm()
         {
@@ -30,7 +31,7 @@ namespace Client
         private void syncTimer_Tick(object sender, EventArgs e)
         {
             client.SyncWithServer();
-
+            UpdateConnectedUser(client.GetClientsList());
         }
 
         private void ConnectToServer_Click(object sender, EventArgs e)
@@ -76,12 +77,12 @@ namespace Client
 
         private void CurrentUserGroup_EnabledChanged(object sender, EventArgs e)
         {
-            IsUserConnectText.Visible = CurrentUserGroup.Enabled;
+            IsUserConnectText.Visible = !CurrentUserGroup.Enabled;
         }
 
         private void ServerConnexionGroup_EnabledChanged(object sender, EventArgs e)
         {
-            IsConnectText.Visible = ServerConnexionGroup.Enabled;
+            IsConnectText.Visible = !ServerConnexionGroup.Enabled;
         }
 
         private void GroupList_DropDown(object sender, EventArgs e)
@@ -92,9 +93,21 @@ namespace Client
 
         private void GroupList_SelectedValueChanged(object sender, EventArgs e)
         {
-            // TODO update the UI based on the new selected group.
-            Group currentGroup = (Group)GroupList.SelectedItem;
-            AdminGroup.Enabled = currentGroup.Administrator.Name == UserName.Text;
+            currentGroup = (Group)GroupList.SelectedItem;
+            GroupDescription.Text = currentGroup.Description;
+            //User not in group, so he can ask to join.
+            JoinGroup.Enabled = !currentGroup.Members.Exists(client1 => client1.Name == UserName.Text);
+            if (currentGroup.Administrator.Name == UserName.Text)
+            {
+                AdminGroup.Enabled = true;
+                List<string> groupMembers = currentGroup.Members.Select(client1 => client1.Name).ToList();
+                GroupClientList.DataSource = groupMembers;
+                AllUsersList.DataSource = client.GetClientsList().Select(client1 => client1.Name).ToList().RemoveAll(name => groupMembers.Contains(name));
+            }
+            else
+            {
+                AdminGroup.Enabled = false;
+            }
 
         }
 
@@ -111,6 +124,26 @@ namespace Client
         private void ClientForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             // TODO faire la sauvegarde des derniers group summaries.
+        }
+
+        private void JoinGroup_Click(object sender, EventArgs e)
+        {
+            client.SendJoinGroupRequest(UserName.Text, currentGroup.Name);
+        }
+
+        private void ChangeAdmin_Click(object sender, EventArgs e)
+        {
+            client.ChangeAdministratorGroup((string)GroupClientList.SelectedItem, currentGroup.Name);
+        }
+
+        private void KickFromGroup_Click(object sender, EventArgs e)
+        {
+            client.KickClientFromGroup((string)GroupClientList.SelectedItem, currentGroup.Name);
+        }
+
+        private void InviteToGroup_Click(object sender, EventArgs e)
+        {
+            client.SendGroupInvitation((string)AllUsersList.SelectedItem, currentGroup.Name);
         }
     }
 }

@@ -53,9 +53,20 @@
             this.GroupList = new System.Windows.Forms.ComboBox();
             this.label7 = new System.Windows.Forms.Label();
             this.OnlineUsers = new System.Windows.Forms.RichTextBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.GroupDescription = new System.Windows.Forms.Label();
+            this.JoinGroup = new System.Windows.Forms.Button();
+            this.GroupClientList = new System.Windows.Forms.ListBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.ChangeAdmin = new System.Windows.Forms.Button();
+            this.KickFromGroup = new System.Windows.Forms.Button();
+            this.AllUsersList = new System.Windows.Forms.ListBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.InviteToGroup = new System.Windows.Forms.Button();
             this.CurrentUserGroup.SuspendLayout();
             this.ServerConnexionGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ServerPort)).BeginInit();
+            this.AdminGroup.SuspendLayout();
             this.GroupsInformationGroup.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -250,15 +261,26 @@
             // 
             // AdminGroup
             // 
-            this.AdminGroup.Location = new System.Drawing.Point(9, 215);
+            this.AdminGroup.Controls.Add(this.InviteToGroup);
+            this.AdminGroup.Controls.Add(this.label10);
+            this.AdminGroup.Controls.Add(this.AllUsersList);
+            this.AdminGroup.Controls.Add(this.KickFromGroup);
+            this.AdminGroup.Controls.Add(this.ChangeAdmin);
+            this.AdminGroup.Controls.Add(this.label9);
+            this.AdminGroup.Controls.Add(this.GroupClientList);
+            this.AdminGroup.Enabled = false;
+            this.AdminGroup.Location = new System.Drawing.Point(9, 96);
             this.AdminGroup.Name = "AdminGroup";
-            this.AdminGroup.Size = new System.Drawing.Size(805, 216);
+            this.AdminGroup.Size = new System.Drawing.Size(805, 335);
             this.AdminGroup.TabIndex = 3;
             this.AdminGroup.TabStop = false;
             this.AdminGroup.Text = "Gestion d\'administrateur";
             // 
             // GroupsInformationGroup
             // 
+            this.GroupsInformationGroup.Controls.Add(this.JoinGroup);
+            this.GroupsInformationGroup.Controls.Add(this.GroupDescription);
+            this.GroupsInformationGroup.Controls.Add(this.label8);
             this.GroupsInformationGroup.Controls.Add(this.label6);
             this.GroupsInformationGroup.Controls.Add(this.GroupList);
             this.GroupsInformationGroup.Controls.Add(this.AdminGroup);
@@ -307,6 +329,96 @@
             this.OnlineUsers.TabIndex = 0;
             this.OnlineUsers.Text = "";
             // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(6, 50);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(63, 13);
+            this.label8.TabIndex = 17;
+            this.label8.Text = "Description:";
+            // 
+            // GroupDescription
+            // 
+            this.GroupDescription.Location = new System.Drawing.Point(75, 50);
+            this.GroupDescription.Name = "GroupDescription";
+            this.GroupDescription.Size = new System.Drawing.Size(739, 43);
+            this.GroupDescription.TabIndex = 18;
+            // 
+            // JoinGroup
+            // 
+            this.JoinGroup.Location = new System.Drawing.Point(592, 17);
+            this.JoinGroup.Name = "JoinGroup";
+            this.JoinGroup.Size = new System.Drawing.Size(222, 23);
+            this.JoinGroup.TabIndex = 19;
+            this.JoinGroup.Text = "Rejoindre ce groupe";
+            this.JoinGroup.UseVisualStyleBackColor = true;
+            this.JoinGroup.Click += new System.EventHandler(this.JoinGroup_Click);
+            // 
+            // GroupClientList
+            // 
+            this.GroupClientList.FormattingEnabled = true;
+            this.GroupClientList.Location = new System.Drawing.Point(9, 29);
+            this.GroupClientList.Name = "GroupClientList";
+            this.GroupClientList.Size = new System.Drawing.Size(203, 290);
+            this.GroupClientList.TabIndex = 0;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(6, 16);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(143, 13);
+            this.label9.TabIndex = 16;
+            this.label9.Text = "Nom des usagers du groupe:";
+            // 
+            // ChangeAdmin
+            // 
+            this.ChangeAdmin.Location = new System.Drawing.Point(218, 97);
+            this.ChangeAdmin.Name = "ChangeAdmin";
+            this.ChangeAdmin.Size = new System.Drawing.Size(172, 23);
+            this.ChangeAdmin.TabIndex = 20;
+            this.ChangeAdmin.Text = "Rendre administrateur du groupe";
+            this.ChangeAdmin.UseVisualStyleBackColor = true;
+            this.ChangeAdmin.Click += new System.EventHandler(this.ChangeAdmin_Click);
+            // 
+            // KickFromGroup
+            // 
+            this.KickFromGroup.Location = new System.Drawing.Point(218, 197);
+            this.KickFromGroup.Name = "KickFromGroup";
+            this.KickFromGroup.Size = new System.Drawing.Size(172, 23);
+            this.KickFromGroup.TabIndex = 21;
+            this.KickFromGroup.Text = "Enlever du groupe";
+            this.KickFromGroup.UseVisualStyleBackColor = true;
+            this.KickFromGroup.Click += new System.EventHandler(this.KickFromGroup_Click);
+            // 
+            // AllUsersList
+            // 
+            this.AllUsersList.FormattingEnabled = true;
+            this.AllUsersList.Location = new System.Drawing.Point(424, 29);
+            this.AllUsersList.Name = "AllUsersList";
+            this.AllUsersList.Size = new System.Drawing.Size(203, 290);
+            this.AllUsersList.TabIndex = 22;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(421, 16);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(126, 13);
+            this.label10.TabIndex = 23;
+            this.label10.Text = "Nom de tous les usagers:";
+            // 
+            // InviteToGroup
+            // 
+            this.InviteToGroup.Location = new System.Drawing.Point(629, 140);
+            this.InviteToGroup.Name = "InviteToGroup";
+            this.InviteToGroup.Size = new System.Drawing.Size(170, 23);
+            this.InviteToGroup.TabIndex = 20;
+            this.InviteToGroup.Text = "Inviter à ce groupe";
+            this.InviteToGroup.UseVisualStyleBackColor = true;
+            this.InviteToGroup.Click += new System.EventHandler(this.InviteToGroup_Click);
+            // 
             // ClientForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -326,6 +438,8 @@
             this.ServerConnexionGroup.ResumeLayout(false);
             this.ServerConnexionGroup.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ServerPort)).EndInit();
+            this.AdminGroup.ResumeLayout(false);
+            this.AdminGroup.PerformLayout();
             this.GroupsInformationGroup.ResumeLayout(false);
             this.GroupsInformationGroup.PerformLayout();
             this.ResumeLayout(false);
@@ -359,6 +473,16 @@
         private System.Windows.Forms.ComboBox GroupList;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.RichTextBox OnlineUsers;
+        private System.Windows.Forms.Button JoinGroup;
+        private System.Windows.Forms.Label GroupDescription;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.ListBox GroupClientList;
+        private System.Windows.Forms.Button InviteToGroup;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.ListBox AllUsersList;
+        private System.Windows.Forms.Button KickFromGroup;
+        private System.Windows.Forms.Button ChangeAdmin;
+        private System.Windows.Forms.Label label9;
     }
 }
 

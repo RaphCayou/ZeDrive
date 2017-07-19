@@ -38,7 +38,6 @@ namespace Client
             if (validConnect)
             {
                 userName = user;
-                // TODO JP load group data of the user
             }
             return validConnect;
         }
@@ -68,10 +67,14 @@ namespace Client
             access.AcknowledgeInvite(userName, groupName, isAccepted);
         }
 
-        //Push generated revisions list
+        /// <summary>
+        /// Generate and push revisions list
+        /// </summary>
+        /// <returns>Revision list of the server.</returns>
         public List<Revision> UpdateServerHistory()
         {
             List<Revision> serveeRevisions = new List<Revision>();
+            //Creating the revision list
             //TODO JP call on access the update server
             return serveeRevisions;
         }
@@ -99,7 +102,7 @@ namespace Client
             access.ChangeAdministratorGroup(userName, newAdmin, groupName);
         }
 
-        public void DeleteClientFromGroup(string removedUser, string groupName)
+        public void KickClientFromGroup(string removedUser, string groupName)
         {
             access.KickUserFromGroup(userName, removedUser, groupName);
         }
