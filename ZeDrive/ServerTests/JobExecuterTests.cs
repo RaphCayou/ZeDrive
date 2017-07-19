@@ -14,19 +14,7 @@ namespace ServerTests
     public class JobExecuterTests
     {
         private ServerBusiness business;
-
-        [TestInitialize]
-        public void SetUp()
-        {
-            business = new ServerBusiness("groupSave","clientSave");
-            try
-            {
-                business.CreateUser("Bob", "psw");
-                business.CreateGroup("A", "Desc", "Bob");
-            }
-            catch {}
-        }
-
+        private List<Revision> actualRevisions;
         public Job CreateJob(string filename, string username, string groupname)
         {
             return new Job
@@ -81,6 +69,53 @@ namespace ServerTests
                 }
             };
         }
+
+        [TestInitialize]
+        public void SetUp()
+        {
+            business = new ServerBusiness("groupSave","clientSave");
+            try
+            {
+                business.CreateUser("Bob", "psw");
+                business.CreateGroup("A", "Desc", "Bob");
+            }
+            catch {}
+        }
+
+        [TestMethod]
+        // Test the first client call (with no groups) when the server is virgin
+        public void TestFirstClientInitServerVirgin()
+        {
+            actualRevisions = business.UpdateServerHistory(new Job
+            {
+                Username = "Bob",
+                Revisions = new List<Revision>(),
+                GroupSummaries = new List<GroupSummary>()
+            });
+            
+            CollectionAssert.AreEqual(new List<Revision>(), actualRevisions);
+        }
+
+        [TestMethod]
+        // Test the first client call (with groups) when the server is virgin
+        public void TestFirstClientInitGroupServerVirgin()
+        {
+            actualRevisions = business.UpdateServerHistory(CreateEmptyJob("Bob", "A"));
+
+            CollectionAssert.AreEqual(new List<Revision>(), actualRevisions);
+        }
+
+        [TestMethod]
+        // Test the first client call (with groups) when the server is virgin
+        public void TestFirstClientInitGroupServer()
+        {
+            actualRevisions = business.UpdateServerHistory(CreateEmptyJob("Bob", "A"));
+
+            CollectionAssert.AreEqual(new List<Revision>(), actualRevisions);
+        }
+
+
+        //*********************************************************************************
 
         [TestMethod]
         public void TestAddJob()

@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using ShareLibrary.Communication;
 using ShareLibrary.Models;
 using ShareLibrary.Summary;
-//using System.Threading.Tasks;
 
 namespace Server
 {
@@ -14,7 +14,6 @@ namespace Server
         private readonly JobExecuter _jobExecuter;
         private readonly DataStore _dataStore;
         private readonly List<PendingAction> _pendingActions;
-        //private Task _jobExecuterTask;
 
         /// <summary>
         /// Instanciates the server business
@@ -25,9 +24,9 @@ namespace Server
         {
             _dataStore = new DataStore(groupsSaveFileName, clientsSaveFileName);
             _pendingActions = new List<PendingAction>();
-
             _jobExecuter = new JobExecuter(_dataStore);
-            //_jobExecuterTask = Task.Factory.StartNew(() => _jobExecuter.Execute());
+
+            Task.Factory.StartNew(() => _jobExecuter.Execute());
         }
 
         /// <summary>
@@ -133,6 +132,24 @@ namespace Server
                     response = revisionList;
                     stopWaitHandle.Set();
                 }
+            };
+
+            _jobExecuter.Add(job);
+            stopWaitHandle.WaitOne();
+
+            _dataStore.UpdateLastSeen(job.Username);
+
+            return response;
+        }
+        public List<Revision> UpdateServerHistory(Job job)
+        {
+            AutoResetEvent stopWaitHandle = new AutoResetEvent(false);
+            List<Revision> response = new List<Revision>();
+
+            job.CallBack = revisionList =>
+            {
+                response = revisionList;
+                stopWaitHandle.Set();
             };
 
             _jobExecuter.Add(job);
