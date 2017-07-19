@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml.Serialization;
-using ShareLibrary;
 using ShareLibrary.Communication;
 using ShareLibrary.Models;
 
@@ -49,7 +45,7 @@ namespace Server
         /// <returns>Whether user credentials are valid</returns>
         public bool Connect(string username, string password)
         {
-            bool authorized = false;
+            bool authorized;
             if (!ParametersHasEmpty(username, password))
             {
                 authorized = dataStore.CheckCredentials(username, password);
@@ -75,7 +71,7 @@ namespace Server
         /// <summary>
         /// Creates a group on the server
         /// </summary>
-        /// <param name="name">Name of the group</param>
+        /// <param name="groupName">Name of the group</param>
         /// <param name="description">Description of the group</param>
         /// <param name="username">Name of the user creating the group (gets admin rights)</param>
         public void CreateGroup(string groupName, string description, string username)
