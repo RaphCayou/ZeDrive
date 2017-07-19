@@ -37,8 +37,8 @@ namespace Server
                 throw new ArgumentNullException("Noms de fichiers vides ou invalides");
             }
 
-            _groupsSaveFileName = Path.GetFileNameWithoutExtension(groupsSaveFileName) + ".xml";
-            _clientsSaveFileName = Path.GetFileNameWithoutExtension(clientsSaveFileName) + ".xml";
+            _groupsSaveFileName = Path.ChangeExtension(groupsSaveFileName, ".xml");
+            _clientsSaveFileName = Path.ChangeExtension(clientsSaveFileName, ".xml");
 
             if (File.Exists(_groupsSaveFileName))
             {
