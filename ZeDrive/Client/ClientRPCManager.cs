@@ -1,5 +1,6 @@
 ﻿using Server.TcpCommunication;
 using ShareLibrary.Communication;
+using ShareLibrary.Communication.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -75,17 +76,30 @@ namespace Client
             socketListener.Send(message.ToArray());
 
             // Wait for server reply
-            Message response = SocketUtils.ReceiveMessage(socketListener);
+            Message response = null;
+            try
+            {
+                response = SocketUtils.ReceiveMessage(socketListener, 8000, 8000);
+            }
+            catch (NoNewMessageException ex)
+            {
+                // TODO must either redo the request or reset the connection
+            }
+            catch (MessageInterruptedException ex)
+            {
+                // TODO Must disconnect and reconnect the socket (reset connection)
+            }
 
             object result = null;
 
-            if (response.Type == MessageType.Response && response.Length > 0)
+            if (response != null && response.Type == MessageType.Response && response.Length > 0)
             {
-                // When server reply complete, unpack the response
+                // When server reply complete and valid, unpack the response
                 MemoryStream ms = new MemoryStream(response.Content);
                 result = bf.Deserialize(ms);
             }
 
+            // If the response is an exception, return exception
             bool isException = result.GetType().IsSubclassOf(typeof(Exception));
             if (isException)
             {

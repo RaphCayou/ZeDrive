@@ -41,6 +41,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Communication\CommandHeader.cs" />
+    <Compile Include="Communication\Exceptions\MessageInterruptedException.cs" />
+    <Compile Include="Communication\Exceptions\NoNewMessageException.cs" />
     <Compile Include="Communication\IServerBusiness.cs" />
     <Compile Include="Communication\Message.cs" />
     <Compile Include="Communication\RequestMessageContent.cs" />

@@ -1,4 +1,5 @@
 ﻿using ShareLibrary.Communication;
+using ShareLibrary.Communication.Exceptions;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -53,7 +54,20 @@ namespace Server.TcpCommunication
             while (IsSocketConnected(handler))
             {
                 // Get the message from the socket
-                Message message = SocketUtils.ReceiveMessage(handler);
+                Message message = null;
+                try
+                {
+                    message = SocketUtils.ReceiveMessage(handler, 20000, 8000);
+                }
+                catch (NoNewMessageException ex)
+                {
+                    // TODO Must wait again until another message arrives
+                }
+                catch (MessageInterruptedException ex)
+                {
+                    // TODO VERIFY Must abandon connection
+                    break;
+                }
 
                 if (message != null && message.Type == MessageType.Request)
                 {
@@ -92,6 +106,7 @@ namespace Server.TcpCommunication
                 }
             }
 
+            // TODO Check if you need to disconnect first?
             handler.Close();
         }
 
