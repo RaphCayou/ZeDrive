@@ -13,6 +13,8 @@ namespace Client
 {
     public partial class ClientForm : Form
     {
+        private ClientBusiness client;
+        private string rootPath;
         public ClientForm()
         {
             InitializeComponent();
@@ -20,7 +22,64 @@ namespace Client
 
         private void ClientForm_Load(object sender, EventArgs e)
         {
+            CurrentUserGroup.Enabled = false;
+            GroupsInformationGroup.Enabled = false;
+        }
 
+        private void syncTimer_Tick(object sender, EventArgs e)
+        {
+            client.UpdateServerHistory();
+        }
+
+        private void ConnectToServer_Click(object sender, EventArgs e)
+        {
+            string serverAddress = ServerAddress.Text;
+            int serverPort = Convert.ToInt32(ServerPort.Value);
+            rootPath = RootFolderPath.Text;
+            try
+            {
+                client = new ClientBusiness(rootPath, serverAddress, serverPort);
+                CurrentUserGroup.Enabled = true;
+                ServerConnexionGroup.Enabled = false;
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(exception.ToString() + Environment.NewLine + exception.Message);
+            }
+        }
+
+        private void ConnectUser_Click(object sender, EventArgs e)
+        {
+            ConnectUserToServer();
+        }
+
+        private void CreateUser_Click(object sender, EventArgs e)
+        {
+            client.CreateUser(UserName.Text, Password.Text);
+            ConnectUserToServer();
+        }
+
+        private void ConnectUserToServer()
+        {
+            if (client.Connect(UserName.Text, Password.Text))
+            {
+                GroupsInformationGroup.Enabled = true;
+                CurrentUserGroup.Enabled = false;
+            }
+            else
+            {
+                MessageBox.Show("Nom d'usager ou mot de passe invalide.");
+            }
+        }
+
+        private void CurrentUserGroup_EnabledChanged(object sender, EventArgs e)
+        {
+            IsUserConnectText.Visible = CurrentUserGroup.Enabled;
+        }
+
+        private void ServerConnexionGroup_EnabledChanged(object sender, EventArgs e)
+        {
+            IsConnectText.Visible = ServerConnexionGroup.Enabled;
         }
     }
 }

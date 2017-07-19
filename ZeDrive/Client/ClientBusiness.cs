@@ -4,7 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Server;
 using ShareLibrary.Models;
+using ShareLibrary.Summary;
 using Action = ShareLibrary.Models.Action;
 
 namespace Client
@@ -12,21 +14,61 @@ namespace Client
     public class ClientBusiness
     {
         private string rootFolderPath;
+        private string userName;
+        private Dictionary<string, GroupSummary> lastGroupsSummaries;
 
-        public ClientBusiness(string rootFolderPath)
+        private IServerBusiness access;
+
+
+        public ClientBusiness(string rootFolderPath, string serverAddress, int serverPort)
         {
             this.rootFolderPath = rootFolderPath;
+            access = new ClientServerAccess(serverAddress, serverPort);
+            lastGroupsSummaries = new Dictionary<string, GroupSummary>();
         }
 
-        public void Connect() { }
-        public void CreateGroup() { }
-        public void SendJoinGroupRequest() { }
-        public void SendGroupInvitation() { }
-        public void AcceptInvitation() { }
+        public bool Connect(string user, string password)
+        {
+            bool validConnect = access.Connect(user, password);
+            if (validConnect)
+            {
+                userName = user;
+                // TODO JP load group data of the user
+            }
+            return validConnect;
+        }
+
+        public void CreateUser(string newUserName, string password)
+        {
+            access.CreateUser(newUserName, password);
+        }
+
+        public void CreateGroup(string groupName, string groupDescription)
+        {
+            access.CreateGroup(groupName, groupDescription, userName);
+        }
+
+        public void SendJoinGroupRequest(string invitedUser, string groupName)
+        {
+            access.SendClientGroupRequest(userName, groupName);
+        }
+
+        public void SendGroupInvitation(string invitedUser, string groupName)
+        {
+            access.SendClientGroupInvitation(userName, invitedUser, groupName);
+        }
+
+        public void AcceptInvitation(string groupName, bool isAccepted)
+        {
+            access.AcknowledgeInvite(userName, groupName, isAccepted);
+        }
 
         //Push generated revisions list
-        public void UpdateServerHistory()
+        public List<Revision> UpdateServerHistory()
         {
+            List<Revision> serveeRevisions = new List<Revision>();
+            //TODO JP call on access the update server
+            return serveeRevisions;
         }
 
         /// <summary>
@@ -41,7 +83,27 @@ namespace Client
             }
         }
 
-        public void ChangeAdministratorGroup() { }
-        public void DeleteClientFromGroup() { }
+        public void SyncWithServer()
+        {
+            UpdateLocalFiles(UpdateServerHistory());
+        }
+
+        public void ChangeAdministratorGroup(string newAdmin, string groupName)
+        {
+            access.ChangeAdministratorGroup(userName, newAdmin, groupName);
+        }
+
+        public void DeleteClientFromGroup(string removedUser, string groupName)
+        {
+            access.KickUserFromGroup(userName, removedUser, groupName);
+        }
+
+        /// <summary>
+        /// We fetch the groups updates.(Invitations, kicks, join completed and newly admin)
+        /// </summary>
+        public void GetGroupsUpdate()
+        {
+            // TODO JP call on access the getGroup list then apply the local modification based the group list
+        }
     }
 }

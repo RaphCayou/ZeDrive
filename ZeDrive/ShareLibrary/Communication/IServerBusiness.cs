@@ -19,6 +19,5 @@ namespace ShareLibrary.Communication
         void AcknowledgeRequest(string adminUsername, string username, string group, bool accept);
         void AcknowledgeInvite(string username, string group, bool accept);
         void ChangeAdministratorGroup(string usernameCurrentAdmin, string usernameFutureAdmin, string groupName);
-        Tuple<string, string> GetSaveFilesNames();
     }
 }

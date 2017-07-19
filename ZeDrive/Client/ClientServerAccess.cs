@@ -83,10 +83,5 @@ namespace Client
         {
             throw new NotImplementedException();
         }
-
-        public Tuple<string, string> GetSaveFilesNames()
-        {
-            throw new NotImplementedException();
-        }
     }
 }
