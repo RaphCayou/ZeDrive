@@ -78,18 +78,18 @@ namespace Server
         /// <summary>
         /// Creates the group in datastore
         /// </summary>
-        /// <param name="name">Name of the group</param>
+        /// <param name="groupName">Name of the group</param>
         /// <param name="description">Description of the group</param>
         /// <param name="username">Username of the user creating the group (gets admin rights)</param>
-        public void CreateGroup(string name, string description, string username)
+        public void CreateGroup(string groupName, string description, string username)
         {
-            if (Groups.Count(c => c.Name == name) == 0)
+            if (Groups.Count(c => c.Name == groupName) == 0)
             {
                 Groups.Add(new Group
                 {
-                    Name = name,
+                    Name = groupName,
                     Description = description,
-                    Administrator = Clients.FirstOrDefault(c => c.Name == name),
+                    Administrator = Clients.FirstOrDefault(c => c.Name == username),
                     Files = new List<FileInfo>(),
                     Members = new List<Client>{ Clients.FirstOrDefault(c => c.Name == username) }
                 });
@@ -97,7 +97,7 @@ namespace Server
             }
             else
             {
-                throw new ArgumentException($"Le groupe {name} existe déjà.");
+                throw new ArgumentException($"Le groupe {groupName} existe déjà.");
             }
         }
 

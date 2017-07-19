@@ -70,5 +70,15 @@ namespace ServerTests
             Assert.IsNotNull(clients);
             Assert.IsNotNull(clients.FirstOrDefault(c => c.Name == "Henry"));
         }
+
+        [TestMethod]
+        public void When_Creating_Group_Then_You_Are_Admin_And_Member()
+        {
+            business = new ServerBusiness(groupsSaveFile, clientsSaveFile);
+            business.CreateUser("potato", "potàto");
+            business.CreateGroup("FrenchFries", "Fried batons of potato", "potato");
+            Assert.AreEqual("potato", business.GetGroupList().FirstOrDefault(g => g.Name == "FrenchFries")?.Administrator.Name);
+            Assert.IsTrue(business.GetGroupList().FirstOrDefault(g => g.Name == "FrenchFries")?.Members.Exists(m => m.Name == "potato") == true);
+        }
     }
 }

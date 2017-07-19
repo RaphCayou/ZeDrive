@@ -78,11 +78,11 @@ namespace Server
         /// <param name="name">Name of the group</param>
         /// <param name="description">Description of the group</param>
         /// <param name="username">Name of the user creating the group (gets admin rights)</param>
-        public void CreateGroup(string name, string description, string username)
+        public void CreateGroup(string groupName, string description, string username)
         {
-            if (!ParametersHasEmpty(name, description, username))
+            if (!ParametersHasEmpty(groupName, description, username))
             {
-                dataStore.CreateGroup(name, description, username);
+                dataStore.CreateGroup(groupName, description, username);
             }
             else throw new ArgumentException("Les paramètres ne doivent pas être vides.");
         }
