@@ -30,6 +30,12 @@ namespace Client
             socketListener.Connect(ep);
         }
 
+        ~ClientRPCManager()
+        {
+            socketListener.Shutdown(SocketShutdown.Both);
+            socketListener.Close();
+        }
+
         public object SendMessage(MethodBase methodInfo)
         {
             return SendMessageToServer(methodInfo, new List<object>());
@@ -48,7 +54,7 @@ namespace Client
                 Command = new CommandHeader()
                 {
                     MethodName = methodInfo.Name,
-                    ParameterAssemblyQualifiedNames = methodInfo.GetParameters().Select(p => p.GetType().AssemblyQualifiedName).ToList()
+                    ParameterAssemblyQualifiedNames = methodInfo.GetParameters().Select(p => p.ParameterType.AssemblyQualifiedName).ToList()
                 },
                 Parameters = parameters
             };
@@ -73,11 +79,17 @@ namespace Client
 
             object result = null;
 
-            if (response.Type == MessageType.Response)
+            if (response.Type == MessageType.Response && response.Length > 0)
             {
                 // When server reply complete, unpack the response
                 MemoryStream ms = new MemoryStream(response.Content);
                 result = bf.Deserialize(ms);
+            }
+
+            bool isException = result.GetType().IsSubclassOf(typeof(Exception));
+            if (isException)
+            {
+                throw (Exception)result;
             }
 
             // Return the response

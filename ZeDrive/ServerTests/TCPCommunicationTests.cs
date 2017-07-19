@@ -15,17 +15,20 @@ namespace ServerTests
         [TestMethod]
         public void TestSendingMessageFromClientToServer()
         {
-            Mock<IServerBusiness> mockBusiness = new Mock<IServerBusiness>();
-            ServerDispatcher server = new ServerDispatcher(mockBusiness.Object, "127.0.0.1", 10000);
+            IServerBusiness business = new ServerBusiness("groupsSaveFile", "clientsSaveFile");
+            ServerDispatcher server = new ServerDispatcher(business, "127.0.0.1", 10000);
 
             ClientServerAccess clientLinkToServer = new ClientServerAccess("127.0.0.1", 10000);
 
-            //TODO change user and get return value
-            clientLinkToServer.GetNotification("random ass user todo change");
-
-            Thread.Sleep(1000);
-
-            mockBusiness.Verify(b => b.GetNotification("randomAssUsername Change it"));
+            try
+            {
+                clientLinkToServer.CreateUser("Henry", "hunter2");
+            }
+            catch (Exception e)
+            {
+                Assert.IsTrue(true);
+            }
+            Assert.IsTrue(clientLinkToServer.Connect("Henry", "hunter2"));
         }
     }
 }

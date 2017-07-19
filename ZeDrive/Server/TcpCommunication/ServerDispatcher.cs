@@ -37,6 +37,12 @@ namespace Server.TcpCommunication
 
             socketListener.BeginAccept(AcceptNewConnection, socketListener);
         }
+
+        ~ServerDispatcher()
+        {
+            socketListener.Shutdown(SocketShutdown.Both);
+            socketListener.Close();
+        }
         
         private void AcceptNewConnection(IAsyncResult ar)
         {
@@ -49,25 +55,40 @@ namespace Server.TcpCommunication
                 // Get the message from the socket
                 Message message = SocketUtils.ReceiveMessage(handler);
 
-                if (message.Type == MessageType.Request)
+                if (message != null && message.Type == MessageType.Request)
                 {
                     // Synchronously call the server method associated to the command
                     object result = ExecuteCommand(message);
 
-                    // Serialize the response
-                    MemoryStream msResponse = new MemoryStream();
-                    BinaryFormatter bf = new BinaryFormatter();
-                    bf.Serialize(msResponse, result);
-
-                    // frame the response
-                    Message response = new Message()
+                    if (result != null)
                     {
-                        Type = MessageType.Response,
-                        Content = msResponse.ToArray()
-                    };
+                        // Serialize the response
+                        MemoryStream msResponse = new MemoryStream();
+                        BinaryFormatter bf = new BinaryFormatter();
+                        bf.Serialize(msResponse, result);
 
-                    // Send the response
-                    handler.Send(response.ToArray());
+                        // frame the response
+                        Message response = new Message()
+                        {
+                            Type = MessageType.Response,
+                            Content = msResponse.ToArray()
+                        };
+
+                        // Send the response
+                        handler.Send(response.ToArray());
+                    }
+                    else
+                    {
+                        // empty response
+                        Message response = new Message()
+                        {
+                            Type = MessageType.Response,
+                            Content = new byte[0]
+                        };
+
+                        // Send the response
+                        handler.Send(response.ToArray());
+                    }
                 }
             }
 
@@ -86,6 +107,11 @@ namespace Server.TcpCommunication
 
         private object ExecuteCommand(Message message)
         {
+            if (message.Length == 0)
+            {
+                return null;
+            }
+
             // Get the request from the message
             MemoryStream ms = new MemoryStream(message.Content);
             BinaryFormatter bf = new BinaryFormatter();
@@ -97,7 +123,15 @@ namespace Server.TcpCommunication
                 MethodInfo methodImplementation = typeof(ServerBusiness).GetMethod(request.Command.MethodName, request.Command.ParameterTypes.ToArray());
 
                 // Calls the method
-                object methodResult = methodImplementation.Invoke(business, request.Parameters.ToArray());
+                object methodResult = null;
+                try
+                {
+                    methodResult = methodImplementation.Invoke(business, request.Parameters.ToArray());
+                }
+                catch (TargetInvocationException ex)
+                {
+                    return ex.InnerException; // original exception throw by the method
+                }
 
                 // Return the object returned by the method invocation
                 return methodResult;
