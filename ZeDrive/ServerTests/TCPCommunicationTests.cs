@@ -5,6 +5,7 @@ using Server.TcpCommunication;
 using Client;
 using Moq;
 using System.Threading;
+using ShareLibrary.Communication;
 
 namespace ServerTests
 {
@@ -19,11 +20,12 @@ namespace ServerTests
 
             ClientServerAccess clientLinkToServer = new ClientServerAccess("127.0.0.1", 10000);
 
-            clientLinkToServer.GetNotification();
+            //TODO change user and get return value
+            clientLinkToServer.GetNotification("random ass user todo change");
 
             Thread.Sleep(1000);
 
-            mockBusiness.Verify(b => b.GetNotification());
+            mockBusiness.Verify(b => b.GetNotification("randomAssUsername Change it"));
         }
     }
 }

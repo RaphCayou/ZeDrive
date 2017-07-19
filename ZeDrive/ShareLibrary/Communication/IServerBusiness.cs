@@ -1,11 +1,9 @@
-﻿using ShareLibrary.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using ShareLibrary.Models;
+using Server;
 
-namespace Server
+namespace ShareLibrary.Communication
 {
     public interface IServerBusiness
     {
@@ -17,7 +15,7 @@ namespace Server
         void SendClientGroupInvitation(string adminUsername, string invitedUser, string groupName);
         void SendClientGroupRequest(string username, string groupName);
         void KickUserFromGroup(string adminUsername, string username, string groupName);
-        void GetNotification();
+        List<PendingAction> GetNotification(string username);
         void AcknowledgeRequest(string adminUsername, string username, string group, bool accept);
         void AcknowledgeInvite(string username, string group, bool accept);
         void ChangeAdministratorGroup(string usernameCurrentAdmin, string usernameFutureAdmin, string groupName);

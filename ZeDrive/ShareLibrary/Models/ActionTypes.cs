@@ -6,8 +6,5 @@ using System.Threading.Tasks;
 
 namespace ShareLibrary.Models
 {
-    public class ActionType
-    {
-        public enum Action { Invite, Request }
-    }
+    public enum ActionTypes { Invite, Request }
 }

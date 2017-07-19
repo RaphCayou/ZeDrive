@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using ShareLibrary.Communication;
 using ShareLibrary.Models;
 
 namespace Client
@@ -68,9 +69,12 @@ namespace Client
             throw new NotImplementedException();
         }
 
-        public void GetNotification()
+        public List<PendingAction> GetNotification(string username)
         {
             RPCManager.SendMessage(System.Reflection.MethodBase.GetCurrentMethod());
+
+            //TODO Return accurate list
+            return new List<PendingAction>();
         }
 
         public void AcknowledgeRequest(string adminUsername, string username, string group, bool accept)

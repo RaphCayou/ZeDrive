@@ -117,6 +117,11 @@ namespace Server
             return Groups.FirstOrDefault(g => g.Name == groupName).Administrator.Name == username;
         }
 
+        public string GetGroupAdmin(string groupName)
+        {
+            return Groups.FirstOrDefault(g => g.Name == groupName).Administrator.Name;
+        }
+
         public bool CheckUserInGroup(string username, string groupName)
         {
             UpdateLastSeen(username);

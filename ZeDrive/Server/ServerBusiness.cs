@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using ShareLibrary;
+using ShareLibrary.Communication;
 using ShareLibrary.Models;
 
 namespace Server
@@ -98,7 +99,7 @@ namespace Server
                 }
                 if (!dataStore.CheckUserInGroup(invitedUser, groupName))
                 {
-                   pendingActions.Add(new PendingAction { clientName = invitedUser, groupName = groupName, action = ActionType.Action.Invite});
+                   pendingActions.Add(new PendingAction { ClientName = invitedUser, GroupName = groupName, ActionType = ActionTypes.Invite});
                 }
                 else throw new ArgumentException("L'utilisateur est déjà dans le groupe.");
             }
@@ -111,7 +112,7 @@ namespace Server
             {
                 if (!dataStore.CheckUserInGroup(username, groupName))
                 {
-                    pendingActions.Add(new PendingAction { clientName = username, groupName = groupName, action = ActionType.Action.Request });
+                    pendingActions.Add(new PendingAction { ClientName = username, GroupName = groupName, ActionType = ActionTypes.Request });
                 }
                 else throw new ArgumentException("L'utilisateur est déjà dans le groupe.");
             }
@@ -132,19 +133,27 @@ namespace Server
         /// <summary>
         /// Check for group join request and group invitation
         /// </summary>
-        public void GetNotification()
+        public List<PendingAction> GetNotification(string username)
         {
-            //TODO vérifie avec les pending voir si il faut effectuer une action
+            List<PendingAction> userPendingActions = new List<PendingAction>();
+
+            //Invites sent to the user
+            userPendingActions.AddRange(pendingActions.Where(p => p.ActionType == ActionTypes.Invite && p.ClientName == username));
+
+            //Requests by ClientName towards admin of GroupName
+            userPendingActions.AddRange(pendingActions.Where(p => p.ActionType == ActionTypes.Request && username == dataStore.GetGroupAdmin(p.GroupName)));
+
+            return userPendingActions;
         }
 
         public void AcknowledgeRequest(string adminUsername, string username, string group, bool accept)
         {
-            //TODO accepter la requete, faire l'Action et supprimer le pending
+            //TODO accepter la requete, faire l'ActionTypes et supprimer le pending
         }
 
         public void AcknowledgeInvite(string username, string group, bool accept)
         {
-            //TODO accepter la requete, faire l'Action et supprimer le pending
+            //TODO accepter la requete, faire l'ActionTypes et supprimer le pending
         }
 
         public void ChangeAdministratorGroup(string usernameCurrentAdmin, string usernameFutureAdmin, string groupName)
