@@ -2,18 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using ShareLibrary.Communication;
 using ShareLibrary.Models;
+//using System.Threading.Tasks;
 
 namespace Server
 {
     public class ServerBusiness : IServerBusiness
     {
-        private JobExecuter jobExecuter;
-        private DataStore dataStore;
-        private List<PendingAction> pendingActions;
-        private Task jobExecuterTask;
+        private readonly JobExecuter _jobExecuter;
+        private readonly DataStore _dataStore;
+        private readonly List<PendingAction> _pendingActions;
+        //private Task _jobExecuterTask;
 
         /// <summary>
         /// Instanciates the server business
@@ -22,11 +22,11 @@ namespace Server
         /// <param name="clientsSaveFileName">Clients save file name on disk</param>
         public ServerBusiness(string groupsSaveFileName, string clientsSaveFileName)
         {
-            dataStore = new DataStore(groupsSaveFileName, clientsSaveFileName);
-            pendingActions = new List<PendingAction>();
+            _dataStore = new DataStore(groupsSaveFileName, clientsSaveFileName);
+            _pendingActions = new List<PendingAction>();
 
-            jobExecuter = new JobExecuter(dataStore);
-            jobExecuterTask = Task.Factory.StartNew(() => jobExecuter.Execute());
+            _jobExecuter = new JobExecuter(_dataStore);
+            //_jobExecuterTask = Task.Factory.StartNew(() => _jobExecuter.Execute());
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace Server
         /// </summary>
         ~ServerBusiness()
         {
-            dataStore.Save();
+            _dataStore.Save();
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace Server
             bool authorized;
             if (!ParametersHasEmpty(username, password))
             {
-                authorized = dataStore.CheckCredentials(username, password);
+                authorized = _dataStore.CheckCredentials(username, password);
             }
             else throw new ArgumentException("Les paramètres ne doivent pas être vides.");
             return authorized;
@@ -63,7 +63,7 @@ namespace Server
         {
             if (!ParametersHasEmpty(username, password))
             {
-                dataStore.CreateUser(username, password);
+                _dataStore.CreateUser(username, password);
             }
             else throw new ArgumentException("Les paramètres ne doivent pas être vides.");
         }
@@ -78,7 +78,7 @@ namespace Server
         {
             if (!ParametersHasEmpty(groupName, description, username))
             {
-                dataStore.CreateGroup(groupName, description, username);
+                _dataStore.CreateGroup(groupName, description, username);
             }
             else throw new ArgumentException("Les paramètres ne doivent pas être vides.");
         }
@@ -89,7 +89,7 @@ namespace Server
         /// <returns>List of clients</returns>
         public List<Client> GetClientList()
         {
-            return dataStore.Clients;
+            return _dataStore.Clients;
         }
 
         /// <summary>
@@ -98,7 +98,7 @@ namespace Server
         /// <returns>List of online clients</returns>
         public List<Client> GetOnlineClientsList()
         {
-            return dataStore.Clients.Where(c => c.LastSeen >= DateTime.Now.AddMinutes(-5)).ToList();
+            return _dataStore.Clients.Where(c => c.LastSeen >= DateTime.Now.AddMinutes(-5)).ToList();
         }
 
         /// <summary>
@@ -107,7 +107,7 @@ namespace Server
         /// <returns>List of groups</returns>
         public List<Group> GetGroupList()
         {
-            return dataStore.Groups;
+            return _dataStore.Groups;
         }
 
         /// <summary>
@@ -126,10 +126,10 @@ namespace Server
                 stopWaitHandle.Set();
             };
 
-            jobExecuter.Add(job);
+            _jobExecuter.Add(job);
             stopWaitHandle.WaitOne();
 
-            dataStore.UpdateLastSeen(job.Username);
+            _dataStore.UpdateLastSeen(job.Username);
 
             return response;
         }
@@ -144,13 +144,13 @@ namespace Server
         {
             if (!ParametersHasEmpty(adminUsername, invitedUser, groupName))
             {
-                if (!dataStore.CheckAdminRights(adminUsername, groupName))
+                if (!_dataStore.CheckAdminRights(adminUsername, groupName))
                 {
                     throw new ArgumentException("Vous n'avez pas les droits requis.");
                 }
-                if (!dataStore.CheckUserInGroup(invitedUser, groupName))
+                if (!_dataStore.CheckUserInGroup(invitedUser, groupName))
                 {
-                   pendingActions.Add(new PendingAction { ClientName = invitedUser, GroupName = groupName, ActionType = ActionTypes.Invite});
+                   _pendingActions.Add(new PendingAction { ClientName = invitedUser, GroupName = groupName, ActionType = ActionTypes.Invite});
                 }
                 else throw new ArgumentException("L'utilisateur est déjà dans le groupe.");
             }
@@ -166,9 +166,9 @@ namespace Server
         {
             if (!ParametersHasEmpty(username, groupName))
             {
-                if (!dataStore.CheckUserInGroup(username, groupName))
+                if (!_dataStore.CheckUserInGroup(username, groupName))
                 {
-                    pendingActions.Add(new PendingAction { ClientName = username, GroupName = groupName, ActionType = ActionTypes.Request });
+                    _pendingActions.Add(new PendingAction { ClientName = username, GroupName = groupName, ActionType = ActionTypes.Request });
                 }
                 else throw new ArgumentException("L'utilisateur est déjà dans le groupe.");
             }
@@ -185,9 +185,9 @@ namespace Server
         {
             if (!ParametersHasEmpty(adminUsername, username, groupName))
             {
-                if (!dataStore.CheckAdminRights(adminUsername, groupName)) throw new ArgumentException("Vous n'avez pas les droits requis.");
-                if (!dataStore.CheckUserInGroup(username, groupName)) throw new ArgumentException("L'utilisateur n'est pas dans le groupe.");
-                dataStore.RemoveUserFromGroup(adminUsername, username, groupName);
+                if (!_dataStore.CheckAdminRights(adminUsername, groupName)) throw new ArgumentException("Vous n'avez pas les droits requis.");
+                if (!_dataStore.CheckUserInGroup(username, groupName)) throw new ArgumentException("L'utilisateur n'est pas dans le groupe.");
+                _dataStore.RemoveUserFromGroup(adminUsername, username, groupName);
             }
             else throw new ArgumentException("Les paramètres ne doivent pas être vides.");
         }
@@ -203,10 +203,10 @@ namespace Server
             if (!ParametersHasEmpty(username))
             {
                 //Invites sent to the user
-                userPendingActions.AddRange(pendingActions.Where(p => p.ActionType == ActionTypes.Invite && p.ClientName == username));
+                userPendingActions.AddRange(_pendingActions.Where(p => p.ActionType == ActionTypes.Invite && p.ClientName == username));
 
                 //Requests by ClientName towards admin of GroupName
-                userPendingActions.AddRange(pendingActions.Where(p => p.ActionType == ActionTypes.Request && username == dataStore.GetGroupAdmin(p.GroupName)));
+                userPendingActions.AddRange(_pendingActions.Where(p => p.ActionType == ActionTypes.Request && username == _dataStore.GetGroupAdmin(p.GroupName)));
             }
             else throw new ArgumentException("Les paramètres ne doivent pas être vides.");
             return userPendingActions;
@@ -223,15 +223,15 @@ namespace Server
         {
             if (!ParametersHasEmpty(username, groupName))
             {
-                if (!dataStore.CheckAdminRights(adminUsername, groupName))
+                if (!_dataStore.CheckAdminRights(adminUsername, groupName))
                 {
                     if (accept)
                     {
-                        dataStore.AddUserToGroup(username, groupName);
+                        _dataStore.AddUserToGroup(username, groupName);
                     }
                 }
                 else throw new ArgumentException("Vous n'avez pas les droits requis.");
-                pendingActions.RemoveAll(p => p.ActionType == ActionTypes.Request && p.GroupName == groupName && p.ClientName == username);
+                _pendingActions.RemoveAll(p => p.ActionType == ActionTypes.Request && p.GroupName == groupName && p.ClientName == username);
             }
             else throw new ArgumentException("Les paramètres ne doivent pas être vides.");
         }
@@ -246,15 +246,15 @@ namespace Server
         {
             if (!ParametersHasEmpty(username, groupName))
             {
-                if (!dataStore.CheckUserInGroup(username, groupName))
+                if (!_dataStore.CheckUserInGroup(username, groupName))
                 {
                     if (accept)
                     {
-                        dataStore.AddUserToGroup(username, groupName);
+                        _dataStore.AddUserToGroup(username, groupName);
                     }
                 }
                 else throw new ArgumentException("Vous êtes déjà dans le groupe.");
-                pendingActions.RemoveAll(p => p.ActionType == ActionTypes.Invite && p.GroupName == groupName && p.ClientName == username);
+                _pendingActions.RemoveAll(p => p.ActionType == ActionTypes.Invite && p.GroupName == groupName && p.ClientName == username);
             }
             else throw new ArgumentException("Les paramètres ne doivent pas être vides.");
         }
@@ -269,10 +269,10 @@ namespace Server
         {
             if (!ParametersHasEmpty(usernameCurrentAdmin, usernameFutureAdmin, groupName))
             {
-                if (!dataStore.CheckAdminRights(usernameCurrentAdmin, groupName)) throw new ArgumentException("Vous n'avez pas les droits d'administrateur.");
-                if (dataStore.CheckUserInGroup(usernameFutureAdmin, groupName))
+                if (!_dataStore.CheckAdminRights(usernameCurrentAdmin, groupName)) throw new ArgumentException("Vous n'avez pas les droits d'administrateur.");
+                if (_dataStore.CheckUserInGroup(usernameFutureAdmin, groupName))
                 {
-                    dataStore.ChangeAdminForGroup(usernameCurrentAdmin, usernameFutureAdmin, groupName);
+                    _dataStore.ChangeAdminForGroup(usernameCurrentAdmin, usernameFutureAdmin, groupName);
                 }
                 else throw new ArgumentException("L'utilisateur n'est pas dans le groupe.");
             }
@@ -295,7 +295,7 @@ namespace Server
         /// <returns>Save files names on disk</returns>
         public Tuple<string, string> GetSaveFilesNames()
         {
-            return dataStore.GetSaveFilesNames();
+            return _dataStore.GetSaveFilesNames();
         }
     }
 }
