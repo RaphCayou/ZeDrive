@@ -1,10 +1,5 @@
-﻿using Server;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using ShareLibrary.Communication;
 using ShareLibrary.Models;
 
@@ -71,10 +66,7 @@ namespace Client
 
         public List<PendingAction> GetNotification(string username)
         {
-            RPCManager.SendMessage(System.Reflection.MethodBase.GetCurrentMethod());
-
-            //TODO Return accurate list
-            return new List<PendingAction>();
+            return (List<PendingAction>)RPCManager.SendMessage(System.Reflection.MethodBase.GetCurrentMethod());
         }
 
         public void AcknowledgeRequest(string adminUsername, string username, string group, bool accept)
