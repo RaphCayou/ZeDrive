@@ -23,7 +23,7 @@ namespace Client
         private void ClientForm_Load(object sender, EventArgs e)
         {
             CurrentUserGroup.Enabled = false;
-            GroupsInformationGroup.Enabled = false;
+            //GroupsInformationGroup.Enabled = false;  // TODO JP reactivate that line
         }
 
         private void syncTimer_Tick(object sender, EventArgs e)
@@ -80,6 +80,17 @@ namespace Client
         private void ServerConnexionGroup_EnabledChanged(object sender, EventArgs e)
         {
             IsConnectText.Visible = ServerConnexionGroup.Enabled;
+        }
+
+        private void GroupList_DropDown(object sender, EventArgs e)
+        {
+            // TODO Add the real groups informations
+            GroupList.DataSource = new List<string>{"1", "2", "3", "4", "5", "1", "1", "1"};
+        }
+
+        private void GroupList_SelectedValueChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

@@ -32,11 +32,15 @@
             this.syncTimer = new System.Windows.Forms.Timer(this.components);
             this.ConnectToServer = new System.Windows.Forms.Button();
             this.CurrentUserGroup = new System.Windows.Forms.GroupBox();
+            this.IsUserConnectText = new System.Windows.Forms.Label();
+            this.CreateUser = new System.Windows.Forms.Button();
+            this.ConnectUser = new System.Windows.Forms.Button();
             this.Password = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.UserName = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.ServerConnexionGroup = new System.Windows.Forms.GroupBox();
+            this.IsConnectText = new System.Windows.Forms.Label();
             this.RootFolderPath = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.ServerPort = new System.Windows.Forms.NumericUpDown();
@@ -45,10 +49,8 @@
             this.label2 = new System.Windows.Forms.Label();
             this.AdminGroup = new System.Windows.Forms.GroupBox();
             this.GroupsInformationGroup = new System.Windows.Forms.GroupBox();
-            this.ConnectUser = new System.Windows.Forms.Button();
-            this.CreateUser = new System.Windows.Forms.Button();
-            this.IsUserConnectText = new System.Windows.Forms.Label();
-            this.IsConnectText = new System.Windows.Forms.Label();
+            this.GroupList = new System.Windows.Forms.ComboBox();
+            this.label6 = new System.Windows.Forms.Label();
             this.CurrentUserGroup.SuspendLayout();
             this.ServerConnexionGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ServerPort)).BeginInit();
@@ -85,6 +87,37 @@
             this.CurrentUserGroup.TabStop = false;
             this.CurrentUserGroup.Text = "Usager courant";
             this.CurrentUserGroup.EnabledChanged += new System.EventHandler(this.CurrentUserGroup_EnabledChanged);
+            // 
+            // IsUserConnectText
+            // 
+            this.IsUserConnectText.AutoSize = true;
+            this.IsUserConnectText.ForeColor = System.Drawing.Color.DarkGreen;
+            this.IsUserConnectText.Location = new System.Drawing.Point(764, 16);
+            this.IsUserConnectText.Name = "IsUserConnectText";
+            this.IsUserConnectText.Size = new System.Drawing.Size(56, 13);
+            this.IsUserConnectText.TabIndex = 14;
+            this.IsUserConnectText.Text = "Connecté!";
+            this.IsUserConnectText.Visible = false;
+            // 
+            // CreateUser
+            // 
+            this.CreateUser.Location = new System.Drawing.Point(956, 11);
+            this.CreateUser.Name = "CreateUser";
+            this.CreateUser.Size = new System.Drawing.Size(86, 23);
+            this.CreateUser.TabIndex = 13;
+            this.CreateUser.Text = "Créer l\'usager";
+            this.CreateUser.UseVisualStyleBackColor = true;
+            this.CreateUser.Click += new System.EventHandler(this.CreateUser_Click);
+            // 
+            // ConnectUser
+            // 
+            this.ConnectUser.Location = new System.Drawing.Point(683, 11);
+            this.ConnectUser.Name = "ConnectUser";
+            this.ConnectUser.Size = new System.Drawing.Size(75, 23);
+            this.ConnectUser.TabIndex = 12;
+            this.ConnectUser.Text = "Connexion";
+            this.ConnectUser.UseVisualStyleBackColor = true;
+            this.ConnectUser.Click += new System.EventHandler(this.ConnectUser_Click);
             // 
             // Password
             // 
@@ -136,6 +169,17 @@
             this.ServerConnexionGroup.TabStop = false;
             this.ServerConnexionGroup.Text = "Connexion au serveur";
             this.ServerConnexionGroup.EnabledChanged += new System.EventHandler(this.ServerConnexionGroup_EnabledChanged);
+            // 
+            // IsConnectText
+            // 
+            this.IsConnectText.AutoSize = true;
+            this.IsConnectText.ForeColor = System.Drawing.Color.DarkGreen;
+            this.IsConnectText.Location = new System.Drawing.Point(947, 16);
+            this.IsConnectText.Name = "IsConnectText";
+            this.IsConnectText.Size = new System.Drawing.Size(56, 13);
+            this.IsConnectText.TabIndex = 15;
+            this.IsConnectText.Text = "Connecté!";
+            this.IsConnectText.Visible = false;
             // 
             // RootFolderPath
             // 
@@ -204,15 +248,17 @@
             // 
             // AdminGroup
             // 
-            this.AdminGroup.Location = new System.Drawing.Point(9, 331);
+            this.AdminGroup.Location = new System.Drawing.Point(9, 215);
             this.AdminGroup.Name = "AdminGroup";
-            this.AdminGroup.Size = new System.Drawing.Size(200, 100);
+            this.AdminGroup.Size = new System.Drawing.Size(1033, 216);
             this.AdminGroup.TabIndex = 3;
             this.AdminGroup.TabStop = false;
             this.AdminGroup.Text = "Gestion d\'administrateur";
             // 
             // GroupsInformationGroup
             // 
+            this.GroupsInformationGroup.Controls.Add(this.label6);
+            this.GroupsInformationGroup.Controls.Add(this.GroupList);
             this.GroupsInformationGroup.Controls.Add(this.AdminGroup);
             this.GroupsInformationGroup.Location = new System.Drawing.Point(12, 113);
             this.GroupsInformationGroup.Name = "GroupsInformationGroup";
@@ -221,47 +267,25 @@
             this.GroupsInformationGroup.TabStop = false;
             this.GroupsInformationGroup.Text = "Gestion des groupes";
             // 
-            // ConnectUser
+            // GroupList
             // 
-            this.ConnectUser.Location = new System.Drawing.Point(683, 11);
-            this.ConnectUser.Name = "ConnectUser";
-            this.ConnectUser.Size = new System.Drawing.Size(75, 23);
-            this.ConnectUser.TabIndex = 12;
-            this.ConnectUser.Text = "Connexion";
-            this.ConnectUser.UseVisualStyleBackColor = true;
-            this.ConnectUser.Click += new System.EventHandler(this.ConnectUser_Click);
+            this.GroupList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.GroupList.FormattingEnabled = true;
+            this.GroupList.Location = new System.Drawing.Point(222, 19);
+            this.GroupList.Name = "GroupList";
+            this.GroupList.Size = new System.Drawing.Size(363, 21);
+            this.GroupList.TabIndex = 4;
+            this.GroupList.DropDown += new System.EventHandler(this.GroupList_DropDown);
+            this.GroupList.SelectedValueChanged += new System.EventHandler(this.GroupList_SelectedValueChanged);
             // 
-            // CreateUser
+            // label6
             // 
-            this.CreateUser.Location = new System.Drawing.Point(956, 11);
-            this.CreateUser.Name = "CreateUser";
-            this.CreateUser.Size = new System.Drawing.Size(86, 23);
-            this.CreateUser.TabIndex = 13;
-            this.CreateUser.Text = "Créer l\'usager";
-            this.CreateUser.UseVisualStyleBackColor = true;
-            this.CreateUser.Click += new System.EventHandler(this.CreateUser_Click);
-            // 
-            // IsUserConnectText
-            // 
-            this.IsUserConnectText.AutoSize = true;
-            this.IsUserConnectText.ForeColor = System.Drawing.Color.DarkGreen;
-            this.IsUserConnectText.Location = new System.Drawing.Point(764, 16);
-            this.IsUserConnectText.Name = "IsUserConnectText";
-            this.IsUserConnectText.Size = new System.Drawing.Size(56, 13);
-            this.IsUserConnectText.TabIndex = 14;
-            this.IsUserConnectText.Text = "Connecté!";
-            this.IsUserConnectText.Visible = false;
-            // 
-            // IsConnectText
-            // 
-            this.IsConnectText.AutoSize = true;
-            this.IsConnectText.ForeColor = System.Drawing.Color.DarkGreen;
-            this.IsConnectText.Location = new System.Drawing.Point(947, 16);
-            this.IsConnectText.Name = "IsConnectText";
-            this.IsConnectText.Size = new System.Drawing.Size(56, 13);
-            this.IsConnectText.TabIndex = 15;
-            this.IsConnectText.Text = "Connecté!";
-            this.IsConnectText.Visible = false;
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(6, 22);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(210, 13);
+            this.label6.TabIndex = 16;
+            this.label6.Text = "Choisissez un groupe pour faire une action.";
             // 
             // ClientForm
             // 
@@ -280,6 +304,7 @@
             this.ServerConnexionGroup.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ServerPort)).EndInit();
             this.GroupsInformationGroup.ResumeLayout(false);
+            this.GroupsInformationGroup.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -306,6 +331,8 @@
         private System.Windows.Forms.Button CreateUser;
         private System.Windows.Forms.Label IsUserConnectText;
         private System.Windows.Forms.Label IsConnectText;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.ComboBox GroupList;
     }
 }
 

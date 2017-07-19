@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Server;
+using ShareLibrary.Communication;
 using ShareLibrary.Models;
 using ShareLibrary.Summary;
 using Action = ShareLibrary.Models.Action;
@@ -19,6 +20,10 @@ namespace Client
 
         private IServerBusiness access;
 
+        public ClientBusiness(string rootFolderPath)
+        {
+            this.rootFolderPath = rootFolderPath;
+        }
 
         public ClientBusiness(string rootFolderPath, string serverAddress, int serverPort)
         {
