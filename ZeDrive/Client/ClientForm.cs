@@ -15,6 +15,7 @@ namespace Client
 {
     public partial class ClientForm : Form
     {
+        private int SYNC_INTERVAL = 15000;
         private ClientBusiness client;
         private Group currentGroup;
         private string rootPath;
@@ -27,12 +28,27 @@ namespace Client
         {
             CurrentUserGroup.Enabled = false;
             GroupsInformationGroup.Enabled = false;
+            syncTimer.Interval = SYNC_INTERVAL;
         }
 
         private void syncTimer_Tick(object sender, EventArgs e)
         {
+            MessageBox.Show("Sync");
             client.SyncWithServer();
             UpdateConnectedUser(client.GetClientsList());
+            foreach (PendingAction action in client.GetPendingActions())
+            {
+                if (action.ActionType == ActionTypes.Invite)
+                {
+                    DialogResult dialogResult = MessageBox.Show($"Voulez-vous rejoindre le group \"{action.GroupName}\" ?", "Nouvelle invitation!", MessageBoxButtons.YesNo);
+                    client.AcceptInvitation(action.GroupName, dialogResult == DialogResult.Yes);
+                }
+                else
+                {
+                    DialogResult dialogResult = MessageBox.Show($"Acceptez-vous que {action.ClientName} rejoinde le group \"{action.GroupName}\" ?", "Nouvelle demande!", MessageBoxButtons.YesNo);
+                    client.AcknowledgeRequest(action.ClientName, action.GroupName, dialogResult == DialogResult.Yes);
+                }
+            }
         }
 
         private void ConnectToServer_Click(object sender, EventArgs e)

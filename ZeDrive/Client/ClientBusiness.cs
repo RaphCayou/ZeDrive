@@ -19,7 +19,7 @@ namespace Client
         private const string GROUP_SUMMARY_FILE = "lastGroupsSummaries.xml";
         private readonly string rootFolderPath;
         private string userName;
-        private readonly List<GroupSummary> lastGroupsSummaries;
+        private List<GroupSummary> lastGroupsSummaries;
 
         private readonly IServerBusiness access;
 
@@ -69,6 +69,16 @@ namespace Client
             access.AcknowledgeInvite(userName, groupName, isAccepted);
         }
 
+        public void AcknowledgeRequest(string requestUserName, string groupName, bool isAccepted)
+        {
+            access.AcknowledgeRequest(userName, requestUserName, groupName, isAccepted);
+        }
+
+        public List<PendingAction> GetPendingActions()
+        {
+            return access.GetNotification(userName);
+        }
+
         /// <summary>
         /// Generate and push revisions list
         /// </summary>
@@ -76,14 +86,15 @@ namespace Client
         public List<Revision> UpdateServerHistory()
         {
             List<Revision> localRevisions = new List<Revision>();
+            List<GroupSummary> newGroupSummaries = new List<GroupSummary>();
             //Creating the revision list
             foreach (GroupSummary group in lastGroupsSummaries)
             {
                 GroupSummary updateSummary = new GroupSummary(group.GroupName, rootFolderPath);
                 localRevisions.AddRange(updateSummary.GenerateRevisions(group));
-                lastGroupsSummaries.Remove(group);
-                lastGroupsSummaries.Add(updateSummary);
+                newGroupSummaries.Add(updateSummary);
             }
+            lastGroupsSummaries = newGroupSummaries;
             List<Revision> serverRevisions = access.UpdateServerHistory(userName, localRevisions, lastGroupsSummaries);
             return serverRevisions;
         }

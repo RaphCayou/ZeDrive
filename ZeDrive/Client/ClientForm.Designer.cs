@@ -371,7 +371,7 @@
             this.NewGroupDescription.Multiline = true;
             this.NewGroupDescription.Name = "NewGroupDescription";
             this.NewGroupDescription.Size = new System.Drawing.Size(415, 55);
-            this.NewGroupDescription.TabIndex = 23;
+            this.NewGroupDescription.TabIndex = 21;
             // 
             // label12
             // 
