@@ -25,6 +25,7 @@ namespace Server.TcpCommunication
                 message = m;
             }
             public Socket workSocket;
+            public int writePosition = 0;
             public Message message;
         }
 
@@ -95,7 +96,7 @@ namespace Server.TcpCommunication
 
             // Read data from the client socket.   
             int bytesRead = handler.EndReceive(ar);
-            if (bytesRead < message.Length)
+            if (bytesRead == 0)
             {
                 handler.Shutdown(SocketShutdown.Both);
                 handler.Close();
@@ -103,36 +104,46 @@ namespace Server.TcpCommunication
                 // If not enough data read, connection must have been interrupted
                 throw new MessageInterruptedException();
             }
-
-            // Here we assume we have the complete message content
-            if (message.Type == MessageType.Request)
+            else if (state.writePosition + bytesRead < message.Length)
             {
-                // Synchronously call the server method associated to the command
-                object result = ExecuteCommand(message);
-                Message response = new Message()
-                {
-                    Type = MessageType.Response,
-                    Content = new byte[0]
-                };
+                // There is more data to come
+                state.writePosition += bytesRead;
 
-                if (result != null)
-                {
-                    // Serialize the response
-                    MemoryStream msResponse = new MemoryStream();
-                    BinaryFormatter bf = new BinaryFormatter();
-                    bf.Serialize(msResponse, result);
-
-                    // frame the response
-                    response.Content = msResponse.ToArray();
-                }
-                
-                byte[] messageBuffer = response.ToArray();
-                handler.BeginSend(messageBuffer, 0, messageBuffer.Length, 0, SendCallback, handler);
+                // Asynchronously receive rest of message
+                handler.BeginReceive(message.Content, 0, message.Length, 0, ReadCallback, state);
             }
             else
             {
-                handler.Shutdown(SocketShutdown.Both);
-                handler.Close();
+                // Here we assume we have the complete message content
+                if (message.Type == MessageType.Request)
+                {
+                    // Synchronously call the server method associated to the command
+                    object result = ExecuteCommand(message);
+                    Message response = new Message()
+                    {
+                        Type = MessageType.Response,
+                        Content = new byte[0]
+                    };
+
+                    if (result != null)
+                    {
+                        // Serialize the response
+                        MemoryStream msResponse = new MemoryStream();
+                        BinaryFormatter bf = new BinaryFormatter();
+                        bf.Serialize(msResponse, result);
+
+                        // frame the response
+                        response.Content = msResponse.ToArray();
+                    }
+
+                    byte[] messageBuffer = response.ToArray();
+                    handler.BeginSend(messageBuffer, 0, messageBuffer.Length, 0, SendCallback, handler);
+                }
+                else
+                {
+                    handler.Shutdown(SocketShutdown.Both);
+                    handler.Close();
+                }
             }
         }
 

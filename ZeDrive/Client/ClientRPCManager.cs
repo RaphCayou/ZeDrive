@@ -77,15 +77,17 @@ namespace Client
             Message response = null;
             try
             {
-                response = SocketUtils.ReceiveMessage(socketListener, 1000, 1000);
+                response = SocketUtils.ReceiveMessage(socketListener, 8000, 8000);
             }
             catch (NoNewMessageException ex)
             {
                 // TODO must either redo the request or reset the connection
+                throw ex;
             }
             catch (MessageInterruptedException ex)
             {
                 // TODO Must disconnect and reconnect the socket (reset connection)
+                throw ex;
             }
 
             object result = null;
