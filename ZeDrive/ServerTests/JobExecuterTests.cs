@@ -16,6 +16,7 @@ namespace ServerTests
         private ServerBusiness business;
         private List<Revision> actualRevisions;
         private List<Revision> expectedRevisions;
+
         public Job CreateJob(string filename, string username, string groupname)
         {
             return new Job
@@ -87,21 +88,12 @@ namespace ServerTests
             };
         }
 
-        public void AddData(string filename, string username, string groupname)
-        {
-            
-        }
-
         [TestInitialize]
         public void SetUp()
         {
             business = new ServerBusiness("groupSave","clientSave");
-            try
-            {
-                business.CreateUser("Bob", "psw");
-                business.CreateGroup("A", "Desc", "Bob");
-            }
-            catch {}
+            business.CreateUser("Bob", "psw");
+            business.CreateGroup("A", "Desc", "Bob");
         }
 
         [TestMethod]

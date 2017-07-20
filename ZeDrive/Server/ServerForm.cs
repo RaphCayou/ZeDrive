@@ -30,6 +30,9 @@ namespace Server
         private void btnStart_Click(object sender, EventArgs e)
         {
             btnStart.Enabled = false;
+            RootFolderPath.Enabled = false;
+            ServerAddress.Enabled = false;
+            ServerPort.Enabled = false;
             business = new ServerBusiness("GroupsSave", "ClientSave", RootFolderPath.Text);
             dispatcher = new ServerDispatcher(business, ServerAddress.Text, (int)ServerPort.Value);
         }
