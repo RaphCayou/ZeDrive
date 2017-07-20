@@ -110,7 +110,7 @@ namespace Server.TcpCommunication
                 state.writePosition += bytesRead;
 
                 // Asynchronously receive rest of message
-                handler.BeginReceive(message.Content, 0, message.Length, 0, ReadCallback, state);
+                handler.BeginReceive(message.Content, state.writePosition, message.Length - state.writePosition, 0, ReadCallback, state);
             }
             else
             {
