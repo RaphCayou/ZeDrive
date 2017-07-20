@@ -28,17 +28,17 @@ namespace Server
         /// Instanciates the datastore
         /// Creates or loads existing Groups and Clients
         /// </summary>
-        /// <param name="groupsSaveFileName">Groups save file name on disk</param>
-        /// <param name="clientsSaveFileName">Clients save file name on disk</param>
-        public DataStore(string groupsSaveFileName, string clientsSaveFileName)
+        /// <param name="groupsSaveFilePath">Groups save file name on disk</param>
+        /// <param name="clientsSaveFilePath">Clients save file name on disk</param>
+        public DataStore(string groupsSaveFilePath, string clientsSaveFilePath)
         {
-            if (string.IsNullOrEmpty(groupsSaveFileName) || string.IsNullOrEmpty(clientsSaveFileName))
+            if (string.IsNullOrEmpty(groupsSaveFilePath) || string.IsNullOrEmpty(clientsSaveFilePath))
             {
                 throw new ArgumentNullException("Noms de fichiers vides ou invalides");
             }
 
-            _groupsSaveFilePath = Path.ChangeExtension(groupsSaveFileName, ".xml");
-            _clientsSaveFilePath = Path.ChangeExtension(clientsSaveFileName, ".xml");
+            _groupsSaveFilePath = Path.ChangeExtension(groupsSaveFilePath, ".xml");
+            _clientsSaveFilePath = Path.ChangeExtension(clientsSaveFilePath, ".xml");
 
             if (File.Exists(_groupsSaveFilePath))
             {
