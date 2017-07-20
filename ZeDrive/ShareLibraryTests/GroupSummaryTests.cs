@@ -49,12 +49,7 @@ namespace ShareLibraryTests
             TestFilesGroup1.ForEach(File.Delete);
             foreach (string group in GROUPS)
             {
-                IEnumerable<string> filePaths = Directory.EnumerateFiles(Path.Combine(TESTING_PATH, group));
-                foreach (string filePath in filePaths)
-                {
-                    File.Delete(filePath);
-                }
-                Directory.Delete(Path.Combine(TESTING_PATH, group));
+                Directory.Delete(Path.Combine(TESTING_PATH, group), true);
             }
         }
 

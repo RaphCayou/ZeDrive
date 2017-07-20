@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -25,7 +26,7 @@ namespace Client
         private void ClientForm_Load(object sender, EventArgs e)
         {
             CurrentUserGroup.Enabled = false;
-            //GroupsInformationGroup.Enabled = false;  // TODO JP reactivate that line
+            GroupsInformationGroup.Enabled = false;
         }
 
         private void syncTimer_Tick(object sender, EventArgs e)
@@ -44,6 +45,10 @@ namespace Client
                 client = new ClientBusiness(rootPath, serverAddress, serverPort);
                 CurrentUserGroup.Enabled = true;
                 ServerConnexionGroup.Enabled = false;
+            }
+            catch (SocketException socketException)
+            {
+                MessageBox.Show(socketException.Message);
             }
             catch (Exception exception)
             {
@@ -94,21 +99,23 @@ namespace Client
         private void GroupList_SelectedValueChanged(object sender, EventArgs e)
         {
             currentGroup = (Group)GroupList.SelectedItem;
-            GroupDescription.Text = currentGroup.Description;
-            //User not in group, so he can ask to join.
-            JoinGroup.Enabled = !currentGroup.Members.Exists(client1 => client1.Name == UserName.Text);
-            if (currentGroup.Administrator.Name == UserName.Text)
+            if (currentGroup != null)
             {
-                AdminGroup.Enabled = true;
-                List<string> groupMembers = currentGroup.Members.Select(client1 => client1.Name).ToList();
-                GroupClientList.DataSource = groupMembers;
-                AllUsersList.DataSource = client.GetClientsList().Select(client1 => client1.Name).ToList().RemoveAll(name => groupMembers.Contains(name));
+                GroupDescription.Text = currentGroup.Description;
+                //User not in group, so he can ask to join.
+                JoinGroup.Enabled = !currentGroup.Members.Exists(client1 => client1.Name == UserName.Text);
+                if (currentGroup.Administrator.Name == UserName.Text)
+                {
+                    AdminGroup.Enabled = true;
+                    List<string> groupMembers = currentGroup.Members.Select(client1 => client1.Name).ToList();
+                    GroupClientList.DataSource = groupMembers;
+                    AllUsersList.DataSource = client.GetClientsList().Select(client1 => client1.Name).ToList().RemoveAll(name => groupMembers.Contains(name));
+                }
+                else
+                {
+                    AdminGroup.Enabled = false;
+                }
             }
-            else
-            {
-                AdminGroup.Enabled = false;
-            }
-
         }
 
         private void UpdateConnectedUser(List<ShareLibrary.Models.Client> onlineClients)
@@ -123,7 +130,7 @@ namespace Client
 
         private void ClientForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            // TODO faire la sauvegarde des derniers group summaries.
+            client?.Save();
         }
 
         private void JoinGroup_Click(object sender, EventArgs e)
@@ -144,6 +151,11 @@ namespace Client
         private void InviteToGroup_Click(object sender, EventArgs e)
         {
             client.SendGroupInvitation((string)AllUsersList.SelectedItem, currentGroup.Name);
+        }
+
+        private void CreateGroup_Click(object sender, EventArgs e)
+        {
+            client.CreateGroup(NewGroupName.Text, NewGroupDescription.Text);
         }
     }
 }

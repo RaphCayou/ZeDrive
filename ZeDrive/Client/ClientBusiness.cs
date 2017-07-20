@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,28 +9,37 @@ using Server;
 using ShareLibrary.Communication;
 using ShareLibrary.Models;
 using ShareLibrary.Summary;
+using ShareLibrary.Utils;
 using Action = ShareLibrary.Models.Action;
 
 namespace Client
 {
     public class ClientBusiness
     {
-        private string rootFolderPath;
+        private const string GROUP_SUMMARY_FILE = "lastGroupsSummaries.xml";
+        private readonly string rootFolderPath;
         private string userName;
-        private Dictionary<string, GroupSummary> lastGroupsSummaries;
+        private readonly List<GroupSummary> lastGroupsSummaries;
 
-        private IServerBusiness access;
+        private readonly IServerBusiness access;
 
         public ClientBusiness(string rootFolderPath)
         {
             this.rootFolderPath = rootFolderPath;
+            if (File.Exists(GROUP_SUMMARY_FILE))
+            {
+                lastGroupsSummaries = DiskAccessUtils.LoadFromDiskOrConstrucDefault<List<GroupSummary>>(GROUP_SUMMARY_FILE);
+            }
+            else
+            {
+                lastGroupsSummaries = new List<GroupSummary>();
+            }
+                
         }
 
-        public ClientBusiness(string rootFolderPath, string serverAddress, int serverPort)
+        public ClientBusiness(string rootFolderPath, string serverAddress, int serverPort) : this(rootFolderPath)
         {
-            this.rootFolderPath = rootFolderPath;
             access = new ClientServerAccess(serverAddress, serverPort);
-            lastGroupsSummaries = new Dictionary<string, GroupSummary>();
         }
 
         public bool Connect(string user, string password)
@@ -73,10 +83,17 @@ namespace Client
         /// <returns>Revision list of the server.</returns>
         public List<Revision> UpdateServerHistory()
         {
-            List<Revision> serveeRevisions = new List<Revision>();
+            List<Revision> localRevisions = new List<Revision>();
             //Creating the revision list
-            //TODO JP call on access the update server
-            return serveeRevisions;
+            foreach (GroupSummary group in lastGroupsSummaries)
+            {
+                GroupSummary updateSummary = new GroupSummary(group.GroupName, rootFolderPath);
+                localRevisions.AddRange(updateSummary.GenerateRevisions(group));
+                lastGroupsSummaries.Remove(group);
+                lastGroupsSummaries.Add(updateSummary);
+            }
+            List<Revision> serverRevisions = access.UpdateServerHistory(userName, localRevisions, lastGroupsSummaries);
+            return serverRevisions;
         }
 
         /// <summary>
@@ -93,8 +110,8 @@ namespace Client
 
         public void SyncWithServer()
         {
-            UpdateLocalFiles(UpdateServerHistory());
             GetGroupsUpdate();
+            UpdateLocalFiles(UpdateServerHistory());
         }
 
         public void ChangeAdministratorGroup(string newAdmin, string groupName)
@@ -112,7 +129,19 @@ namespace Client
         /// </summary>
         public void GetGroupsUpdate()
         {
-            // TODO JP call on access the getGroup list then apply the local modification based the group list
+            List<string> groupListUpdate = access.GetGroupListForClient(userName).Select(group => group.Name).ToList();
+            IEnumerable<string> newGroups = groupListUpdate.Except(lastGroupsSummaries.Select(summary => summary.GroupName));
+            foreach (string newGroup in newGroups)
+            {
+                Directory.CreateDirectory(Path.Combine(rootFolderPath, newGroup));
+                lastGroupsSummaries.Add(new GroupSummary(newGroup, rootFolderPath));
+            }
+            IEnumerable<string> removedGroups = lastGroupsSummaries.Select(summary => summary.GroupName).Except(groupListUpdate);
+            foreach (string removedGroup in removedGroups)
+            {
+                lastGroupsSummaries.RemoveAll(summary => summary.GroupName == removedGroup);
+                Directory.Delete(Path.Combine(rootFolderPath, removedGroup), true);
+            }
         }
 
         public List<Group> GetGroupList()
@@ -123,6 +152,11 @@ namespace Client
         public List<ShareLibrary.Models.Client> GetClientsList()
         {
             return access.GetClientList();
+        }
+
+        public void Save()
+        {
+            DiskAccessUtils.SaveToDisk(GROUP_SUMMARY_FILE, lastGroupsSummaries);
         }
     }
 }
