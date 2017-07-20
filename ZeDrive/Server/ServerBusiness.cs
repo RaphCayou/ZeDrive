@@ -164,6 +164,7 @@ namespace Server
             stopWaitHandle.WaitOne();
 
             _dataStore.UpdateLastSeen(job.Username);
+            _dataStore.Save();
 
             return response;
         }
