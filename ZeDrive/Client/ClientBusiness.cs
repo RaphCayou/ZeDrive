@@ -94,6 +94,8 @@ namespace Client
         /// <param name="revisions">The revisions to apply localy.</param>
         public void UpdateLocalFiles(List<Revision> revisions)
         {
+            if (revisions == null) return;
+
             foreach (Revision revision in revisions)
             {
                 revision.Apply(rootFolderPath);

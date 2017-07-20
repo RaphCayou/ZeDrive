@@ -79,6 +79,7 @@ namespace Client
             {
                 GroupsInformationGroup.Enabled = true;
                 CurrentUserGroup.Enabled = false;
+                syncTimer.Start();
             }
             else
             {

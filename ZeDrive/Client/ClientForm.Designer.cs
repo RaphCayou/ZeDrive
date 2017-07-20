@@ -371,7 +371,7 @@
             this.NewGroupDescription.Multiline = true;
             this.NewGroupDescription.Name = "NewGroupDescription";
             this.NewGroupDescription.Size = new System.Drawing.Size(415, 55);
-            this.NewGroupDescription.TabIndex = 22;
+            this.NewGroupDescription.TabIndex = 23;
             // 
             // label12
             // 
@@ -396,7 +396,7 @@
             this.CreateGroup.Location = new System.Drawing.Point(592, 120);
             this.CreateGroup.Name = "CreateGroup";
             this.CreateGroup.Size = new System.Drawing.Size(192, 23);
-            this.CreateGroup.TabIndex = 21;
+            this.CreateGroup.TabIndex = 22;
             this.CreateGroup.Text = "Créer un groupe";
             this.CreateGroup.UseVisualStyleBackColor = true;
             this.CreateGroup.Click += new System.EventHandler(this.CreateGroup_Click);
