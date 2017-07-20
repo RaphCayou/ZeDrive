@@ -30,15 +30,16 @@ namespace Server
         /// </summary>
         /// <param name="groupsSaveFilePath">Groups save file name on disk</param>
         /// <param name="clientsSaveFilePath">Clients save file name on disk</param>
-        public DataStore(string groupsSaveFilePath, string clientsSaveFilePath)
+        /// <param name="rootFolderPath">Root folder path on disk</param>
+        public DataStore(string groupsSaveFilePath, string clientsSaveFilePath, string rootFolderPath)
         {
             if (string.IsNullOrEmpty(groupsSaveFilePath) || string.IsNullOrEmpty(clientsSaveFilePath))
             {
-                throw new ArgumentNullException("Noms de fichiers vides ou invalides");
+                throw new ArgumentException("Noms de fichiers vides ou invalides");
             }
 
-            _groupsSaveFilePath = Path.ChangeExtension(groupsSaveFilePath, ".xml");
-            _clientsSaveFilePath = Path.ChangeExtension(clientsSaveFilePath, ".xml");
+            _groupsSaveFilePath = Path.Combine(rootFolderPath, Path.ChangeExtension(groupsSaveFilePath, ".xml"));
+            _clientsSaveFilePath = Path.Combine(rootFolderPath, Path.ChangeExtension(clientsSaveFilePath, ".xml"));
 
             if (File.Exists(_groupsSaveFilePath))
             {

@@ -1,2 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ArrayOfGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
+<ArrayOfGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Group>
+    <Name>LosBanditos</Name>
+    <Description>¡Mira este hijo!</Description>
+    <Administrator>
+      <Name>soyElAdmin</Name>
+      <Password>holaSombreros</Password>
+      <LastSeen>2017-07-20T10:54:28.0664194-04:00</LastSeen>
+    </Administrator>
+    <Members>
+      <Client>
+        <Name>soyElAdmin</Name>
+        <Password>holaSombreros</Password>
+        <LastSeen>2017-07-20T10:54:28.0664194-04:00</LastSeen>
+      </Client>
+      <Client>
+        <Name>noSoyElAdmin</Name>
+        <Password>laAguaAzul</Password>
+        <LastSeen>2017-07-20T10:54:28.0664194-04:00</LastSeen>
+      </Client>
+    </Members>
+    <Files />
+  </Group>
+</ArrayOfGroup>

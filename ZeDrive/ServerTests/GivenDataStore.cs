@@ -36,7 +36,7 @@ namespace ServerTests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(ArgumentException))]
         public void When_Creating_With_Empty_Parameters_Then_Exception()
         {
             _business = new ServerBusiness("", "");
@@ -67,10 +67,11 @@ namespace ServerTests
         public void When_Creating_With_Existing_NonEmpty_Files_Then_Loads_Correctly()
         {
             _business = new ServerBusiness(_loadGroups, _loadClients);
-            List<ShareLibrary.Models.Client> clients = _business.GetClientList();
+            var clients = _business.GetClientList();
+            var groups = _business.GetGroupList();
 
             Assert.IsNotNull(clients);
-            Assert.IsNotNull(clients.FirstOrDefault(c => c.Name == "Henry"));
+            Assert.IsNotNull(groups);
         }
 
         [TestMethod]

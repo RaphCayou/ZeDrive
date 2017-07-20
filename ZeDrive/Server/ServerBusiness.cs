@@ -24,7 +24,7 @@ namespace Server
         /// <param name="rootFolderPath">Folder root path on server</param>
         public ServerBusiness(string groupsSaveFilePath, string clientsSaveFilePath, string rootFolderPath = "Default Server Root")
         {
-            _dataStore = new DataStore(Path.Combine(rootFolderPath, groupsSaveFilePath), Path.Combine(rootFolderPath, clientsSaveFilePath));
+            _dataStore = new DataStore(groupsSaveFilePath, clientsSaveFilePath, rootFolderPath);
             _pendingActions = new List<PendingAction>();
             _jobExecuter = new JobExecuter(rootFolderPath, _dataStore);
 
@@ -63,7 +63,9 @@ namespace Server
         /// <param name="password">Password of the user</param>
         public bool CreateUser(string username, string password)
         {
-            return !ParametersHasEmpty(username, password) && _dataStore.CreateUser(username, password);
+            if (!ParametersHasEmpty(username, password))
+                return _dataStore.CreateUser(username, password);
+            return false;
         }
 
         /// <summary>
@@ -74,7 +76,9 @@ namespace Server
         /// <param name="username">Name of the user creating the group (gets admin rights)</param>
         public bool CreateGroup(string groupName, string description, string username)
         {
-            return !ParametersHasEmpty(groupName, description, username) && _dataStore.CreateGroup(groupName, description, username);
+            if (!ParametersHasEmpty(groupName, description, username))
+                return _dataStore.CreateGroup(groupName, description, username);
+            return false;
         }
 
         /// <summary>
