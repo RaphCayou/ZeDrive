@@ -26,15 +26,7 @@ namespace Client
         public ClientBusiness(string rootFolderPath)
         {
             this.rootFolderPath = rootFolderPath;
-            if (File.Exists(GROUP_SUMMARY_FILE))
-            {
-                lastGroupsSummaries = DiskAccessUtils.LoadFromDiskOrConstrucDefault<List<GroupSummary>>(GROUP_SUMMARY_FILE);
-            }
-            else
-            {
-                lastGroupsSummaries = new List<GroupSummary>();
-            }
-                
+            lastGroupsSummaries = DiskAccessUtils.LoadFromDiskOrConstrucDefault<List<GroupSummary>>(GROUP_SUMMARY_FILE);
         }
 
         public ClientBusiness(string rootFolderPath, string serverAddress, int serverPort) : this(rootFolderPath)
@@ -52,14 +44,14 @@ namespace Client
             return validConnect;
         }
 
-        public void CreateUser(string newUserName, string password)
+        public bool CreateUser(string newUserName, string password)
         {
-            access.CreateUser(newUserName, password);
+            return access.CreateUser(newUserName, password);
         }
 
-        public void CreateGroup(string groupName, string groupDescription)
+        public bool CreateGroup(string groupName, string groupDescription)
         {
-            access.CreateGroup(groupName, groupDescription, userName);
+            return access.CreateGroup(groupName, groupDescription, userName);
         }
 
         public void SendJoinGroupRequest(string invitedUser, string groupName)

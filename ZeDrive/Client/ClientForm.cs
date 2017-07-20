@@ -63,8 +63,14 @@ namespace Client
 
         private void CreateUser_Click(object sender, EventArgs e)
         {
-            client.CreateUser(UserName.Text, Password.Text);
-            ConnectUserToServer();
+            if (client.CreateUser(UserName.Text, Password.Text))
+            {
+                ConnectUserToServer();
+            }
+            else
+            {
+                MessageBox.Show("Le nom d'usager est déjà utilisé.");
+            }
         }
 
         private void ConnectUserToServer()
@@ -155,7 +161,10 @@ namespace Client
 
         private void CreateGroup_Click(object sender, EventArgs e)
         {
-            client.CreateGroup(NewGroupName.Text, NewGroupDescription.Text);
+            if (!client.CreateGroup(NewGroupName.Text, NewGroupDescription.Text))
+            {
+                MessageBox.Show("Ce nom de groupe existe déjà.");
+            }
         }
     }
 }
