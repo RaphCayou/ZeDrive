@@ -1,11 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ShareLibrary.Models;
+using Action = ShareLibrary.Models.Action;
 using FileInfo = ShareLibrary.Models.FileInfo;
 
 namespace ShareLibrary.Summary
 {
+    [Serializable]
     public class GroupSummary
     {
         public string GroupName;

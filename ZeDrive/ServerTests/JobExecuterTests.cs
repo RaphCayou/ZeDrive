@@ -158,7 +158,7 @@ namespace ServerTests
         }
 
         [TestMethod]
-        public void TestDeleteJobForReal()
+        public void TestDeleteJobForRealOnClientSide()
         {
             // Add the job to the server
             business.UpdateServerHistory(CreateJob("Test1.txt", "Bob", "A"));

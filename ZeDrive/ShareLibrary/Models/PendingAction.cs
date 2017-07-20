@@ -1,7 +1,9 @@
-﻿using ShareLibrary.Models;
+﻿using System;
+using ShareLibrary.Models;
 
 namespace ShareLibrary.Models
 {
+    [Serializable]
     public class PendingAction
     {
         public string ClientName { get; set; }

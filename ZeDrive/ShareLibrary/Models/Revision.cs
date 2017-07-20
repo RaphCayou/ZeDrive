@@ -4,12 +4,14 @@ using System.Linq;
 
 namespace ShareLibrary.Models
 {
+    [Serializable]
     public enum Action
     {
         Create,
         Modify,
         Delete,
     }
+    [Serializable]
     public class Revision
     {
         public Action Action;

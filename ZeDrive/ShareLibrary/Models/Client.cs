@@ -2,6 +2,7 @@
 
 namespace ShareLibrary.Models
 {
+    [Serializable]
     public class Client
     {
         public string Name;

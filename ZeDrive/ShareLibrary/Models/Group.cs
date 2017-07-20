@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace ShareLibrary.Models
 {
+    [Serializable]
     public class Group
     {
         public string Name;
