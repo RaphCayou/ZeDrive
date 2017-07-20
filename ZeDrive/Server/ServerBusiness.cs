@@ -111,6 +111,17 @@ namespace Server
         }
 
         /// <summary>
+        /// Gets the list of groups for a specific client from the server
+        /// </summary>
+        /// <returns>List of groups for that specific client</returns>
+        public List<Group> GetGroupListForClient(string username)
+        {
+            return !ParametersHasEmpty(username) ? 
+                _dataStore.Groups.Where(g => g.Members.Exists(m => m.Name == username)).ToList() : 
+                _dataStore.Groups;
+        }
+
+        /// <summary>
         /// Update server history,
         /// Send Revision,
         /// Save history on disk

@@ -14,6 +14,7 @@ namespace ShareLibrary.Communication
         List<Client> GetClientList();
         List<Client> GetOnlineClientsList();
         List<Group> GetGroupList();
+        List<Group> GetGroupListForClient(string username);
         void SendClientGroupInvitation(string adminUsername, string invitedUser, string groupName);
         void SendClientGroupRequest(string username, string groupName);
         void KickUserFromGroup(string adminUsername, string username, string groupName);
