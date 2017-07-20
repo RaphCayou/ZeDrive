@@ -222,6 +222,7 @@ namespace Server
         {
             if (!ParametersHasEmpty(adminUsername, username, groupName))
             {
+                if (adminUsername == username) throw new ArgumentException("L'administrateur ne peut pas se retirer du groupe."); 
                 if (!_dataStore.CheckAdminRights(adminUsername, groupName)) throw new ArgumentException("Vous n'avez pas les droits requis.");
                 if (!_dataStore.CheckUserInGroup(username, groupName)) throw new ArgumentException("L'utilisateur n'est pas dans le groupe.");
                 _dataStore.RemoveUserFromGroup(adminUsername, username, groupName);
