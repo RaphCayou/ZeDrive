@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,11 +21,11 @@ namespace Server
         /// </summary>
         /// <param name="groupsSaveFilePath">Groups save file name with path on disk</param>
         /// <param name="clientsSaveFilePath">Clients save file name with path on disk</param>
-        public ServerBusiness(string groupsSaveFilePath, string clientsSaveFilePath)
+        public ServerBusiness(string groupsSaveFilePath, string clientsSaveFilePath, string rootFolderPath = "Default Server Root")
         {
-            _dataStore = new DataStore(groupsSaveFilePath, clientsSaveFilePath);
+            _dataStore = new DataStore(Path.Combine(rootFolderPath, groupsSaveFilePath), Path.Combine(rootFolderPath, clientsSaveFilePath));
             _pendingActions = new List<PendingAction>();
-            _jobExecuter = new JobExecuter(_dataStore);
+            _jobExecuter = new JobExecuter(rootFolderPath, _dataStore);
 
             Task.Factory.StartNew(() => _jobExecuter.Execute());
         }

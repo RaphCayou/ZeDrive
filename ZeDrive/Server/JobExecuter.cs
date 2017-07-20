@@ -19,10 +19,11 @@ namespace Server
         private int executionCount = 0;
         private List<GroupSummary> serverGroupSummaries;
         private DataStore dataStore;
-        private string rootPath = "Server Root";
+        private string rootPath;
 
-        public JobExecuter(DataStore dataStore)
+        public JobExecuter(string rootFolderPath, DataStore dataStore)
         {
+            this.rootPath = rootFolderPath;
             this.dataStore = dataStore;
             syncJobs = new BlockingCollection<Job>();
             serverGroupSummaries = new List<GroupSummary>();
