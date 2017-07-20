@@ -115,7 +115,9 @@ namespace Client
                     AdminGroup.Enabled = true;
                     List<string> groupMembers = currentGroup.Members.Select(client1 => client1.Name).ToList();
                     GroupClientList.DataSource = groupMembers;
-                    AllUsersList.DataSource = client.GetClientsList().Select(client1 => client1.Name).ToList().RemoveAll(name => groupMembers.Contains(name));
+                    List<string> userNotInGroup = client.GetClientsList().Select(client1 => client1.Name).ToList();
+                    userNotInGroup.RemoveAll(name => groupMembers.Contains(name));
+                    AllUsersList.DataSource = userNotInGroup;
                 }
                 else
                 {
@@ -169,6 +171,7 @@ namespace Client
             {
                 NewGroupName.Text = "";
                 NewGroupDescription.Text = "";
+                MessageBox.Show("Le groupe a été créé.");
             }
         }
     }

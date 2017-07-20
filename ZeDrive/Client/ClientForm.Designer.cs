@@ -56,6 +56,11 @@
             this.label9 = new System.Windows.Forms.Label();
             this.GroupClientList = new System.Windows.Forms.ListBox();
             this.GroupsInformationGroup = new System.Windows.Forms.GroupBox();
+            this.NewGroupDescription = new System.Windows.Forms.TextBox();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.CreateGroup = new System.Windows.Forms.Button();
+            this.NewGroupName = new System.Windows.Forms.TextBox();
             this.JoinGroup = new System.Windows.Forms.Button();
             this.GroupDescription = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
@@ -63,11 +68,6 @@
             this.GroupList = new System.Windows.Forms.ComboBox();
             this.label7 = new System.Windows.Forms.Label();
             this.OnlineUsers = new System.Windows.Forms.RichTextBox();
-            this.NewGroupName = new System.Windows.Forms.TextBox();
-            this.CreateGroup = new System.Windows.Forms.Button();
-            this.label11 = new System.Windows.Forms.Label();
-            this.label12 = new System.Windows.Forms.Label();
-            this.NewGroupDescription = new System.Windows.Forms.TextBox();
             this.CurrentUserGroup.SuspendLayout();
             this.ServerConnexionGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ServerPort)).BeginInit();
@@ -365,6 +365,49 @@
             this.GroupsInformationGroup.TabStop = false;
             this.GroupsInformationGroup.Text = "Gestion des groupes";
             // 
+            // NewGroupDescription
+            // 
+            this.NewGroupDescription.Location = new System.Drawing.Point(171, 122);
+            this.NewGroupDescription.Multiline = true;
+            this.NewGroupDescription.Name = "NewGroupDescription";
+            this.NewGroupDescription.Size = new System.Drawing.Size(415, 55);
+            this.NewGroupDescription.TabIndex = 22;
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(6, 131);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(159, 13);
+            this.label12.TabIndex = 23;
+            this.label12.Text = "Description du nouveau groupe:";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(6, 99);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(128, 13);
+            this.label11.TabIndex = 22;
+            this.label11.Text = "Nom du nouveau groupe:";
+            // 
+            // CreateGroup
+            // 
+            this.CreateGroup.Location = new System.Drawing.Point(592, 120);
+            this.CreateGroup.Name = "CreateGroup";
+            this.CreateGroup.Size = new System.Drawing.Size(192, 23);
+            this.CreateGroup.TabIndex = 21;
+            this.CreateGroup.Text = "Créer un groupe";
+            this.CreateGroup.UseVisualStyleBackColor = true;
+            this.CreateGroup.Click += new System.EventHandler(this.CreateGroup_Click);
+            // 
+            // NewGroupName
+            // 
+            this.NewGroupName.Location = new System.Drawing.Point(171, 92);
+            this.NewGroupName.Name = "NewGroupName";
+            this.NewGroupName.Size = new System.Drawing.Size(415, 20);
+            this.NewGroupName.TabIndex = 20;
+            // 
             // JoinGroup
             // 
             this.JoinGroup.Location = new System.Drawing.Point(592, 19);
@@ -428,49 +471,6 @@
             this.OnlineUsers.Size = new System.Drawing.Size(242, 502);
             this.OnlineUsers.TabIndex = 0;
             this.OnlineUsers.Text = "";
-            // 
-            // NewGroupName
-            // 
-            this.NewGroupName.Location = new System.Drawing.Point(171, 92);
-            this.NewGroupName.Name = "NewGroupName";
-            this.NewGroupName.Size = new System.Drawing.Size(415, 20);
-            this.NewGroupName.TabIndex = 20;
-            // 
-            // CreateGroup
-            // 
-            this.CreateGroup.Location = new System.Drawing.Point(592, 120);
-            this.CreateGroup.Name = "CreateGroup";
-            this.CreateGroup.Size = new System.Drawing.Size(192, 23);
-            this.CreateGroup.TabIndex = 21;
-            this.CreateGroup.Text = "Créer un groupe";
-            this.CreateGroup.UseVisualStyleBackColor = true;
-            this.CreateGroup.Click += new System.EventHandler(this.CreateGroup_Click);
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(6, 99);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(128, 13);
-            this.label11.TabIndex = 22;
-            this.label11.Text = "Nom du nouveau groupe:";
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(6, 131);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(159, 13);
-            this.label12.TabIndex = 23;
-            this.label12.Text = "Description du nouveau groupe:";
-            // 
-            // NewGroupDescription
-            // 
-            this.NewGroupDescription.Location = new System.Drawing.Point(171, 122);
-            this.NewGroupDescription.Multiline = true;
-            this.NewGroupDescription.Name = "NewGroupDescription";
-            this.NewGroupDescription.Size = new System.Drawing.Size(415, 55);
-            this.NewGroupDescription.TabIndex = 24;
             // 
             // ClientForm
             // 
