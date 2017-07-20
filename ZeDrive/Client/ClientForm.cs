@@ -63,7 +63,7 @@ namespace Client
 
         private void CreateUser_Click(object sender, EventArgs e)
         {
-            if (client.CreateUser(UserName.Text, Password.Text))
+            if (!client.CreateUser(UserName.Text, Password.Text))
             {
                 ConnectUserToServer();
             }

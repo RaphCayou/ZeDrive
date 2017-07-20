@@ -148,7 +148,11 @@ namespace Client
 
         public void Save()
         {
-            DiskAccessUtils.SaveToDisk(GROUP_SUMMARY_FILE, lastGroupsSummaries);
+            //We do not want to save an empty list.
+            if (lastGroupsSummaries != null && !lastGroupsSummaries.Any())
+            {
+                DiskAccessUtils.SaveToDisk(GROUP_SUMMARY_FILE, lastGroupsSummaries);
+            }
         }
     }
 }
