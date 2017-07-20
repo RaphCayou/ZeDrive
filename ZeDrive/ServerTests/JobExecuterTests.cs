@@ -149,17 +149,8 @@ namespace ServerTests
             CollectionAssert.AreEqual(expectedRevisions, actualRevisions);
         }
 
-
-        //*********************************************************************************
-
         [TestMethod]
-        public void TestAddJob()
-        {
-            business.UpdateServerHistory(CreateJob("Test1.txt", "Bob", "A"));
-        }
-
-        [TestMethod]
-        public void TestModifyJob()
+        public void TestCreateAndModifyClientFileJob()
         {
             business.UpdateServerHistory(CreateJob("Test1.txt", "Bob", "A"));
 
@@ -169,6 +160,51 @@ namespace ServerTests
                 w.WriteLine("Hello from the other side");
             }
 
+            actualRevisions = business.UpdateServerHistory(CreateJob("Test1.txt", "Bob", "A"));
+
+            CollectionAssert.AreEqual(new List<Revision>(), actualRevisions);
+        }
+
+        [TestMethod]
+        public void TestDeleteJobForReal()
+        {
+            // Add the job to the server
+            business.UpdateServerHistory(CreateJob("Test1.txt", "Bob", "A"));
+
+            // Delete the job from the server (and not the client)
+            Job deleteJob = CreateJob("Test1.txt", "Bob", "A");
+            deleteJob.Revisions[0].Action = Action.Delete;
+            deleteJob.GroupSummaries[0].Files = new List<FileInfo>();
+
+            business.UpdateServerHistory(deleteJob);
+
+            // Add an other job (with the last file in the summary)
+            Job createJob = CreateJob("Test2.txt", "Bob", "A");
+            createJob.GroupSummaries[0].Files.Add(new FileInfo
+            {
+                CreationDate = File.GetCreationTime("Test1.txt"),
+                LastModificationDate = File.GetLastWriteTime("Test1.txt"),
+                Name = "Test1.txt"
+            });
+
+            Revision rev = CreateRevision("Test1.txt", "Bob", "A");
+            rev.Action = Action.Delete;
+            rev.Data = new byte[0];
+
+            expectedRevisions = new List<Revision> { rev };
+
+            // The server tells the client to delete the file
+            actualRevisions = business.UpdateServerHistory(createJob);
+
+            CollectionAssert.AreEqual(expectedRevisions, actualRevisions);
+        }
+
+        // No Assert
+        //*********************************************************************************
+
+        [TestMethod]
+        public void TestAddJob()
+        {
             business.UpdateServerHistory(CreateJob("Test1.txt", "Bob", "A"));
         }
 
@@ -186,38 +222,6 @@ namespace ServerTests
             });
 
             business.UpdateServerHistory(job);
-        }
-
-        [TestMethod]
-        public void TestNewEmptyClientJob()
-        {
-            business.UpdateServerHistory(CreateJob("Test1.txt", "Bob", "A"));
-            business.UpdateServerHistory(CreateEmptyJob("Bob", "A"));
-        }
-
-        [TestMethod]
-        public void TestDeleteJobForReal()
-        {
-            // Add the job to the server
-            business.UpdateServerHistory(CreateJob("Test1.txt", "Bob", "A"));
-
-            // Delete the job from the server (and not the client)
-            Job deleteJob = CreateJob("Test1.txt", "Bob", "A");
-            deleteJob.Revisions[0].Action = Action.Delete;
-            deleteJob.GroupSummaries[0].Files = new List<FileInfo>();
-
-            business.UpdateServerHistory(deleteJob);
-
-            // Add an other job (with the last file)
-            Job createJob = CreateJob("Test2.txt", "Bob", "A");
-            createJob.GroupSummaries[0].Files.Add(new FileInfo
-            {
-                CreationDate = File.GetCreationTime("Test1.txt"),
-                LastModificationDate = File.GetLastWriteTime("Test1.txt"),
-                Name = "Test1.txt"
-            });
-
-            business.UpdateServerHistory(createJob);
         }
     }
 }

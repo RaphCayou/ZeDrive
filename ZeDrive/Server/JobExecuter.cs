@@ -116,6 +116,7 @@ namespace Server
                                         // Add revision to response (Delete)
                                         else
                                         {
+                                            rev.Data = new byte[0];
                                             returnRevisions.Add(rev);
                                         }
                                         break;
