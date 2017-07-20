@@ -18,11 +18,11 @@ namespace Server
         /// <summary>
         /// Instanciates the server business
         /// </summary>
-        /// <param name="groupsSaveFileName">Groups save file name on disk</param>
-        /// <param name="clientsSaveFileName">Clients save file name on disk</param>
-        public ServerBusiness(string groupsSaveFileName, string clientsSaveFileName)
+        /// <param name="groupsSaveFilePath">Groups save file name with path on disk</param>
+        /// <param name="clientsSaveFilePath">Clients save file name with path on disk</param>
+        public ServerBusiness(string groupsSaveFilePath, string clientsSaveFilePath)
         {
-            _dataStore = new DataStore(groupsSaveFileName, clientsSaveFileName);
+            _dataStore = new DataStore(groupsSaveFilePath, clientsSaveFilePath);
             _pendingActions = new List<PendingAction>();
             _jobExecuter = new JobExecuter(_dataStore);
 

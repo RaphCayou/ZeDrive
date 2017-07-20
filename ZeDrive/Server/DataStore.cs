@@ -11,8 +11,8 @@ namespace Server
 {
     internal class DataStore
     {
-        private readonly string _groupsSaveFileName;
-        private readonly string _clientsSaveFileName;
+        private readonly string _groupsSaveFilePath;
+        private readonly string _clientsSaveFilePath;
 
         /// <summary>
         /// List of Groups that gets saved to disk
@@ -37,10 +37,10 @@ namespace Server
                 throw new ArgumentNullException("Noms de fichiers vides ou invalides");
             }
 
-            _groupsSaveFileName = Path.ChangeExtension(groupsSaveFileName, ".xml");
-            _clientsSaveFileName = Path.ChangeExtension(clientsSaveFileName, ".xml");
+            _groupsSaveFilePath = Path.ChangeExtension(groupsSaveFileName, ".xml");
+            _clientsSaveFilePath = Path.ChangeExtension(clientsSaveFileName, ".xml");
 
-            if (File.Exists(_groupsSaveFileName))
+            if (File.Exists(_groupsSaveFilePath))
             {
                 LoadGroups();
             }
@@ -48,7 +48,7 @@ namespace Server
             {
                 Groups = new List<Group>();
             }
-            if (File.Exists(_clientsSaveFileName))
+            if (File.Exists(_clientsSaveFilePath))
             {
                 LoadClients();
             }
@@ -106,7 +106,7 @@ namespace Server
         /// </summary>
         private void LoadGroups()
         {
-            Groups = DiskAccessUtils.LoadFromDisk<List<Group>>(_groupsSaveFileName);
+            Groups = DiskAccessUtils.LoadFromDisk<List<Group>>(_groupsSaveFilePath);
         }
 
         /// <summary>
@@ -114,7 +114,7 @@ namespace Server
         /// </summary>
         private void LoadClients()
         {
-            Clients = DiskAccessUtils.LoadFromDisk<List<Client>>(_clientsSaveFileName);
+            Clients = DiskAccessUtils.LoadFromDisk<List<Client>>(_clientsSaveFilePath);
         }
 
         /// <summary>
@@ -223,8 +223,8 @@ namespace Server
         /// </summary>
         public void Save()
         {
-            DiskAccessUtils.SaveToDisk(_groupsSaveFileName, Groups);
-            DiskAccessUtils.SaveToDisk(_clientsSaveFileName, Clients);
+            DiskAccessUtils.SaveToDisk(_groupsSaveFilePath, Groups);
+            DiskAccessUtils.SaveToDisk(_clientsSaveFilePath, Clients);
         }
 
         /// <summary>
@@ -233,7 +233,7 @@ namespace Server
         /// <returns>Save files names on disk</returns>
         public Tuple<string, string> GetSaveFilesNames()
         {
-            return new Tuple<string, string>(_groupsSaveFileName, _clientsSaveFileName);
+            return new Tuple<string, string>(_groupsSaveFilePath, _clientsSaveFilePath);
         }
     }
 }
