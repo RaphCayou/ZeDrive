@@ -63,7 +63,7 @@ namespace Client
 
         private void CreateUser_Click(object sender, EventArgs e)
         {
-            if (!client.CreateUser(UserName.Text, Password.Text))
+            if (client.CreateUser(UserName.Text, Password.Text))
             {
                 ConnectUserToServer();
             }
@@ -161,9 +161,14 @@ namespace Client
 
         private void CreateGroup_Click(object sender, EventArgs e)
         {
-            if (!client.CreateGroup(NewGroupName.Text, NewGroupDescription.Text))
+            if (!client.CreateGroup(NewGroupName.Text.Trim(), NewGroupDescription.Text.Trim()))
             {
                 MessageBox.Show("Ce nom de groupe existe déjà.");
+            }
+            else
+            {
+                NewGroupName.Text = "";
+                NewGroupDescription.Text = "";
             }
         }
     }
