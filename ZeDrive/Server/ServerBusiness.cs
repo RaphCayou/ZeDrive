@@ -24,7 +24,7 @@ namespace Server
         /// <param name="rootFolderPath">Folder root path on server</param>
         public ServerBusiness(string groupsSaveFilePath, string clientsSaveFilePath, string rootFolderPath = "Default Server Root")
         {
-            _dataStore = new DataStore(Path.Combine(rootFolderPath, groupsSaveFilePath), Path.Combine(rootFolderPath, clientsSaveFilePath), string rootFolderPath);
+            _dataStore = new DataStore(Path.Combine(rootFolderPath, groupsSaveFilePath), Path.Combine(rootFolderPath, clientsSaveFilePath));
             _pendingActions = new List<PendingAction>();
             _jobExecuter = new JobExecuter(rootFolderPath, _dataStore);
 
