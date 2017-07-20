@@ -21,9 +21,10 @@ namespace Server
         /// </summary>
         /// <param name="groupsSaveFilePath">Groups save file name with path on disk</param>
         /// <param name="clientsSaveFilePath">Clients save file name with path on disk</param>
+        /// <param name="rootFolderPath">Folder root path on server</param>
         public ServerBusiness(string groupsSaveFilePath, string clientsSaveFilePath, string rootFolderPath = "Default Server Root")
         {
-            _dataStore = new DataStore(Path.Combine(rootFolderPath, groupsSaveFilePath), Path.Combine(rootFolderPath, clientsSaveFilePath));
+            _dataStore = new DataStore(Path.Combine(rootFolderPath, groupsSaveFilePath), Path.Combine(rootFolderPath, clientsSaveFilePath), string rootFolderPath);
             _pendingActions = new List<PendingAction>();
             _jobExecuter = new JobExecuter(rootFolderPath, _dataStore);
 
@@ -60,13 +61,9 @@ namespace Server
         /// </summary>
         /// <param name="username">Name of the user</param>
         /// <param name="password">Password of the user</param>
-        public void CreateUser(string username, string password)
+        public bool CreateUser(string username, string password)
         {
-            if (!ParametersHasEmpty(username, password))
-            {
-                _dataStore.CreateUser(username, password);
-            }
-            else throw new ArgumentException("Les paramètres ne doivent pas être vides.");
+            return !ParametersHasEmpty(username, password) && _dataStore.CreateUser(username, password);
         }
 
         /// <summary>
@@ -75,13 +72,9 @@ namespace Server
         /// <param name="groupName">Name of the group</param>
         /// <param name="description">Description of the group</param>
         /// <param name="username">Name of the user creating the group (gets admin rights)</param>
-        public void CreateGroup(string groupName, string description, string username)
+        public bool CreateGroup(string groupName, string description, string username)
         {
-            if (!ParametersHasEmpty(groupName, description, username))
-            {
-                _dataStore.CreateGroup(groupName, description, username);
-            }
-            else throw new ArgumentException("Les paramètres ne doivent pas être vides.");
+            return !ParametersHasEmpty(groupName, description, username) && _dataStore.CreateGroup(groupName, description, username);
         }
 
         /// <summary>

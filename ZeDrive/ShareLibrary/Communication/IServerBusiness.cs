@@ -7,8 +7,8 @@ namespace ShareLibrary.Communication
     public interface IServerBusiness
     {
         bool Connect(string username, string password);
-        void CreateUser(string username, string password);
-        void CreateGroup(string name, string description, string username);
+        bool CreateUser(string username, string password);
+        bool CreateGroup(string name, string description, string username);
         List<Client> GetClientList();
         List<Client> GetOnlineClientsList();
         List<Group> GetGroupList();

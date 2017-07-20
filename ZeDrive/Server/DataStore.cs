@@ -63,16 +63,11 @@ namespace Server
         /// </summary>
         /// <param name="username">Username of the user</param>
         /// <param name="password">Password of the user</param>
-        public void CreateUser(string username, string password)
+        public bool CreateUser(string username, string password)
         {
-            if (Clients.Count(c => c.Name == username) == 0)
-            {
-                Clients.Add(new Client { Name = username, Password = password, LastSeen = DateTime.Now });
-            }
-            else
-            {
-                throw new ArgumentException($"Le client {username} existe déjà.");
-            }
+            if (Clients.Count(c => c.Name == username) != 0) return false;
+            Clients.Add(new Client { Name = username, Password = password, LastSeen = DateTime.Now });
+            return true;
         }
 
         /// <summary>
@@ -81,24 +76,19 @@ namespace Server
         /// <param name="groupName">Name of the group</param>
         /// <param name="description">Description of the group</param>
         /// <param name="username">Username of the user creating the group (gets admin rights)</param>
-        public void CreateGroup(string groupName, string description, string username)
+        public bool CreateGroup(string groupName, string description, string username)
         {
-            if (Groups.Count(c => c.Name == groupName) == 0)
+            if (Groups.Count(c => c.Name == groupName) != 0) return false;
+            Groups.Add(new Group
             {
-                Groups.Add(new Group
-                {
-                    Name = groupName,
-                    Description = description,
-                    Administrator = Clients.FirstOrDefault(c => c.Name == username),
-                    Files = new List<FileInfo>(),
-                    Members = new List<Client>{ Clients.FirstOrDefault(c => c.Name == username) }
-                });
-                UpdateLastSeen(username);
-            }
-            else
-            {
-                throw new ArgumentException($"Le groupe {groupName} existe déjà.");
-            }
+                Name = groupName,
+                Description = description,
+                Administrator = Clients.FirstOrDefault(c => c.Name == username),
+                Files = new List<FileInfo>(),
+                Members = new List<Client>{ Clients.FirstOrDefault(c => c.Name == username) }
+            });
+            UpdateLastSeen(username);
+            return true;
         }
 
         /// <summary>

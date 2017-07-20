@@ -23,17 +23,17 @@ namespace Client
                 );
         }
 
-        public void CreateUser(string username, string password)
+        public bool CreateUser(string username, string password)
         {
-            RPCManager.SendMessage(System.Reflection.MethodBase.GetCurrentMethod(),
+            return (bool)RPCManager.SendMessage(System.Reflection.MethodBase.GetCurrentMethod(),
                 username,
                 password
                 );
         }
 
-        public void CreateGroup(string name, string description, string username)
+        public bool CreateGroup(string name, string description, string username)
         {
-            RPCManager.SendMessage(System.Reflection.MethodBase.GetCurrentMethod(),
+            return (bool)RPCManager.SendMessage(System.Reflection.MethodBase.GetCurrentMethod(),
                 name,
                 description,
                 username
