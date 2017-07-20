@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using ShareLibrary.Communication;
 using ShareLibrary.Models;
 using ShareLibrary.Summary;
@@ -8,6 +7,7 @@ namespace Client
 {
     public class ClientServerAccess : IServerBusiness
     {
+        // ReSharper disable once InconsistentNaming
         private ClientRPCManager RPCManager { get; set; }
 
         public ClientServerAccess(string ipAddress, int port)

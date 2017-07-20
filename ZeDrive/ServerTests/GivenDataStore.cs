@@ -112,9 +112,9 @@ namespace ServerTests
             var notifs = _business.GetNotification("noSoyElAdmin");
 
             Assert.IsTrue(notifs.Count == 1);
-            Assert.IsTrue(notifs.FirstOrDefault().ActionType == ActionTypes.Invite);
-            Assert.IsTrue(notifs.FirstOrDefault().ClientName == "noSoyElAdmin");
-            Assert.IsTrue(notifs.FirstOrDefault().GroupName == "LosBanditos");
+            Assert.IsTrue(notifs.FirstOrDefault()?.ActionType == ActionTypes.Invite);
+            Assert.IsTrue(notifs.FirstOrDefault()?.ClientName == "noSoyElAdmin");
+            Assert.IsTrue(notifs.FirstOrDefault()?.GroupName == "LosBanditos");
         }
 
         [TestMethod]
@@ -127,11 +127,12 @@ namespace ServerTests
 
             _business.SendClientGroupInvitation("soyElAdmin", "noSoyElAdmin", "LosBanditos");
             var notif = _business.GetNotification("noSoyElAdmin").FirstOrDefault();
-            _business.AcknowledgeInvite(notif.ClientName, notif.GroupName, true);
+            _business.AcknowledgeInvite(notif?.ClientName, notif?.GroupName, true);
 
-            var groupsForClient = _business.GetGroupListForClient(notif.ClientName);
+            var groupsForClient = _business.GetGroupListForClient(notif?.ClientName);
             Assert.IsTrue(groupsForClient.Count == 1);
-            Assert.IsTrue(groupsForClient.FirstOrDefault().Members.Exists(m => m.Name == notif.ClientName));
+            var group = groupsForClient.FirstOrDefault();
+            Assert.IsTrue(group != null && group.Members.Exists(m => m.Name == notif?.ClientName));
         }
 
         [TestMethod]
@@ -146,9 +147,9 @@ namespace ServerTests
             var notifs = _business.GetNotification("soyElAdmin");
 
             Assert.IsTrue(notifs.Count == 1);
-            Assert.IsTrue(notifs.FirstOrDefault().ActionType == ActionTypes.Request);
-            Assert.IsTrue(notifs.FirstOrDefault().ClientName == "noSoyElAdmin");
-            Assert.IsTrue(notifs.FirstOrDefault().GroupName == "LosBanditos");
+            Assert.IsTrue(notifs.FirstOrDefault()?.ActionType == ActionTypes.Request);
+            Assert.IsTrue(notifs.FirstOrDefault()?.ClientName == "noSoyElAdmin");
+            Assert.IsTrue(notifs.FirstOrDefault()?.GroupName == "LosBanditos");
         }
 
         [TestMethod]
@@ -161,11 +162,12 @@ namespace ServerTests
 
             _business.SendClientGroupRequest("noSoyElAdmin", "LosBanditos");
             var notif = _business.GetNotification("soyElAdmin").FirstOrDefault();
-            _business.AcknowledgeRequest("soyElAdmin", notif.ClientName, notif.GroupName, true);
+            _business.AcknowledgeRequest("soyElAdmin", notif?.ClientName, notif?.GroupName, true);
 
-            var groupsForClient = _business.GetGroupListForClient(notif.ClientName);
+            var groupsForClient = _business.GetGroupListForClient(notif?.ClientName);
             Assert.IsTrue(groupsForClient.Count == 1);
-            Assert.IsTrue(groupsForClient.FirstOrDefault().Members.Exists(m => m.Name == notif.ClientName));
+            var group = groupsForClient.FirstOrDefault();
+            Assert.IsTrue(group != null && group.Members.Exists(m => m.Name == notif?.ClientName));
         }
 
         [TestMethod]
@@ -179,7 +181,7 @@ namespace ServerTests
             _business.AcknowledgeInvite("noSoyElAdmin", "LosBanditos", true);
 
             var group = _business.GetGroupList().FirstOrDefault(g => g.Name == "LosBanditos");
-            Assert.IsTrue(group.Members.Count == 2);
+            Assert.IsTrue(group?.Members.Count == 2);
 
             _business.KickUserFromGroup("soyElAdmin", "noSoyElAdmin", "LosBanditos");
 

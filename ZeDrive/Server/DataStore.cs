@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Xml.Serialization;
 using ShareLibrary.Models;
 using ShareLibrary.Utils;
 using FileInfo = ShareLibrary.Models.FileInfo;
+// ReSharper disable NotResolvedInText
 
 namespace Server
 {
@@ -146,7 +146,7 @@ namespace Server
         public bool CheckAdminRights(string username, string groupName)
         {
             UpdateLastSeen(username);
-            return Groups.FirstOrDefault(g => g.Name == groupName).Administrator.Name == username;
+            return Groups.FirstOrDefault(g => g.Name == groupName)?.Administrator.Name == username;
         }
 
         /// <summary>
@@ -156,7 +156,7 @@ namespace Server
         /// <returns>Name of the group administrator</returns>
         public string GetGroupAdmin(string groupName)
         {
-            return Groups.FirstOrDefault(g => g.Name == groupName).Administrator.Name;
+            return Groups.FirstOrDefault(g => g.Name == groupName)?.Administrator.Name;
         }
 
         /// <summary>
@@ -168,7 +168,7 @@ namespace Server
         public bool CheckUserInGroup(string username, string groupName)
         {
             UpdateLastSeen(username);
-            return Groups.FirstOrDefault(g => g.Name == groupName).Members.Count(c => c.Name == username) > 0;
+            return Groups.FirstOrDefault(g => g.Name == groupName)?.Members.Count(c => c.Name == username) > 0;
         }
 
         /// <summary>
@@ -180,7 +180,8 @@ namespace Server
         public void ChangeAdminForGroup(string usernameOldAdmin, string usernameNewAdmin, string groupName)
         {
             UpdateLastSeen(usernameOldAdmin);
-            Groups.FirstOrDefault(g => g.Name == groupName).Administrator = Clients.FirstOrDefault(c => c.Name == usernameNewAdmin);
+            var group = Groups.FirstOrDefault(g => g.Name == groupName);
+            if (group != null) group.Administrator = Clients.FirstOrDefault(c => c.Name == usernameNewAdmin);
         }
 
         /// <summary>

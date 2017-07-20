@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using ShareLibrary.Models;
-using Server;
 using ShareLibrary.Summary;
 
 namespace ShareLibrary.Communication
