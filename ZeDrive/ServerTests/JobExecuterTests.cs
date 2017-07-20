@@ -15,6 +15,7 @@ namespace ServerTests
     {
         private ServerBusiness business;
         private List<Revision> actualRevisions;
+        private List<Revision> expectedRevisions;
         public Job CreateJob(string filename, string username, string groupname)
         {
             return new Job
@@ -70,6 +71,27 @@ namespace ServerTests
             };
         }
 
+        public Revision CreateRevision(string filename, string username, string groupname)
+        {
+            return new Revision
+            {
+                GroupName = groupname,
+                Action = Action.Create,
+                File = new FileInfo
+                {
+                    CreationDate = File.GetCreationTime(filename),
+                    LastModificationDate = File.GetLastWriteTime(filename),
+                    Name = filename
+                },
+                Data = File.ReadAllBytes(filename)
+            };
+        }
+
+        public void AddData(string filename, string username, string groupname)
+        {
+            
+        }
+
         [TestInitialize]
         public void SetUp()
         {
@@ -106,12 +128,25 @@ namespace ServerTests
         }
 
         [TestMethod]
-        // Test the first client call (with groups) when the server is virgin
+        // Test the first client call (with groups) when the server has data
+        // The server return everything to the fresh client
         public void TestFirstClientInitGroupServer()
         {
+            // Add data
+            business.UpdateServerHistory(CreateJob("Test1.txt", "Bob", "A"));
+            business.UpdateServerHistory(CreateJob("Test2.txt", "Bob", "A"));
+            business.UpdateServerHistory(CreateJob("Test3.txt", "Bob", "A"));
+
             actualRevisions = business.UpdateServerHistory(CreateEmptyJob("Bob", "A"));
 
-            CollectionAssert.AreEqual(new List<Revision>(), actualRevisions);
+            expectedRevisions = new List<Revision>
+            {
+                CreateRevision("Test1.txt", "Bob", "A"),
+                CreateRevision("Test2.txt", "Bob", "A"),
+                CreateRevision("Test3.txt", "Bob", "A")
+            };
+
+            CollectionAssert.AreEqual(expectedRevisions, actualRevisions);
         }
 
 

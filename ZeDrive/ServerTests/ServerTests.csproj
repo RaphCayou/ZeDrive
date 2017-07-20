@@ -79,6 +79,12 @@
   <ItemGroup>
     <Content Include="loadClients.xml" />
     <Content Include="loadGroups.xml" />
+    <Content Include="Test4.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Test3.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Test2.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

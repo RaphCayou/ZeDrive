@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 
 namespace ShareLibrary.Models
 {
@@ -37,6 +38,20 @@ namespace ShareLibrary.Models
                 default:
                     throw new ArgumentException("Action non supportée.");
             }
+        }
+
+        public override bool Equals(Object obj)
+        {
+            // Check for null values and compare run-time types.
+            if (obj == null || GetType() != obj.GetType())
+                return false;
+
+            Revision r = (Revision)obj;
+            return 
+                Action.Equals(r.Action) && 
+                Data.SequenceEqual(r.Data) && 
+                File.Equals(r.File) && 
+                GroupName.Equals(r.GroupName);
         }
     }
 }
