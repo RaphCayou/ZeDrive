@@ -82,5 +82,15 @@ namespace ShareLibrary.Communication
 
             return message;
         }
+
+        /// <summary>
+        /// Checks if the socket connection has been terminated by remote host (the client)
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        static bool IsSocketConnected(Socket s)
+        {
+            return !((s.Poll(1000, SelectMode.SelectRead) && (s.Available == 0)) || !s.Connected);
+        }
     }
 }

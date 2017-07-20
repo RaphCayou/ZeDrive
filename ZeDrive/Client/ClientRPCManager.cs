@@ -16,7 +16,7 @@ namespace Client
 {
     public class ClientRPCManager
     {
-        private Socket socketListener;
+        private EndPoint ep;
 
         public ClientRPCManager(string ipAddress, int port)
         {
@@ -24,17 +24,12 @@ namespace Client
             IPAddress serverIP = IPAddress.Parse(ipAddress);
 
             // Can throw if invalid port 
-            EndPoint ep = new IPEndPoint(serverIP, port);
-
-            socketListener = new Socket(serverIP.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-
-            socketListener.Connect(ep);
+            ep = new IPEndPoint(serverIP, port);
         }
 
-        ~ClientRPCManager()
+        private Socket InitializeSocket()
         {
-            socketListener.Shutdown(SocketShutdown.Both);
-            socketListener.Close();
+            return new Socket(ep.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
         }
 
         public object SendMessage(MethodBase methodInfo)
@@ -49,6 +44,9 @@ namespace Client
 
         private object SendMessageToServer(MethodBase methodInfo, List<object> parameters)
         {
+            Socket socketListener = InitializeSocket();
+            socketListener.Connect(ep);
+
             // Create request
             RequestMessageContent request = new RequestMessageContent()
             {
@@ -79,7 +77,7 @@ namespace Client
             Message response = null;
             try
             {
-                response = SocketUtils.ReceiveMessage(socketListener, 8000, 8000);
+                response = SocketUtils.ReceiveMessage(socketListener, 1000, 1000);
             }
             catch (NoNewMessageException ex)
             {
@@ -102,9 +100,16 @@ namespace Client
                 bool isException = result.GetType().IsSubclassOf(typeof(Exception));
                 if (isException)
                 {
+                    // Release the socket.  
+                    socketListener.Shutdown(SocketShutdown.Both);
+                    socketListener.Close();
                     throw (Exception)result;
                 }
             }
+
+            // Release the socket.  
+            socketListener.Shutdown(SocketShutdown.Both);
+            socketListener.Close();
 
             // Return the response
             return result;

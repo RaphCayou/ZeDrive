@@ -17,6 +17,17 @@ namespace Server.TcpCommunication
 {
     public class ServerDispatcher
     {
+        public class StateObject
+        {
+            public StateObject(Socket s, Message m)
+            {
+                workSocket = s;
+                message = m;
+            }
+            public Socket workSocket;
+            public Message message;
+        }
+
         private IServerBusiness business;
         private Socket socketListener;
 
@@ -32,97 +43,113 @@ namespace Server.TcpCommunication
 
             // Creates the listener socket
             socketListener = new Socket(serverIP.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-            socketListener.Bind(ep);
 
+            socketListener.Bind(ep);
             socketListener.Listen(100);
 
-            socketListener.BeginAccept(AcceptNewConnection, socketListener);
+            StartListeningForAnotherConnection();
         }
 
-        ~ServerDispatcher()
+        private void StartListeningForAnotherConnection()
         {
-            socketListener.Shutdown(SocketShutdown.Both);
-            socketListener.Close();
+            socketListener.BeginAccept(Message.CompleteHeaderSize, AcceptNewConnection, socketListener);
         }
         
         private void AcceptNewConnection(IAsyncResult ar)
         {
+            StartListeningForAnotherConnection();
+
             // Get the socket that handles the client request.  
             Socket listener = (Socket)ar.AsyncState;
-            Socket handler = listener.EndAccept(ar);
 
-            while (IsSocketConnected(handler))
+            // Receive message length
+            byte[] messsageHeaderBuffer;
+            int bytesTransferred;
+            Socket handler = listener.EndAccept(out messsageHeaderBuffer, out bytesTransferred, ar);
+            
+            if (bytesTransferred != Message.CompleteHeaderSize)
             {
-                // Get the message from the socket
-                Message message = null;
-                try
-                {
-                    // TODO change 0 for actual valid time out
-                    message = SocketUtils.ReceiveMessage(handler, 0, 8000);
-                }
-                catch (NoNewMessageException ex)
-                {
-                    // TODO Must wait again until another message arrives
-                }
-                catch (MessageInterruptedException ex)
-                {
-                    // TODO VERIFY Must abandon connection
-                    break;
-                }
-
-                if (message != null && message.Type == MessageType.Request)
-                {
-                    // Synchronously call the server method associated to the command
-                    object result = ExecuteCommand(message);
-
-                    if (result != null)
-                    {
-                        // Serialize the response
-                        MemoryStream msResponse = new MemoryStream();
-                        BinaryFormatter bf = new BinaryFormatter();
-                        bf.Serialize(msResponse, result);
-
-                        // frame the response
-                        Message response = new Message()
-                        {
-                            Type = MessageType.Response,
-                            Content = msResponse.ToArray()
-                        };
-
-                        // Send the response
-                        handler.Send(response.ToArray());
-                    }
-                    else
-                    {
-                        // empty response
-                        Message response = new Message()
-                        {
-                            Type = MessageType.Response,
-                            Content = new byte[0]
-                        };
-
-                        // Send the response
-                        handler.Send(response.ToArray());
-                    }
-                }
+                // Never supposed to happen, means that we did not read the complete header, which means that the message cannot be retreived correctly.
+                throw new NoNewMessageException();
             }
 
-            // TODO Check if you need to disconnect first?
-            handler.Close();
+            int messageLength = BitConverter.ToInt32(messsageHeaderBuffer, 0);
+            MessageType messageType = (MessageType)BitConverter.ToInt32(messsageHeaderBuffer, Message.SizeOfLengthInHeader);
+
+            Message message = new Message
+            {
+                Type = messageType,
+                Content = new byte[messageLength]
+            };
+            StateObject state = new StateObject(handler, message);
+
+            // Asynchronously receive rest of message
+            handler.BeginReceive(message.Content, 0, message.Length, 0, ReadCallback, state);
         }
 
-        /// <summary>
-        /// Checks if the socket connection has been terminated by remote host (the client)
-        /// </summary>
-        /// <param name="s"></param>
-        /// <returns></returns>
-        static bool IsSocketConnected(Socket s)
+        public void ReadCallback(IAsyncResult ar)
         {
-            return !((s.Poll(1000, SelectMode.SelectRead) && (s.Available == 0)) || !s.Connected);
+            StateObject state = (StateObject)ar.AsyncState;
+            Socket handler = state.workSocket;
+            Message message = state.message;
+
+            // Read data from the client socket.   
+            int bytesRead = handler.EndReceive(ar);
+            if (bytesRead < message.Length)
+            {
+                handler.Shutdown(SocketShutdown.Both);
+                handler.Close();
+
+                // If not enough data read, connection must have been interrupted
+                throw new MessageInterruptedException();
+            }
+
+            // Here we assume we have the complete message content
+            if (message.Type == MessageType.Request)
+            {
+                // Synchronously call the server method associated to the command
+                object result = ExecuteCommand(message);
+                Message response = new Message()
+                {
+                    Type = MessageType.Response,
+                    Content = new byte[0]
+                };
+
+                if (result != null)
+                {
+                    // Serialize the response
+                    MemoryStream msResponse = new MemoryStream();
+                    BinaryFormatter bf = new BinaryFormatter();
+                    bf.Serialize(msResponse, result);
+
+                    // frame the response
+                    response.Content = msResponse.ToArray();
+                }
+                
+                byte[] messageBuffer = response.ToArray();
+                handler.BeginSend(messageBuffer, 0, messageBuffer.Length, 0, SendCallback, handler);
+            }
+            else
+            {
+                handler.Shutdown(SocketShutdown.Both);
+                handler.Close();
+            }
+        }
+
+        private void SendCallback(IAsyncResult ar)
+        {
+            Socket handler = (Socket)ar.AsyncState;
+
+            // Complete sending the data to the remote device.  
+            int bytesSent = handler.EndSend(ar);
+
+            handler.Shutdown(SocketShutdown.Both);
+            handler.Close();
         }
 
         private object ExecuteCommand(Message message)
         {
+            // Validate that the message is not empty
             if (message.Length == 0)
             {
                 return null;
@@ -133,27 +160,28 @@ namespace Server.TcpCommunication
             BinaryFormatter bf = new BinaryFormatter();
             RequestMessageContent request = (RequestMessageContent)bf.Deserialize(ms);
 
-            if (typeof(IServerBusiness).GetMethod(request.Command.MethodName, request.Command.ParameterTypes.ToArray()) != null)
+            // Validate that the method exists within the IServerBusiness interface
+            if (typeof(IServerBusiness).GetMethod(request.Command.MethodName, request.Command.ParameterTypes.ToArray()) == null)
             {
-                // Interface contains method, get the real implementation. This is meant to protect against a client wanting to execute another method which he is not supposed to know of.
-                MethodInfo methodImplementation = typeof(ServerBusiness).GetMethod(request.Command.MethodName, request.Command.ParameterTypes.ToArray());
+                return null;
+            }
+            
+            // Interface contains method, get the real implementation. This is meant to protect against a client wanting to execute another method which he is not supposed to know of.
+            MethodInfo methodImplementation = typeof(ServerBusiness).GetMethod(request.Command.MethodName, request.Command.ParameterTypes.ToArray());
 
-                // Calls the method
-                object methodResult = null;
-                try
-                {
-                    methodResult = methodImplementation.Invoke(business, request.Parameters.ToArray());
-                }
-                catch (TargetInvocationException ex)
-                {
-                    return ex.InnerException; // original exception throw by the method
-                }
-
-                // Return the object returned by the method invocation
-                return methodResult;
+            // Calls the method
+            object methodResult = null;
+            try
+            {
+                methodResult = methodImplementation.Invoke(business, request.Parameters.ToArray());
+            }
+            catch (TargetInvocationException ex)
+            {
+                return ex.InnerException; // original exception throw by the method
             }
 
-            return null;
+            // Return the object returned by the method invocation
+            return methodResult;
         }
     }
 }

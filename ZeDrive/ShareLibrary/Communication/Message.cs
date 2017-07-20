@@ -11,6 +11,7 @@ namespace Server.TcpCommunication
     {
         public static int SizeOfLengthInHeader = sizeof(int);
         public static int SizeOfTypeInHeader = sizeof(MessageType);
+        public static int CompleteHeaderSize = SizeOfLengthInHeader + SizeOfTypeInHeader;
 
         public MessageType Type { get; set; }
         public byte[] Content { get; set; }
