@@ -261,14 +261,11 @@ namespace Server
         {
             if (!ParametersHasEmpty(username, groupName))
             {
-                if (!_dataStore.CheckAdminRights(adminUsername, groupName))
+                if (!_dataStore.CheckAdminRights(adminUsername, groupName)) throw new ArgumentException("Vous n'avez pas les droits requis.");
+                if (accept)
                 {
-                    if (accept)
-                    {
-                        _dataStore.AddUserToGroup(username, groupName);
-                    }
+                    _dataStore.AddUserToGroup(username, groupName);
                 }
-                else throw new ArgumentException("Vous n'avez pas les droits requis.");
                 _pendingActions.RemoveAll(p => p.ActionType == ActionTypes.Request && p.GroupName == groupName && p.ClientName == username);
             }
             else throw new ArgumentException("Les paramètres ne doivent pas être vides.");
