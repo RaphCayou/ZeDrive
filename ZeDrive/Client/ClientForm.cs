@@ -55,7 +55,7 @@ namespace Client
                 }
                 currentTick = 0;
             }
-            TimeUntilNextSync.Text = (currentTick % SYNC_INTERVAL).ToString();
+            TimeUntilNextSync.Text = (SYNC_INTERVAL - currentTick % SYNC_INTERVAL).ToString();
         }
 
         private void ConnectToServer_Click(object sender, EventArgs e)
