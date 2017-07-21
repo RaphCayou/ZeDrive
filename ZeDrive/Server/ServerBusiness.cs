@@ -60,6 +60,10 @@ namespace Server
             return authorized;
         }
 
+        /// <summary>
+        /// Test connexion to server by getting simple answer
+        /// </summary>
+        /// <returns>True to indicate that server is up</returns>
         public bool IsAvailable()
         {
             return true;
