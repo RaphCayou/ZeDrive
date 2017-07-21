@@ -62,7 +62,7 @@ namespace Client
                 }
             }
             UpdateGroupInformation();
-
+            client.Save();
         }
 
 
