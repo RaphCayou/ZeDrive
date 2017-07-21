@@ -142,7 +142,7 @@ namespace Client
                 Directory.CreateDirectory(Path.Combine(rootFolderPath, newGroup));
                 lastGroupsSummaries.Add(new GroupSummary(newGroup, rootFolderPath));
             }
-            IEnumerable<string> removedGroups = lastGroupsSummaries.Select(summary => summary.GroupName).Except(groupListUpdate);
+            List<string> removedGroups = lastGroupsSummaries.Select(summary => summary.GroupName).Except(groupListUpdate).ToList();
             foreach (string removedGroup in removedGroups)
             {
                 lastGroupsSummaries.RemoveAll(summary => summary.GroupName == removedGroup);
@@ -153,6 +153,11 @@ namespace Client
         public List<Group> GetGroupList()
         {
             return access.GetGroupList();
+        }
+
+        public Group GetGroupInfo(string groupName)
+        {
+            return access.GetGroupInfo(groupName);
         }
 
         public List<ShareLibrary.Models.Client> GetClientsList()

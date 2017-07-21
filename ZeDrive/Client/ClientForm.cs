@@ -53,6 +53,7 @@ namespace Client
                         client.AcknowledgeRequest(action.ClientName, action.GroupName, dialogResult == DialogResult.Yes);
                     }
                 }
+                UpdateGroupInformation();
                 currentTick = 0;
             }
             TimeUntilNextSync.Text = (SYNC_INTERVAL - currentTick % SYNC_INTERVAL).ToString();
@@ -128,9 +129,15 @@ namespace Client
 
         private void GroupList_SelectedValueChanged(object sender, EventArgs e)
         {
+            UpdateGroupInformation();
+        }
+
+        private void UpdateGroupInformation()
+        {
             currentGroup = (Group)GroupList.SelectedItem;
             if (currentGroup != null)
             {
+                currentGroup = client.GetGroupInfo(currentGroup.Name);
                 GroupDescription.Text = currentGroup.Description;
                 //User not in group, so he can ask to join.
                 JoinGroup.Enabled = !currentGroup.Members.Exists(client1 => client1.Name == UserName.Text);
@@ -146,6 +153,8 @@ namespace Client
                 else
                 {
                     AdminGroup.Enabled = false;
+                    AllUsersList.DataSource = null;
+                    GroupClientList.DataSource = null;
                 }
             }
         }
@@ -173,11 +182,13 @@ namespace Client
         private void ChangeAdmin_Click(object sender, EventArgs e)
         {
             client.ChangeAdministratorGroup((string)GroupClientList.SelectedItem, currentGroup.Name);
+            UpdateGroupInformation();
         }
 
         private void KickFromGroup_Click(object sender, EventArgs e)
         {
             client.KickClientFromGroup((string)GroupClientList.SelectedItem, currentGroup.Name);
+            UpdateGroupInformation();
         }
 
         private void InviteToGroup_Click(object sender, EventArgs e)
