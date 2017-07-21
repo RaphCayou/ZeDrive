@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ShareLibrary.Communication;
 using ShareLibrary.Models;
 using ShareLibrary.Summary;
@@ -21,6 +22,10 @@ namespace Client
                 username,
                 password
                 );
+        }
+        public bool IsAvailable()
+        {
+            return (bool)RPCManager.SendMessage(System.Reflection.MethodBase.GetCurrentMethod());
         }
 
         public bool CreateUser(string username, string password)

@@ -55,6 +55,11 @@ namespace Server
             return authorized;
         }
 
+        public bool IsAvailable()
+        {
+            return true;
+        }
+
         /// <summary>
         /// Creates a user on the server
         /// </summary>

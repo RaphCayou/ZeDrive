@@ -105,7 +105,6 @@ namespace Server
                                         break;
 
                                     case Action.Delete:
-
                                         // Case 1 : The file was created by the current client.
                                         // Update server history (add the current file)
                                         if (currentRelatedjobRevision?.Action == Action.Create)
