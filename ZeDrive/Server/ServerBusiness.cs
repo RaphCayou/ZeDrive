@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using ShareLibrary.Communication;
 using ShareLibrary.Models;
 using ShareLibrary.Summary;
+using Timer = System.Timers.Timer;
 
 namespace Server
 {
@@ -24,6 +25,10 @@ namespace Server
         public ServerBusiness(string groupsSaveFilePath, string clientsSaveFilePath, string rootFolderPath = "Default Server Root")
         {
             _dataStore = new DataStore(groupsSaveFilePath, clientsSaveFilePath, rootFolderPath);
+            var saveTimer = new Timer(15000);
+            saveTimer.Elapsed += OnSaveTimerTick;
+            saveTimer.Enabled = true;
+
             _pendingActions = new List<PendingAction>();
             _jobExecuter = new JobExecuter(rootFolderPath, _dataStore);
 
@@ -124,13 +129,21 @@ namespace Server
         }
 
         /// <summary>
+        /// Event raised when timer attains interval (15 seconds)
+        /// </summary>
+        /// <param name="source">Timer related</param>
+        /// <param name="e">Timer related</param>
+        public void OnSaveTimerTick(Object source, System.Timers.ElapsedEventArgs e)
+        {
+            _dataStore.Save();
+        }
+
+        /// <summary>
         /// Update server history,
         /// Send Revision,
         /// Save history on disk
         /// </summary>
-        public List<Revision> UpdateServerHistory(string username, 
-            List<Revision> revisions, 
-            List<GroupSummary> groupSummaries)
+        public List<Revision> UpdateServerHistory(string username, List<Revision> revisions, List<GroupSummary> groupSummaries)
         {
             AutoResetEvent stopWaitHandle = new AutoResetEvent(false);
             List<Revision> response = new List<Revision>();
@@ -154,6 +167,12 @@ namespace Server
 
             return response;
         }
+
+        /// <summary>
+        /// Update server history,
+        /// Send Revision,
+        /// Save history on disk
+        /// </summary>
         public List<Revision> UpdateServerHistory(Job job)
         {
             AutoResetEvent stopWaitHandle = new AutoResetEvent(false);
@@ -169,7 +188,6 @@ namespace Server
             stopWaitHandle.WaitOne();
 
             _dataStore.UpdateLastSeen(job.Username);
-            _dataStore.Save();
 
             return response;
         }
