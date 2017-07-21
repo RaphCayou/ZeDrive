@@ -28,9 +28,8 @@ namespace Server
             syncJobs = new BlockingCollection<Job>();
             serverGroupSummaries = new List<GroupSummary>();
 
-            if (Directory.Exists(rootPath))
-                Directory.Delete(rootPath, true);
-            Directory.CreateDirectory(rootPath);
+            if (!Directory.Exists(rootPath))
+                Directory.CreateDirectory(rootPath);
         }
 
         public void Execute()
