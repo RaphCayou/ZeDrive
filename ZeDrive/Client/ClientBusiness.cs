@@ -32,6 +32,7 @@ namespace Client
         public ClientBusiness(string rootFolderPath, string serverAddress, int serverPort) : this(rootFolderPath)
         {
             access = new ClientServerAccess(serverAddress, serverPort);
+            access.IsAvailable();
         }
 
         public bool Connect(string user, string password)
