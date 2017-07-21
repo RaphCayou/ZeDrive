@@ -29,6 +29,10 @@ namespace ServerTests
                 Assert.IsTrue(true);
             }
             Assert.IsTrue(clientLinkToServer.Connect("Henry", "hunter2"));
+
+            server.CloseConnection();
+
+            Thread.Sleep(1000);
         }
     }
 }

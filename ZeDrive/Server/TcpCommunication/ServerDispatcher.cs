@@ -51,6 +51,16 @@ namespace Server.TcpCommunication
             StartListeningForAnotherConnection();
         }
 
+        public void CloseConnection()
+        {
+            try
+            {
+                socketListener.Shutdown(SocketShutdown.Both);
+            }
+            catch { }
+            socketListener.Close();
+        }
+
         private void StartListeningForAnotherConnection()
         {
             socketListener.BeginAccept(Message.CompleteHeaderSize, AcceptNewConnection, socketListener);
@@ -58,16 +68,25 @@ namespace Server.TcpCommunication
         
         private void AcceptNewConnection(IAsyncResult ar)
         {
-            StartListeningForAnotherConnection();
-
             // Get the socket that handles the client request.  
             Socket listener = (Socket)ar.AsyncState;
 
             // Receive message length
             byte[] messsageHeaderBuffer;
             int bytesTransferred;
-            Socket handler = listener.EndAccept(out messsageHeaderBuffer, out bytesTransferred, ar);
-            
+            Socket handler = null;
+            try
+            {
+                handler = listener.EndAccept(out messsageHeaderBuffer, out bytesTransferred, ar);
+            }
+            catch
+            {
+                // Happens when the socket is closed. AcceptNewConnection is called a last time but EndAccept throws
+                return;
+            }
+
+            StartListeningForAnotherConnection();
+
             if (bytesTransferred != Message.CompleteHeaderSize)
             {
                 // Never supposed to happen, means that we did not read the complete header, which means that the message cannot be retreived correctly.
@@ -137,7 +156,8 @@ namespace Server.TcpCommunication
                     }
 
                     byte[] messageBuffer = response.ToArray();
-                    handler.BeginSend(messageBuffer, 0, messageBuffer.Length, 0, SendCallback, handler);
+                    StateObject stateSend = new StateObject(handler, response);
+                    handler.BeginSend(messageBuffer, 0, messageBuffer.Length, 0, SendCallback, stateSend);
                 }
                 else
                 {
@@ -149,13 +169,25 @@ namespace Server.TcpCommunication
 
         private void SendCallback(IAsyncResult ar)
         {
-            Socket handler = (Socket)ar.AsyncState;
+            StateObject state = (StateObject)ar.AsyncState;
+            Socket handler = state.workSocket;
+            Message message = state.message;
 
             // Complete sending the data to the remote device.  
             int bytesSent = handler.EndSend(ar);
 
-            handler.Shutdown(SocketShutdown.Both);
-            handler.Close();
+            if (bytesSent + state.writePosition < message.Length + Message.CompleteHeaderSize)
+            {
+                // If data not sent entirely, send the rest
+                state.writePosition += bytesSent;
+                byte[] messageBuffer = message.ToArray();
+                handler.BeginSend(messageBuffer, state.writePosition, messageBuffer.Length - state.writePosition, 0, SendCallback, state);
+            }
+            else
+            {
+                handler.Shutdown(SocketShutdown.Both);
+                handler.Close();
+            }
         }
 
         private object ExecuteCommand(Message message)
