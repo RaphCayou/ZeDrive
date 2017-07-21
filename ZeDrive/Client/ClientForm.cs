@@ -38,26 +38,33 @@ namespace Client
             ++currentTick;
             if (currentTick % SYNC_INTERVAL == 0)
             {
-                client.SyncWithServer();
-                UpdateConnectedUser(client.GetClientsList());
-                foreach (PendingAction action in client.GetPendingActions())
-                {
-                    if (action.ActionType == ActionTypes.Invite)
-                    {
-                        DialogResult dialogResult = MessageBox.Show($"Voulez-vous rejoindre le group \"{action.GroupName}\" ?", "Nouvelle invitation!", MessageBoxButtons.YesNo);
-                        client.AcceptInvitation(action.GroupName, dialogResult == DialogResult.Yes);
-                    }
-                    else
-                    {
-                        DialogResult dialogResult = MessageBox.Show($"Acceptez-vous que {action.ClientName} rejoinde le group \"{action.GroupName}\" ?", "Nouvelle demande!", MessageBoxButtons.YesNo);
-                        client.AcknowledgeRequest(action.ClientName, action.GroupName, dialogResult == DialogResult.Yes);
-                    }
-                }
-                UpdateGroupInformation();
+                Sync();
                 currentTick = 0;
             }
             TimeUntilNextSync.Text = (SYNC_INTERVAL - currentTick % SYNC_INTERVAL).ToString();
         }
+
+        private void Sync()
+        {
+            client.SyncWithServer();
+            UpdateConnectedUser(client.GetClientsList());
+            foreach (PendingAction action in client.GetPendingActions())
+            {
+                if (action.ActionType == ActionTypes.Invite)
+                {
+                    DialogResult dialogResult = MessageBox.Show($"Voulez-vous rejoindre le group \"{action.GroupName}\" ?", "Nouvelle invitation!", MessageBoxButtons.YesNo);
+                    client.AcceptInvitation(action.GroupName, dialogResult == DialogResult.Yes);
+                }
+                else
+                {
+                    DialogResult dialogResult = MessageBox.Show($"Acceptez-vous que {action.ClientName} rejoinde le group \"{action.GroupName}\" ?", "Nouvelle demande!", MessageBoxButtons.YesNo);
+                    client.AcknowledgeRequest(action.ClientName, action.GroupName, dialogResult == DialogResult.Yes);
+                }
+            }
+            UpdateGroupInformation();
+
+        }
+
 
         private void ConnectToServer_Click(object sender, EventArgs e)
         {
@@ -103,6 +110,7 @@ namespace Client
             {
                 GroupsInformationGroup.Enabled = true;
                 CurrentUserGroup.Enabled = false;
+                Sync();
                 syncTimer.Start();
             }
             else
@@ -187,7 +195,14 @@ namespace Client
 
         private void KickFromGroup_Click(object sender, EventArgs e)
         {
-            client.KickClientFromGroup((string)GroupClientList.SelectedItem, currentGroup.Name);
+            try
+            {
+                client.KickClientFromGroup((string) GroupClientList.SelectedItem, currentGroup.Name);
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(exception.Message);
+            }
             UpdateGroupInformation();
         }
 

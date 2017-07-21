@@ -69,6 +69,7 @@
             this.GroupList = new System.Windows.Forms.ComboBox();
             this.label7 = new System.Windows.Forms.Label();
             this.OnlineUsers = new System.Windows.Forms.RichTextBox();
+            this.label13 = new System.Windows.Forms.Label();
             this.CurrentUserGroup.SuspendLayout();
             this.ServerConnexionGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ServerPort)).BeginInit();
@@ -92,6 +93,7 @@
             // 
             // CurrentUserGroup
             // 
+            this.CurrentUserGroup.Controls.Add(this.label13);
             this.CurrentUserGroup.Controls.Add(this.TimeUntilNextSync);
             this.CurrentUserGroup.Controls.Add(this.IsUserConnectText);
             this.CurrentUserGroup.Controls.Add(this.CreateUser);
@@ -111,7 +113,7 @@
             // TimeUntilNextSync
             // 
             this.TimeUntilNextSync.AutoSize = true;
-            this.TimeUntilNextSync.Location = new System.Drawing.Point(909, 20);
+            this.TimeUntilNextSync.Location = new System.Drawing.Point(931, 16);
             this.TimeUntilNextSync.Name = "TimeUntilNextSync";
             this.TimeUntilNextSync.Size = new System.Drawing.Size(19, 13);
             this.TimeUntilNextSync.TabIndex = 15;
@@ -484,6 +486,15 @@
             this.OnlineUsers.TabIndex = 0;
             this.OnlineUsers.Text = "";
             // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(835, 16);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(100, 13);
+            this.label13.TabIndex = 16;
+            this.label13.Text = "Temps avant sync.:";
+            // 
             // ClientForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -554,6 +565,7 @@
         private System.Windows.Forms.Button CreateGroup;
         private System.Windows.Forms.TextBox NewGroupName;
         private System.Windows.Forms.Label TimeUntilNextSync;
+        private System.Windows.Forms.Label label13;
     }
 }
 
