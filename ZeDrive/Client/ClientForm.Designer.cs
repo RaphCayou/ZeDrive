@@ -32,6 +32,7 @@
             this.syncTimer = new System.Windows.Forms.Timer(this.components);
             this.ConnectToServer = new System.Windows.Forms.Button();
             this.CurrentUserGroup = new System.Windows.Forms.GroupBox();
+            this.TimeUntilNextSync = new System.Windows.Forms.Label();
             this.IsUserConnectText = new System.Windows.Forms.Label();
             this.CreateUser = new System.Windows.Forms.Button();
             this.ConnectUser = new System.Windows.Forms.Button();
@@ -91,6 +92,7 @@
             // 
             // CurrentUserGroup
             // 
+            this.CurrentUserGroup.Controls.Add(this.TimeUntilNextSync);
             this.CurrentUserGroup.Controls.Add(this.IsUserConnectText);
             this.CurrentUserGroup.Controls.Add(this.CreateUser);
             this.CurrentUserGroup.Controls.Add(this.ConnectUser);
@@ -105,6 +107,15 @@
             this.CurrentUserGroup.TabStop = false;
             this.CurrentUserGroup.Text = "Usager courant";
             this.CurrentUserGroup.EnabledChanged += new System.EventHandler(this.CurrentUserGroup_EnabledChanged);
+            // 
+            // TimeUntilNextSync
+            // 
+            this.TimeUntilNextSync.AutoSize = true;
+            this.TimeUntilNextSync.Location = new System.Drawing.Point(909, 20);
+            this.TimeUntilNextSync.Name = "TimeUntilNextSync";
+            this.TimeUntilNextSync.Size = new System.Drawing.Size(19, 13);
+            this.TimeUntilNextSync.TabIndex = 15;
+            this.TimeUntilNextSync.Text = "15";
             // 
             // IsUserConnectText
             // 
@@ -294,11 +305,11 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(421, 16);
+            this.label10.Location = new System.Drawing.Point(393, 16);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(126, 13);
+            this.label10.Size = new System.Drawing.Size(161, 13);
             this.label10.TabIndex = 23;
-            this.label10.Text = "Nom de tous les usagers:";
+            this.label10.Text = "Usagers non membre du groupe:";
             // 
             // AllUsersList
             // 
@@ -333,9 +344,9 @@
             this.label9.AutoSize = true;
             this.label9.Location = new System.Drawing.Point(6, 16);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(143, 13);
+            this.label9.Size = new System.Drawing.Size(140, 13);
             this.label9.TabIndex = 16;
-            this.label9.Text = "Nom des usagers du groupe:";
+            this.label9.Text = "Usagers membre du groupe:";
             // 
             // GroupClientList
             // 
@@ -541,6 +552,7 @@
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Button CreateGroup;
         private System.Windows.Forms.TextBox NewGroupName;
+        private System.Windows.Forms.Label TimeUntilNextSync;
     }
 }
 
