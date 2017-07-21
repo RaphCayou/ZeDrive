@@ -62,8 +62,12 @@ namespace Client
 
         public List<Group> GetGroupListForClient(string username)
         {
-            return (List<Group>)RPCManager.SendMessage(System.Reflection.MethodBase.GetCurrentMethod(),
-                username);
+            return (List<Group>)RPCManager.SendMessage(System.Reflection.MethodBase.GetCurrentMethod(), username);
+        }
+
+        public Group GetGroupInfo(string groupName)
+        {
+            return (Group)RPCManager.SendMessage(System.Reflection.MethodBase.GetCurrentMethod(), groupName);
         }
 
         public void SendClientGroupInvitation(string adminUsername, string invitedUser, string groupName)

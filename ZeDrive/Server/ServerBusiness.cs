@@ -133,6 +133,16 @@ namespace Server
         }
 
         /// <summary>
+        /// Gets the group informations for a specific group
+        /// </summary>
+        /// <param name="groupName">Name of the group to get the info of</param>
+        /// <returns>Group with its informations</returns>
+        public Group GetGroupInfo(string groupName)
+        {
+            return !ParametersHasEmpty(groupName) ? _dataStore.Groups.FirstOrDefault(g => g.Name == groupName) : null;
+        }
+
+        /// <summary>
         /// Event raised when timer attains interval (15 seconds)
         /// </summary>
         /// <param name="source">Timer related</param>
