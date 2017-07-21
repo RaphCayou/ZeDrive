@@ -155,8 +155,8 @@ namespace Client
             OnlineUsers.Clear();
             foreach (ShareLibrary.Models.Client onlineClient in onlineClients)
             {
-                OnlineUsers.SelectionColor = onlineClient.LastSeen.AddMinutes(2) < DateTime.Now ? Color.Yellow : Color.Green;
-                OnlineUsers.AppendText(onlineClient.Name);
+                OnlineUsers.SelectionColor = onlineClient.LastSeen.AddMinutes(2) < DateTime.Now ? Color.DarkOrange : Color.Green;
+                OnlineUsers.AppendText(onlineClient.Name + Environment.NewLine);
             }
         }
 
