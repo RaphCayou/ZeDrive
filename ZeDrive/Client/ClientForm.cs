@@ -98,7 +98,7 @@ namespace Client
             }
             catch (Exception exception)
             {
-                MessageBox.Show(exception.ToString() + Environment.NewLine + exception.Message);
+                MessageBox.Show(MESSAGE_ERREUR + Environment.NewLine + exception.ToString() + Environment.NewLine + exception.Message);
             }
         }
 
