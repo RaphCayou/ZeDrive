@@ -315,9 +315,12 @@ namespace Server
             if (!ParametersHasEmpty(username, groupName))
             {
                 if (!_dataStore.CheckAdminRights(adminUsername, groupName)) throw new ArgumentException("Vous n'avez pas les droits requis.");
-                if (accept)
+                if (!_dataStore.CheckUserInGroup(username, groupName))
                 {
-                    _dataStore.AddUserToGroup(username, groupName);
+                    if (accept)
+                    {
+                        _dataStore.AddUserToGroup(username, groupName);
+                    }
                 }
                 _pendingActions.RemoveAll(p => p.ActionType == ActionTypes.Request && p.GroupName == groupName && p.ClientName == username);
             }
