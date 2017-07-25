@@ -86,7 +86,7 @@
             this.ConnectToServer.Location = new System.Drawing.Point(866, 11);
             this.ConnectToServer.Name = "ConnectToServer";
             this.ConnectToServer.Size = new System.Drawing.Size(75, 23);
-            this.ConnectToServer.TabIndex = 0;
+            this.ConnectToServer.TabIndex = 3;
             this.ConnectToServer.Text = "Connexion";
             this.ConnectToServer.UseVisualStyleBackColor = true;
             this.ConnectToServer.Click += new System.EventHandler(this.ConnectToServer_Click);
@@ -144,7 +144,7 @@
             this.CreateUser.Location = new System.Drawing.Point(956, 11);
             this.CreateUser.Name = "CreateUser";
             this.CreateUser.Size = new System.Drawing.Size(86, 23);
-            this.CreateUser.TabIndex = 13;
+            this.CreateUser.TabIndex = 15;
             this.CreateUser.Text = "Créer l\'usager";
             this.CreateUser.UseVisualStyleBackColor = true;
             this.CreateUser.Click += new System.EventHandler(this.CreateUser_Click);
@@ -154,7 +154,7 @@
             this.ConnectUser.Location = new System.Drawing.Point(683, 11);
             this.ConnectUser.Name = "ConnectUser";
             this.ConnectUser.Size = new System.Drawing.Size(75, 23);
-            this.ConnectUser.TabIndex = 12;
+            this.ConnectUser.TabIndex = 14;
             this.ConnectUser.Text = "Connexion";
             this.ConnectUser.UseVisualStyleBackColor = true;
             this.ConnectUser.Click += new System.EventHandler(this.ConnectUser_Click);
@@ -164,7 +164,7 @@
             this.Password.Location = new System.Drawing.Point(459, 13);
             this.Password.Name = "Password";
             this.Password.Size = new System.Drawing.Size(218, 20);
-            this.Password.TabIndex = 8;
+            this.Password.TabIndex = 13;
             this.Password.UseSystemPasswordChar = true;
             // 
             // label5
@@ -181,7 +181,7 @@
             this.UserName.Location = new System.Drawing.Point(87, 13);
             this.UserName.Name = "UserName";
             this.UserName.Size = new System.Drawing.Size(285, 20);
-            this.UserName.TabIndex = 6;
+            this.UserName.TabIndex = 12;
             // 
             // label1
             // 
@@ -226,7 +226,7 @@
             this.RootFolderPath.Location = new System.Drawing.Point(642, 13);
             this.RootFolderPath.Name = "RootFolderPath";
             this.RootFolderPath.Size = new System.Drawing.Size(218, 20);
-            this.RootFolderPath.TabIndex = 11;
+            this.RootFolderPath.TabIndex = 2;
             this.RootFolderPath.Text = "./clientRoot/";
             // 
             // label4
@@ -253,7 +253,7 @@
             0});
             this.ServerPort.Name = "ServerPort";
             this.ServerPort.Size = new System.Drawing.Size(64, 20);
-            this.ServerPort.TabIndex = 9;
+            this.ServerPort.TabIndex = 1;
             this.ServerPort.Value = new decimal(new int[] {
             4242,
             0,
@@ -274,7 +274,7 @@
             this.ServerAddress.Location = new System.Drawing.Point(113, 13);
             this.ServerAddress.Name = "ServerAddress";
             this.ServerAddress.Size = new System.Drawing.Size(218, 20);
-            this.ServerAddress.TabIndex = 7;
+            this.ServerAddress.TabIndex = 0;
             this.ServerAddress.Text = "127.0.0.1";
             // 
             // label2
@@ -308,7 +308,7 @@
             this.InviteToGroup.Location = new System.Drawing.Point(605, 157);
             this.InviteToGroup.Name = "InviteToGroup";
             this.InviteToGroup.Size = new System.Drawing.Size(170, 23);
-            this.InviteToGroup.TabIndex = 20;
+            this.InviteToGroup.TabIndex = 10;
             this.InviteToGroup.Text = "Inviter à ce groupe";
             this.InviteToGroup.UseVisualStyleBackColor = true;
             this.InviteToGroup.Click += new System.EventHandler(this.InviteToGroup_Click);
@@ -328,14 +328,14 @@
             this.AllUsersList.Location = new System.Drawing.Point(396, 29);
             this.AllUsersList.Name = "AllUsersList";
             this.AllUsersList.Size = new System.Drawing.Size(203, 290);
-            this.AllUsersList.TabIndex = 22;
+            this.AllUsersList.TabIndex = 9;
             // 
             // KickFromGroup
             // 
             this.KickFromGroup.Location = new System.Drawing.Point(218, 197);
             this.KickFromGroup.Name = "KickFromGroup";
             this.KickFromGroup.Size = new System.Drawing.Size(172, 23);
-            this.KickFromGroup.TabIndex = 21;
+            this.KickFromGroup.TabIndex = 8;
             this.KickFromGroup.Text = "Enlever du groupe";
             this.KickFromGroup.UseVisualStyleBackColor = true;
             this.KickFromGroup.Click += new System.EventHandler(this.KickFromGroup_Click);
@@ -345,7 +345,7 @@
             this.ChangeAdmin.Location = new System.Drawing.Point(218, 97);
             this.ChangeAdmin.Name = "ChangeAdmin";
             this.ChangeAdmin.Size = new System.Drawing.Size(172, 23);
-            this.ChangeAdmin.TabIndex = 20;
+            this.ChangeAdmin.TabIndex = 7;
             this.ChangeAdmin.Text = "Rendre administrateur du groupe";
             this.ChangeAdmin.UseVisualStyleBackColor = true;
             this.ChangeAdmin.Click += new System.EventHandler(this.ChangeAdmin_Click);
@@ -365,7 +365,7 @@
             this.GroupClientList.Location = new System.Drawing.Point(9, 29);
             this.GroupClientList.Name = "GroupClientList";
             this.GroupClientList.Size = new System.Drawing.Size(203, 290);
-            this.GroupClientList.TabIndex = 0;
+            this.GroupClientList.TabIndex = 6;
             // 
             // GroupsInformationGroup
             // 
@@ -435,7 +435,7 @@
             this.JoinGroup.Location = new System.Drawing.Point(592, 19);
             this.JoinGroup.Name = "JoinGroup";
             this.JoinGroup.Size = new System.Drawing.Size(192, 23);
-            this.JoinGroup.TabIndex = 19;
+            this.JoinGroup.TabIndex = 5;
             this.JoinGroup.Text = "Rejoindre ce groupe";
             this.JoinGroup.UseVisualStyleBackColor = true;
             this.JoinGroup.Click += new System.EventHandler(this.JoinGroup_Click);
