@@ -21,9 +21,9 @@ namespace Server
         private DataStore dataStore;
         private string rootPath;
 
-        public JobExecuter(string rootFolderPath, DataStore dataStore)
+        public JobExecuter(string rootPath, DataStore dataStore)
         {
-            this.rootPath = rootFolderPath;
+            this.rootPath = rootPath;
             this.dataStore = dataStore;
             syncJobs = new BlockingCollection<Job>();
             serverGroupSummaries = new List<GroupSummary>();
@@ -38,7 +38,6 @@ namespace Server
             foreach (Job job in syncJobs.GetConsumingEnumerable())
             {
                 Console.WriteLine("Execute Job {0}", ++executionCount);
-
                 List<Revision> returnRevisions = new List<Revision>();
 
                 // For each client group revision
@@ -48,8 +47,7 @@ namespace Server
                     if (dataStore.CheckUserInGroup(job.Username, clientGroupSummary.GroupName))
                     {
                         // Get the server GroupSummary equal to client GroupSummary
-                        GroupSummary serverGroupSummary =
-                            serverGroupSummaries.Find(s => s.GroupName == clientGroupSummary.GroupName);
+                        GroupSummary serverGroupSummary = serverGroupSummaries.Find(s => s.GroupName == clientGroupSummary.GroupName);
 
                         if (serverGroupSummary != null)
                         {
@@ -61,7 +59,6 @@ namespace Server
                                 ShareLibrary.Models.FileInfo currentServerFile = serverGroupSummary.Files.Find(f => f.Name == rev.File.Name);
                                 ShareLibrary.Models.FileInfo currentClientFile = clientGroupSummary.Files.Find(f => f.Name == rev.File.Name);
 
-                                // TODO check this shit :poop:
                                 Revision currentRelatedjobRevision = job.Revisions.Find(r => r.File?.Name == currentClientFile?.Name);
                                 switch (rev.Action)
                                 {
@@ -71,7 +68,6 @@ namespace Server
 
                                         // Case 1 : The file was deleted by the current client
                                         // Update server history (delete the current file)
-                                        // TODO test this ...
                                         if (currentRelatedjobRevision?.File.Name == rev.File.Name && currentRelatedjobRevision?.Action == Action.Delete)
                                         {
                                             currentRelatedjobRevision.Apply(rootPath);
@@ -86,7 +82,7 @@ namespace Server
                                         break;
 
                                     case Action.Modify:
-                                        rev.Data = currentRelatedjobRevision.Data;
+                                        rev.Data = currentRelatedjobRevision?.Data ?? rev.Data;
 
                                         // Case 1 : Server modification date > client modification date
                                         // Add revision to response with data (Modify)
@@ -126,9 +122,7 @@ namespace Server
                         {
                             // Initial case when the server does not have the client group synced
                             // Add the client files (revisions) to the server files
-                            
-                            List<Revision> clientRevisions =
-                                job.Revisions.FindAll(r => r.GroupName == clientGroupSummary.GroupName);
+                            List<Revision> clientRevisions = job.Revisions.FindAll(r => r.GroupName == clientGroupSummary.GroupName);
 
                             // Create the group directory
                             Directory.CreateDirectory(Path.Combine(rootPath, clientGroupSummary.GroupName));
@@ -152,11 +146,6 @@ namespace Server
         public void Add(Job job)
         {
             syncJobs.Add(job);
-        }
-
-        public void CompleteAdding()
-        {
-            syncJobs.CompleteAdding();
         }
     }
 }
