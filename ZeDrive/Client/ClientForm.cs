@@ -40,6 +40,8 @@ namespace Client
             ++currentTick;
             if (currentTick % SYNC_INTERVAL == 0)
             {
+                TimeUntilNextSync.Text = "Now";
+                Refresh();
                 Sync();
                 currentTick = 0;
             }
@@ -50,7 +52,7 @@ namespace Client
         {
             try
             {
-
+                syncTimer.Stop();
                 client.SyncWithServer();
                 UpdateConnectedUser(client.GetClientsList());
                 foreach (PendingAction action in client.GetPendingActions())
@@ -79,6 +81,7 @@ namespace Client
             {
                 MessageBox.Show(MESSAGE_ERREUR + Environment.NewLine + exception.Message);
             }
+            syncTimer.Start();
         }
 
 
@@ -233,13 +236,21 @@ namespace Client
 
         private void JoinGroup_Click(object sender, EventArgs e)
         {
-            try
+            if (currentGroup == null)
             {
-                client.SendJoinGroupRequest(UserName.Text, currentGroup.Name);
+                MessageBox.Show("Aucun groupe à sélectionner.");
             }
-            catch (Exception exception)
+            else
             {
-                MessageBox.Show(MESSAGE_ERREUR + Environment.NewLine + exception.Message);
+                try
+                {
+                    client.SendJoinGroupRequest(UserName.Text, currentGroup.Name);
+                }
+                catch (Exception exception)
+                {
+                    MessageBox.Show(MESSAGE_ERREUR + Environment.NewLine + exception.Message);
+                }
+
             }
         }
 

@@ -26,7 +26,7 @@ namespace Client
         public ClientBusiness(string rootFolderPath)
         {
             this.rootFolderPath = rootFolderPath;
-            lastGroupsSummaries = DiskAccessUtils.LoadFromDiskOrConstrucDefault<List<GroupSummary>>(GROUP_SUMMARY_FILE);
+            lastGroupsSummaries = DiskAccessUtils.LoadFromDiskOrConstrucDefault<List<GroupSummary>>(Path.Combine(rootFolderPath, GROUP_SUMMARY_FILE));
         }
 
         public ClientBusiness(string rootFolderPath, string serverAddress, int serverPort) : this(rootFolderPath)
@@ -170,7 +170,7 @@ namespace Client
             //We do not want to save an empty list.
             if (lastGroupsSummaries != null && lastGroupsSummaries.Any())
             {
-                DiskAccessUtils.SaveToDisk(GROUP_SUMMARY_FILE, lastGroupsSummaries);
+                DiskAccessUtils.SaveToDisk(Path.Combine(rootFolderPath, GROUP_SUMMARY_FILE), lastGroupsSummaries);
             }
         }
     }
