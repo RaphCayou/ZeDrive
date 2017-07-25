@@ -25,6 +25,10 @@ namespace ShareLibrary.Models
         /// <param name="rootFolderPath">Path to the folder of all groups folders.</param>
         public void Apply(string rootFolderPath)
         {
+            if (!Directory.Exists(Path.Combine(rootFolderPath, GroupName)))
+            {
+                Directory.CreateDirectory(Path.Combine(rootFolderPath, GroupName));
+            }
             string filePath = Path.Combine(rootFolderPath, GroupName, File.Name);
             switch (Action)
             {
