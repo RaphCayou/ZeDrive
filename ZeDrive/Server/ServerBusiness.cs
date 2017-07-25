@@ -222,7 +222,16 @@ namespace Server
                 }
                 if (!_dataStore.CheckUserInGroup(invitedUser, groupName))
                 {
-                   _pendingActions.Add(new PendingAction { ClientName = invitedUser, GroupName = groupName, ActionType = ActionTypes.Invite});
+                    if (!_pendingActions.Exists(pa => pa.ClientName == invitedUser && pa.GroupName == groupName &&
+                                                      pa.ActionType == ActionTypes.Invite))
+                    {
+                        _pendingActions.Add(new PendingAction
+                        {
+                            ClientName = invitedUser,
+                            GroupName = groupName,
+                            ActionType = ActionTypes.Invite
+                        });
+                    }
                 }
                 else throw new ArgumentException("L'utilisateur est déjà dans le groupe.");
             }
@@ -240,7 +249,16 @@ namespace Server
             {
                 if (!_dataStore.CheckUserInGroup(username, groupName))
                 {
-                    _pendingActions.Add(new PendingAction { ClientName = username, GroupName = groupName, ActionType = ActionTypes.Request });
+                    if (!_pendingActions.Exists(pa => pa.ClientName == username && pa.GroupName == groupName &&
+                                                      pa.ActionType == ActionTypes.Request))
+                    {
+                        _pendingActions.Add(new PendingAction
+                        {
+                            ClientName = username,
+                            GroupName = groupName,
+                            ActionType = ActionTypes.Request
+                        });
+                    }
                 }
                 else throw new ArgumentException("L'utilisateur est déjà dans le groupe.");
             }

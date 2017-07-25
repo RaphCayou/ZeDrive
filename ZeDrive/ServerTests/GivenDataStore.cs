@@ -171,6 +171,36 @@ namespace ServerTests
         }
 
         [TestMethod]
+        public void When_Double_Request_Is_Sent_Then_Only_One_Is_Kept()
+        {
+            _business = new ServerBusiness(GroupsSaveFile, ClientsSaveFile);
+            _business.CreateUser("soyElAdmin", "holaSombreros");
+            _business.CreateUser("noSoyElAdmin", "laAguaAzul");
+            _business.CreateGroup("LosBanditos", "¡Mira este hijo!", "soyElAdmin");
+
+            _business.SendClientGroupRequest("noSoyElAdmin", "LosBanditos");
+            _business.SendClientGroupRequest("noSoyElAdmin", "LosBanditos");
+            var notifs = _business.GetNotification("soyElAdmin");
+
+            Assert.IsTrue(notifs.Count == 1);
+        }
+
+        [TestMethod]
+        public void When_Double_Invite_Is_Sent_Then_Only_One_Is_Kept()
+        {
+            _business = new ServerBusiness(GroupsSaveFile, ClientsSaveFile);
+            _business.CreateUser("soyElAdmin", "holaSombreros");
+            _business.CreateUser("noSoyElAdmin", "laAguaAzul");
+            _business.CreateGroup("LosBanditos", "¡Mira este hijo!", "soyElAdmin");
+
+            _business.SendClientGroupInvitation("soyElAdmin", "noSoyElAdmin", "LosBanditos");
+            _business.SendClientGroupInvitation("soyElAdmin", "noSoyElAdmin", "LosBanditos");
+            var notifs = _business.GetNotification("noSoyElAdmin");
+
+            Assert.IsTrue(notifs.Count == 1);
+        }
+
+        [TestMethod]
         public void When_Admin_Kicks_User_Then_User_Is_Removed()
         {
             _business = new ServerBusiness(GroupsSaveFile, ClientsSaveFile);
