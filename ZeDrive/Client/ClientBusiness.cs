@@ -110,6 +110,7 @@ namespace Client
 
             foreach (Revision revision in revisions)
             {
+                lastGroupsSummaries.First(summary => summary.GroupName == revision.GroupName).Update(revision);
                 revision.Apply(rootFolderPath);
             }
         }

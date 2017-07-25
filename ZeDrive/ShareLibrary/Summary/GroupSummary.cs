@@ -45,6 +45,24 @@ namespace ShareLibrary.Summary
 
         }
 
+        public void Update(Revision revisionToApply)
+        {
+            if (revisionToApply.Action == Action.Modify)
+            {
+                Files.RemoveAll(info => info.Name == revisionToApply.File.Name);
+                Files.Add(revisionToApply.File);
+
+            }
+            else if (revisionToApply.Action == Action.Create)
+            {
+                Files.Add(revisionToApply.File);
+            }
+            else if (revisionToApply.Action == Action.Delete)
+            {
+                Files.RemoveAll(info => info.Name == revisionToApply.File.Name);
+            }
+        }
+
         /// <summary>
         /// Generate the revisions list based on an older GroupSummary.
         /// </summary>
