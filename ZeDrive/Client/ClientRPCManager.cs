@@ -79,7 +79,7 @@ namespace Client
             };
 
             // Send over socket
-            socketListener.Send(message.ToArray());
+            SocketUtils.SendMessage(socketListener, message);
 
             // Wait for server reply
             Message response = null;

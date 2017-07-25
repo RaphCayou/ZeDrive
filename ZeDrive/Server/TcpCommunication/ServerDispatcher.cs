@@ -79,19 +79,19 @@ namespace Server.TcpCommunication
             try
             {
                 handler = listener.EndAccept(out messsageHeaderBuffer, out bytesTransferred, ar);
+
+                StartListeningForAnotherConnection();
             }
             catch
             {
                 // Happens when the socket is closed. AcceptNewConnection is called a last time but EndAccept throws
                 return;
             }
-
-            StartListeningForAnotherConnection();
-
+            
             if (bytesTransferred != Message.CompleteHeaderSize)
             {
-                // Never supposed to happen, means that we did not read the complete header, which means that the message cannot be retreived correctly.
-                throw new NoNewMessageException();
+                // TODO Trace this : Never supposed to happen, means that we did not read the complete header, which means that the message cannot be retreived correctly.
+                //throw new NoNewMessageException();
             }
 
             int messageLength = BitConverter.ToInt32(messsageHeaderBuffer, 0);
@@ -105,7 +105,14 @@ namespace Server.TcpCommunication
             StateObject state = new StateObject(handler, message);
 
             // Asynchronously receive rest of message
-            handler.BeginReceive(message.Content, 0, message.Length, 0, ReadCallback, state);
+            try
+            {
+                handler.BeginReceive(message.Content, 0, message.Length, 0, ReadCallback, state);
+            }
+            catch
+            {
+                // TODO Trace this : May fail if the socket was closed by the client during the transmission
+            }
         }
 
         public void ReadCallback(IAsyncResult ar)
@@ -132,8 +139,8 @@ namespace Server.TcpCommunication
                 handler.Shutdown(SocketShutdown.Both);
                 handler.Close();
 
-                // If not enough data read, connection must have been interrupted
-                throw new MessageInterruptedException();
+                // TODO Trace this : If not enough data read, connection must have been interrupted
+                //throw new MessageInterruptedException();
             }
             else if (state.writePosition + bytesRead < message.Length)
             {
@@ -141,7 +148,14 @@ namespace Server.TcpCommunication
                 state.writePosition += bytesRead;
 
                 // Asynchronously receive rest of message
-                handler.BeginReceive(message.Content, state.writePosition, message.Length - state.writePosition, 0, ReadCallback, state);
+                try
+                {
+                    handler.BeginReceive(message.Content, state.writePosition, message.Length - state.writePosition, 0, ReadCallback, state);
+                }
+                catch
+                {
+                    // TODO Trace this : May fail if the socket was closed by the client during the transmission
+                }
             }
             else
             {
@@ -172,7 +186,14 @@ namespace Server.TcpCommunication
                     //TraceLog.Trace(message.Length.ToString(), System.Text.Encoding.Default.GetString(messageBuffer));
 
                     StateObject stateSend = new StateObject(handler, response);
-                    handler.BeginSend(messageBuffer, 0, messageBuffer.Length, 0, SendCallback, stateSend);
+                    try
+                    {
+                        handler.BeginSend(messageBuffer, 0, messageBuffer.Length, 0, SendCallback, stateSend);
+                    }
+                    catch
+                    {
+                        // TODO Trace this : May fail if the socket was closed by the client during the transmission
+                    }
                 }
                 else
                 {
@@ -196,7 +217,7 @@ namespace Server.TcpCommunication
             }
             catch
             {
-                // Happens when the socket is closed but there is data that was not yet sent.
+                // TODO Trace this : Happens when the socket is closed but there is data that was not yet sent.
                 return;
             }
 
@@ -205,7 +226,15 @@ namespace Server.TcpCommunication
                 // If data not sent entirely, send the rest
                 state.writePosition += bytesSent;
                 byte[] messageBuffer = message.ToArray();
-                handler.BeginSend(messageBuffer, state.writePosition, messageBuffer.Length - state.writePosition, 0, SendCallback, state);
+
+                try
+                {
+                    handler.BeginSend(messageBuffer, state.writePosition, messageBuffer.Length - state.writePosition, 0, SendCallback, state);
+                }
+                catch
+                {
+                    // TODO Trace this : May fail if the socket was closed by the client during the transmission
+                }
             }
             else
             {

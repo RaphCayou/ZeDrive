@@ -29,16 +29,13 @@ namespace ShareLibrary.Communication
             {
                 try
                 {
-                    ReceiveCompleteContent(s, SocketFlags.Partial, messageLengthArray.Length, ref messageLengthArray);
+                    ReceiveAllBuffer(s, SocketFlags.Partial, messageLengthArray.Length, ref messageLengthArray);
                     break;
                 }
                 catch (SocketException e)
                 {
-                    // receive timeout exceded, we cancel the reception if no data was received at all
-                    if (s.Available == 0)
-                    {
-                        throw new NoNewMessageException();
-                    }
+                    // receive timeout exceded, we cancel the reception
+                    throw new NoNewMessageException();
                 }
             }
 
@@ -52,7 +49,7 @@ namespace ShareLibrary.Communication
             byte[] messageTypeArray = new byte[Message.SizeOfTypeInHeader];
             try
             {
-                ReceiveCompleteContent(s, SocketFlags.Partial, messageTypeArray.Length, ref messageTypeArray);
+                ReceiveAllBuffer(s, SocketFlags.Partial, messageTypeArray.Length, ref messageTypeArray);
             }
             catch (SocketException e)
             {
@@ -66,7 +63,7 @@ namespace ShareLibrary.Communication
             {
                 try
                 {
-                    ReceiveCompleteContent(s, SocketFlags.None, messageLength, ref messageContent);
+                    ReceiveAllBuffer(s, SocketFlags.None, messageLength, ref messageContent);
                 }
                 catch (SocketException e)
                 {
@@ -84,12 +81,27 @@ namespace ShareLibrary.Communication
             return message;
         }
 
-        static void ReceiveCompleteContent(Socket handler, SocketFlags flags, int messageLength, ref byte[] messageContent)
+        static public void SendMessage(Socket s, Message message)
+        {
+            byte[] buffer = message.ToArray();
+            SendAllBuffer(s, SocketFlags.None, buffer.Length, buffer);
+        }
+
+        static public void ReceiveAllBuffer(Socket handler, SocketFlags flags, int length, ref byte[] buffer)
         {
             int writePosition = 0;
-            while (writePosition < messageLength)
+            while (writePosition < length)
             {
-                writePosition += handler.Receive(messageContent, writePosition, messageLength - writePosition, flags);
+                writePosition += handler.Receive(buffer, writePosition, length - writePosition, flags);
+            }
+        }
+
+        static public void SendAllBuffer(Socket handler, SocketFlags flags, int length, byte[] buffer)
+        {
+            int writePosition = 0;
+            while (writePosition < length)
+            {
+                writePosition += handler.Send(buffer, writePosition, length - writePosition, flags);
             }
         }
 
