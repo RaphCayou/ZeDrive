@@ -169,7 +169,7 @@ namespace Server.TcpCommunication
 
                     byte[] messageBuffer = response.ToArray();
 
-                    TraceLog.Trace(message.Length.ToString(), System.Text.Encoding.Default.GetString(messageBuffer));
+                    //TraceLog.Trace(message.Length.ToString(), System.Text.Encoding.Default.GetString(messageBuffer));
 
                     StateObject stateSend = new StateObject(handler, response);
                     handler.BeginSend(messageBuffer, 0, messageBuffer.Length, 0, SendCallback, stateSend);
