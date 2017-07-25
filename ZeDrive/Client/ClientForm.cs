@@ -17,6 +17,7 @@ namespace Client
     {
         private const int TIMER_TICK = 1000;
         private const int SYNC_INTERVAL = 15;
+        private const string MESSAGE_ERREUR = "Une erreur inatendue est survenue.";
         private int currentTick = 0;
         private ClientBusiness client;
         private Group currentGroup;
@@ -46,23 +47,37 @@ namespace Client
 
         private void Sync()
         {
-            client.SyncWithServer();
-            UpdateConnectedUser(client.GetClientsList());
-            foreach (PendingAction action in client.GetPendingActions())
+            try
             {
-                if (action.ActionType == ActionTypes.Invite)
+
+                client.SyncWithServer();
+                UpdateConnectedUser(client.GetClientsList());
+                foreach (PendingAction action in client.GetPendingActions())
                 {
-                    DialogResult dialogResult = MessageBox.Show($"Voulez-vous rejoindre le group \"{action.GroupName}\" ?", "Nouvelle invitation!", MessageBoxButtons.YesNo);
-                    client.AcceptInvitation(action.GroupName, dialogResult == DialogResult.Yes);
+                    if (action.ActionType == ActionTypes.Invite)
+                    {
+                        DialogResult dialogResult =
+                            MessageBox.Show($"Voulez-vous rejoindre le group \"{action.GroupName}\" ?",
+                                "Nouvelle invitation!", MessageBoxButtons.YesNo);
+                        client.AcceptInvitation(action.GroupName, dialogResult == DialogResult.Yes);
+                    }
+                    else
+                    {
+                        DialogResult dialogResult =
+                            MessageBox.Show(
+                                $"Acceptez-vous que {action.ClientName} rejoinde le group \"{action.GroupName}\" ?",
+                                "Nouvelle demande!", MessageBoxButtons.YesNo);
+                        client.AcknowledgeRequest(action.ClientName, action.GroupName,
+                            dialogResult == DialogResult.Yes);
+                    }
                 }
-                else
-                {
-                    DialogResult dialogResult = MessageBox.Show($"Acceptez-vous que {action.ClientName} rejoinde le group \"{action.GroupName}\" ?", "Nouvelle demande!", MessageBoxButtons.YesNo);
-                    client.AcknowledgeRequest(action.ClientName, action.GroupName, dialogResult == DialogResult.Yes);
-                }
+                UpdateGroupInformation();
+                client.Save();
             }
-            UpdateGroupInformation();
-            client.Save();
+            catch (Exception exception)
+            {
+                MessageBox.Show(MESSAGE_ERREUR + Environment.NewLine + exception.Message);
+            }
         }
 
 
@@ -94,28 +109,42 @@ namespace Client
 
         private void CreateUser_Click(object sender, EventArgs e)
         {
-            if (client.CreateUser(UserName.Text, Password.Text))
+            try
             {
-                ConnectUserToServer();
+                if (client.CreateUser(UserName.Text, Password.Text))
+                {
+                    ConnectUserToServer();
+                }
+                else
+                {
+                    MessageBox.Show("Le nom d'usager est déjà utilisé.");
+                }
             }
-            else
+            catch (Exception exception)
             {
-                MessageBox.Show("Le nom d'usager est déjà utilisé.");
+                MessageBox.Show(MESSAGE_ERREUR + Environment.NewLine + exception.Message);
             }
         }
 
         private void ConnectUserToServer()
         {
-            if (client.Connect(UserName.Text, Password.Text))
+            try
             {
-                GroupsInformationGroup.Enabled = true;
-                CurrentUserGroup.Enabled = false;
-                Sync();
-                syncTimer.Start();
+                if (client.Connect(UserName.Text, Password.Text))
+                {
+                    GroupsInformationGroup.Enabled = true;
+                    CurrentUserGroup.Enabled = false;
+                    Sync();
+                    syncTimer.Start();
+                }
+                else
+                {
+                    MessageBox.Show("Nom d'usager ou mot de passe invalide.");
+                }
             }
-            else
+            catch (Exception exception)
             {
-                MessageBox.Show("Nom d'usager ou mot de passe invalide.");
+                MessageBox.Show(MESSAGE_ERREUR + Environment.NewLine + exception.Message);
             }
         }
 
@@ -131,8 +160,15 @@ namespace Client
 
         private void GroupList_DropDown(object sender, EventArgs e)
         {
-            List<Group> allGroups = client.GetGroupList();
-            GroupList.DataSource = allGroups;
+            try
+            {
+                List<Group> allGroups = client.GetGroupList();
+                GroupList.DataSource = allGroups;
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(MESSAGE_ERREUR + Environment.NewLine + exception.Message);
+            }
         }
 
         private void GroupList_SelectedValueChanged(object sender, EventArgs e)
@@ -145,24 +181,32 @@ namespace Client
             currentGroup = (Group)GroupList.SelectedItem;
             if (currentGroup != null)
             {
-                currentGroup = client.GetGroupInfo(currentGroup.Name);
-                GroupDescription.Text = currentGroup.Description;
-                //User not in group, so he can ask to join.
-                JoinGroup.Enabled = !currentGroup.Members.Exists(client1 => client1.Name == UserName.Text);
-                if (currentGroup.Administrator.Name == UserName.Text)
+                try
                 {
-                    AdminGroup.Enabled = true;
-                    List<string> groupMembers = currentGroup.Members.Select(client1 => client1.Name).ToList();
-                    GroupClientList.DataSource = groupMembers;
-                    List<string> userNotInGroup = client.GetClientsList().Select(client1 => client1.Name).ToList();
-                    userNotInGroup.RemoveAll(name => groupMembers.Contains(name));
-                    AllUsersList.DataSource = userNotInGroup;
+                    currentGroup = client.GetGroupInfo(currentGroup.Name);
+                    GroupDescription.Text = currentGroup.Description;
+                    //User not in group, so he can ask to join.
+                    JoinGroup.Enabled = !currentGroup.Members.Exists(client1 => client1.Name == UserName.Text);
+                    if (currentGroup.Administrator.Name == UserName.Text)
+                    {
+                        AdminGroup.Enabled = true;
+                        List<string> groupMembers = currentGroup.Members.Select(client1 => client1.Name).ToList();
+                        GroupClientList.DataSource = groupMembers;
+                        List<string> userNotInGroup = client.GetClientsList().Select(client1 => client1.Name).ToList();
+                        userNotInGroup.RemoveAll(name => groupMembers.Contains(name));
+                        AllUsersList.DataSource = userNotInGroup;
+                    }
+                    else
+                    {
+                        AdminGroup.Enabled = false;
+                        AllUsersList.DataSource = null;
+                        GroupClientList.DataSource = null;
+                    }
+
                 }
-                else
+                catch (Exception exception)
                 {
-                    AdminGroup.Enabled = false;
-                    AllUsersList.DataSource = null;
-                    GroupClientList.DataSource = null;
+                    MessageBox.Show(MESSAGE_ERREUR + Environment.NewLine + exception.Message);
                 }
             }
         }
@@ -184,20 +228,34 @@ namespace Client
 
         private void JoinGroup_Click(object sender, EventArgs e)
         {
-            client.SendJoinGroupRequest(UserName.Text, currentGroup.Name);
+            try
+            {
+                client.SendJoinGroupRequest(UserName.Text, currentGroup.Name);
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(MESSAGE_ERREUR + Environment.NewLine + exception.Message);
+            }
         }
 
         private void ChangeAdmin_Click(object sender, EventArgs e)
         {
-            client.ChangeAdministratorGroup((string)GroupClientList.SelectedItem, currentGroup.Name);
-            UpdateGroupInformation();
+            try
+            {
+                client.ChangeAdministratorGroup((string)GroupClientList.SelectedItem, currentGroup.Name);
+                UpdateGroupInformation();
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(MESSAGE_ERREUR + Environment.NewLine + exception.Message);
+            }
         }
 
         private void KickFromGroup_Click(object sender, EventArgs e)
         {
             try
             {
-                client.KickClientFromGroup((string) GroupClientList.SelectedItem, currentGroup.Name);
+                client.KickClientFromGroup((string)GroupClientList.SelectedItem, currentGroup.Name);
             }
             catch (Exception exception)
             {
@@ -208,20 +266,34 @@ namespace Client
 
         private void InviteToGroup_Click(object sender, EventArgs e)
         {
-            client.SendGroupInvitation((string)AllUsersList.SelectedItem, currentGroup.Name);
+            try
+            {
+                client.SendGroupInvitation((string)AllUsersList.SelectedItem, currentGroup.Name);
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(MESSAGE_ERREUR + Environment.NewLine + exception.Message);
+            }
         }
 
         private void CreateGroup_Click(object sender, EventArgs e)
         {
-            if (!client.CreateGroup(NewGroupName.Text.Trim(), NewGroupDescription.Text.Trim()))
+            try
             {
-                MessageBox.Show("Ce nom de groupe existe déjà.");
+                if (!client.CreateGroup(NewGroupName.Text.Trim(), NewGroupDescription.Text.Trim()))
+                {
+                    MessageBox.Show("Ce nom de groupe existe déjà.");
+                }
+                else
+                {
+                    NewGroupName.Text = "";
+                    NewGroupDescription.Text = "";
+                    MessageBox.Show("Le groupe a été créé.");
+                }
             }
-            else
+            catch (Exception exception)
             {
-                NewGroupName.Text = "";
-                NewGroupDescription.Text = "";
-                MessageBox.Show("Le groupe a été créé.");
+                MessageBox.Show(MESSAGE_ERREUR + Environment.NewLine + exception.Message);
             }
         }
     }
