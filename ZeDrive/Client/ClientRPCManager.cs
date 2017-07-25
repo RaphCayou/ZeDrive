@@ -1,6 +1,7 @@
 ﻿using Server.TcpCommunication;
 using ShareLibrary.Communication;
 using ShareLibrary.Communication.Exceptions;
+using ShareLibrary.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -45,7 +46,14 @@ namespace Client
         private object SendMessageToServer(MethodBase methodInfo, List<object> parameters)
         {
             Socket socketListener = InitializeSocket();
-            socketListener.Connect(ep);
+            try
+            {
+                socketListener.Connect(ep);
+            }
+            catch
+            {
+                throw new ConnectionFailedException();
+            }
 
             // Create request
             RequestMessageContent request = new RequestMessageContent()
@@ -81,16 +89,16 @@ namespace Client
             }
             catch (NoNewMessageException ex)
             {
-                // TODO must either redo the request or reset the connection
-                throw ex;
+                throw new ServerTimeoutException();
             }
             catch (MessageInterruptedException ex)
             {
-                // TODO Must disconnect and reconnect the socket (reset connection)
-                throw ex;
+                throw new ServerTimeoutException();
             }
 
             object result = null;
+
+            TraceLog.Trace(request.Command.MethodName + " - " + response.Length, System.Text.Encoding.Default.GetString(response.Content));
 
             if (response != null && response.Type == MessageType.Response && response.Length > 0)
             {

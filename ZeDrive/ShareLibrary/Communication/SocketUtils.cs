@@ -29,7 +29,7 @@ namespace ShareLibrary.Communication
             {
                 try
                 {
-                    s.Receive(messageLengthArray, messageLengthArray.Length, SocketFlags.Partial);
+                    ReceiveCompleteContent(s, SocketFlags.Partial, messageLengthArray.Length, ref messageLengthArray);
                     break;
                 }
                 catch (SocketException e)
@@ -52,7 +52,7 @@ namespace ShareLibrary.Communication
             byte[] messageTypeArray = new byte[Message.SizeOfTypeInHeader];
             try
             {
-                s.Receive(messageTypeArray, messageTypeArray.Length, SocketFlags.Partial);
+                ReceiveCompleteContent(s, SocketFlags.Partial, messageTypeArray.Length, ref messageTypeArray);
             }
             catch (SocketException e)
             {
@@ -66,11 +66,12 @@ namespace ShareLibrary.Communication
             {
                 try
                 {
-                    s.Receive(messageContent, messageLength, SocketFlags.None);
+                    ReceiveCompleteContent(s, SocketFlags.None, messageLength, ref messageContent);
                 }
                 catch (SocketException e)
                 {
-                    return null;
+                    // Timeout occured. Message is incomplete
+                    throw new MessageInterruptedException();
                 }
             }
 
@@ -81,6 +82,15 @@ namespace ShareLibrary.Communication
             };
 
             return message;
+        }
+
+        static void ReceiveCompleteContent(Socket handler, SocketFlags flags, int messageLength, ref byte[] messageContent)
+        {
+            int writePosition = 0;
+            while (writePosition < messageLength)
+            {
+                writePosition += handler.Receive(messageContent, writePosition, messageLength - writePosition, flags);
+            }
         }
 
         /// <summary>

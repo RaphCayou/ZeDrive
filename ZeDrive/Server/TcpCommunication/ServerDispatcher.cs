@@ -1,5 +1,6 @@
 ﻿using ShareLibrary.Communication;
 using ShareLibrary.Communication.Exceptions;
+using ShareLibrary.Utils;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -114,7 +115,18 @@ namespace Server.TcpCommunication
             Message message = state.message;
 
             // Read data from the client socket.   
-            int bytesRead = handler.EndReceive(ar);
+            int bytesRead = 0;
+            try
+            {
+                // Try to end receive
+                bytesRead = handler.EndReceive(ar);
+            }
+            catch
+            {
+                // Happens when the socket is closed. ReadCallback is called a last time but EndReceive throws
+                return;
+            }
+
             if (bytesRead == 0)
             {
                 handler.Shutdown(SocketShutdown.Both);
@@ -156,6 +168,9 @@ namespace Server.TcpCommunication
                     }
 
                     byte[] messageBuffer = response.ToArray();
+
+                    TraceLog.Trace(message.Length.ToString(), System.Text.Encoding.Default.GetString(messageBuffer));
+
                     StateObject stateSend = new StateObject(handler, response);
                     handler.BeginSend(messageBuffer, 0, messageBuffer.Length, 0, SendCallback, stateSend);
                 }
@@ -174,7 +189,16 @@ namespace Server.TcpCommunication
             Message message = state.message;
 
             // Complete sending the data to the remote device.  
-            int bytesSent = handler.EndSend(ar);
+            int bytesSent = 0;
+            try
+            {
+                bytesSent = handler.EndSend(ar);
+            }
+            catch
+            {
+                // Happens when the socket is closed but there is data that was not yet sent.
+                return;
+            }
 
             if (bytesSent + state.writePosition < message.Length + Message.CompleteHeaderSize)
             {
@@ -220,7 +244,7 @@ namespace Server.TcpCommunication
             }
             catch (TargetInvocationException ex)
             {
-                return ex.InnerException; // original exception throw by the method
+                return ex.InnerException; // original exception throw by the method invoked
             }
 
             // Return the object returned by the method invocation
