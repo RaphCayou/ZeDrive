@@ -32,6 +32,7 @@
             this.syncTimer = new System.Windows.Forms.Timer(this.components);
             this.ConnectToServer = new System.Windows.Forms.Button();
             this.CurrentUserGroup = new System.Windows.Forms.GroupBox();
+            this.label13 = new System.Windows.Forms.Label();
             this.TimeUntilNextSync = new System.Windows.Forms.Label();
             this.IsUserConnectText = new System.Windows.Forms.Label();
             this.CreateUser = new System.Windows.Forms.Button();
@@ -69,7 +70,6 @@
             this.GroupList = new System.Windows.Forms.ComboBox();
             this.label7 = new System.Windows.Forms.Label();
             this.OnlineUsers = new System.Windows.Forms.RichTextBox();
-            this.label13 = new System.Windows.Forms.Label();
             this.CurrentUserGroup.SuspendLayout();
             this.ServerConnexionGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ServerPort)).BeginInit();
@@ -109,6 +109,15 @@
             this.CurrentUserGroup.TabStop = false;
             this.CurrentUserGroup.Text = "Usager courant";
             this.CurrentUserGroup.EnabledChanged += new System.EventHandler(this.CurrentUserGroup_EnabledChanged);
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(835, 16);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(100, 13);
+            this.label13.TabIndex = 16;
+            this.label13.Text = "Temps avant sync.:";
             // 
             // TimeUntilNextSync
             // 
@@ -218,7 +227,7 @@
             this.RootFolderPath.Name = "RootFolderPath";
             this.RootFolderPath.Size = new System.Drawing.Size(218, 20);
             this.RootFolderPath.TabIndex = 11;
-            this.RootFolderPath.Text = "./";
+            this.RootFolderPath.Text = "./clientRoot/";
             // 
             // label4
             // 
@@ -485,15 +494,6 @@
             this.OnlineUsers.Size = new System.Drawing.Size(242, 502);
             this.OnlineUsers.TabIndex = 0;
             this.OnlineUsers.Text = "";
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(835, 16);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(100, 13);
-            this.label13.TabIndex = 16;
-            this.label13.Text = "Temps avant sync.:";
             // 
             // ClientForm
             // 

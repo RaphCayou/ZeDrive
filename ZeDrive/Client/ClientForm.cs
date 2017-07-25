@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
@@ -86,6 +87,10 @@ namespace Client
             string serverAddress = ServerAddress.Text;
             int serverPort = Convert.ToInt32(ServerPort.Value);
             rootPath = RootFolderPath.Text;
+            if (!Directory.Exists(rootPath))
+            {
+                Directory.CreateDirectory(rootPath);
+            }
             try
             {
                 client = new ClientBusiness(rootPath, serverAddress, serverPort);
