@@ -85,7 +85,7 @@ namespace Client
             Message response = null;
             try
             {
-                response = SocketUtils.ReceiveMessage(socketListener, 8000, 8000);
+                response = SocketUtils.ReceiveMessage(socketListener, 30000, 30000);
             }
             catch (NoNewMessageException ex)
             {
@@ -97,8 +97,6 @@ namespace Client
             }
 
             object result = null;
-
-            //TraceLog.Trace(request.Command.MethodName + " - " + response.Length, System.Text.Encoding.Default.GetString(response.Content));
 
             if (response != null && response.Type == MessageType.Response && response.Length > 0)
             {

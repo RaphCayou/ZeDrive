@@ -87,7 +87,7 @@ namespace ShareLibrary.Communication
             SendAllBuffer(s, SocketFlags.None, buffer.Length, buffer);
         }
 
-        static public void ReceiveAllBuffer(Socket handler, SocketFlags flags, int length, ref byte[] buffer)
+        static private void ReceiveAllBuffer(Socket handler, SocketFlags flags, int length, ref byte[] buffer)
         {
             int writePosition = 0;
             while (writePosition < length)
@@ -96,7 +96,7 @@ namespace ShareLibrary.Communication
             }
         }
 
-        static public void SendAllBuffer(Socket handler, SocketFlags flags, int length, byte[] buffer)
+        static private void SendAllBuffer(Socket handler, SocketFlags flags, int length, byte[] buffer)
         {
             int writePosition = 0;
             while (writePosition < length)

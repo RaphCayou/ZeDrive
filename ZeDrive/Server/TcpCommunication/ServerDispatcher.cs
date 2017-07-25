@@ -85,13 +85,15 @@ namespace Server.TcpCommunication
             catch
             {
                 // Happens when the socket is closed. AcceptNewConnection is called a last time but EndAccept throws
+                Console.WriteLine("Socket was closed and we stop accepting socket connection.");
                 return;
             }
             
             if (bytesTransferred != Message.CompleteHeaderSize)
             {
-                // TODO Trace this : Never supposed to happen, means that we did not read the complete header, which means that the message cannot be retreived correctly.
+                // Never supposed to happen, means that we did not read the complete header, which means that the message cannot be retreived correctly.
                 //throw new NoNewMessageException();
+                Console.WriteLine("Did not receive header of first message at connection initialization.");
             }
 
             int messageLength = BitConverter.ToInt32(messsageHeaderBuffer, 0);
@@ -111,7 +113,8 @@ namespace Server.TcpCommunication
             }
             catch
             {
-                // TODO Trace this : May fail if the socket was closed by the client during the transmission
+                // May fail if the socket was closed by the client during the transmission
+                Console.WriteLine("Message header was received, but socket was closed before receiving content.");
             }
         }
 
@@ -131,6 +134,7 @@ namespace Server.TcpCommunication
             catch
             {
                 // Happens when the socket is closed. ReadCallback is called a last time but EndReceive throws
+                Console.WriteLine("Socket was closed during reading of message.");
                 return;
             }
 
@@ -139,8 +143,8 @@ namespace Server.TcpCommunication
                 handler.Shutdown(SocketShutdown.Both);
                 handler.Close();
 
-                // TODO Trace this : If not enough data read, connection must have been interrupted
-                //throw new MessageInterruptedException();
+                // If not enough data read, connection must have been interrupted
+                Console.WriteLine("Timeout during reading message sent by client. Connection interrupted.");
             }
             else if (state.writePosition + bytesRead < message.Length)
             {
@@ -154,7 +158,8 @@ namespace Server.TcpCommunication
                 }
                 catch
                 {
-                    // TODO Trace this : May fail if the socket was closed by the client during the transmission
+                    // May fail if the socket was closed by the client during the 
+                    Console.WriteLine("Timeout during reading a long message sent by client. Connection interrupted.");
                 }
             }
             else
@@ -183,8 +188,6 @@ namespace Server.TcpCommunication
 
                     byte[] messageBuffer = response.ToArray();
 
-                    //TraceLog.Trace(message.Length.ToString(), System.Text.Encoding.Default.GetString(messageBuffer));
-
                     StateObject stateSend = new StateObject(handler, response);
                     try
                     {
@@ -192,7 +195,8 @@ namespace Server.TcpCommunication
                     }
                     catch
                     {
-                        // TODO Trace this : May fail if the socket was closed by the client during the transmission
+                        // May fail if the socket was closed by the client during the transmission of the response
+                        Console.WriteLine("Socket was closed by client while we were sending a response.");
                     }
                 }
                 else
@@ -217,7 +221,8 @@ namespace Server.TcpCommunication
             }
             catch
             {
-                // TODO Trace this : Happens when the socket is closed but there is data that was not yet sent.
+                // Happens when the socket is closed but there is data that was not yet sent.
+                Console.WriteLine("Sending the response failed because the socket was closed by the client.");
                 return;
             }
 
@@ -233,7 +238,8 @@ namespace Server.TcpCommunication
                 }
                 catch
                 {
-                    // TODO Trace this : May fail if the socket was closed by the client during the transmission
+                    // May fail if the socket was closed by the client during the transmission
+                    Console.WriteLine("Sending a long response failed because the socket was closed by the client.");
                 }
             }
             else
