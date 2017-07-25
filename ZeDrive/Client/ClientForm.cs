@@ -17,7 +17,7 @@ namespace Client
     {
         private const int TIMER_TICK = 1000;
         private const int SYNC_INTERVAL = 15;
-        private const string MESSAGE_ERREUR = "Une erreur inatendue est survenue.";
+        private const string MESSAGE_ERREUR = "Une erreur inattendue est survenue.";
         private int currentTick = 0;
         private ClientBusiness client;
         private Group currentGroup;
