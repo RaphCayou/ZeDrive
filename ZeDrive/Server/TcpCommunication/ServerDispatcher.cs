@@ -221,7 +221,7 @@ namespace Server.TcpCommunication
                 return;
             }
 
-            if (bytesSent + state.writePosition < message.Length + Message.CompleteHeaderSize)
+            if (bytesSent != 0 && bytesSent + state.writePosition < message.Length + Message.CompleteHeaderSize)
             {
                 // If data not sent entirely, send the rest
                 state.writePosition += bytesSent;
