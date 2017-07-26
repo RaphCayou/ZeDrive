@@ -100,13 +100,9 @@ namespace Client
                 CurrentUserGroup.Enabled = true;
                 ServerConnexionGroup.Enabled = false;
             }
-            catch (SocketException socketException)
-            {
-                MessageBox.Show(socketException.Message);
-            }
             catch (Exception exception)
             {
-                MessageBox.Show(MESSAGE_ERREUR + Environment.NewLine + exception.ToString() + Environment.NewLine + exception.Message);
+                MessageBox.Show(exception.Message);
             }
         }
 
@@ -130,7 +126,7 @@ namespace Client
             }
             catch (Exception exception)
             {
-                MessageBox.Show(MESSAGE_ERREUR + Environment.NewLine + exception.Message);
+                Console.WriteLine(MESSAGE_ERREUR + Environment.NewLine + exception.Message);
             }
         }
 
@@ -152,7 +148,7 @@ namespace Client
             }
             catch (Exception exception)
             {
-                MessageBox.Show(MESSAGE_ERREUR + Environment.NewLine + exception.Message);
+                Console.WriteLine(MESSAGE_ERREUR + Environment.NewLine + exception.Message);
             }
         }
 
@@ -175,7 +171,7 @@ namespace Client
             }
             catch (Exception exception)
             {
-                MessageBox.Show(MESSAGE_ERREUR + Environment.NewLine + exception.Message);
+                Console.WriteLine(MESSAGE_ERREUR + Environment.NewLine + exception.Message);
             }
         }
 
@@ -214,7 +210,7 @@ namespace Client
                 }
                 catch (Exception exception)
                 {
-                    MessageBox.Show(MESSAGE_ERREUR + Environment.NewLine + exception.Message);
+                    Console.WriteLine(MESSAGE_ERREUR + Environment.NewLine + exception.Message);
                 }
             }
         }
@@ -248,7 +244,7 @@ namespace Client
                 }
                 catch (Exception exception)
                 {
-                    MessageBox.Show(MESSAGE_ERREUR + Environment.NewLine + exception.Message);
+                    Console.WriteLine(MESSAGE_ERREUR + Environment.NewLine + exception.Message);
                 }
 
             }
@@ -263,7 +259,7 @@ namespace Client
             }
             catch (Exception exception)
             {
-                MessageBox.Show(MESSAGE_ERREUR + Environment.NewLine + exception.Message);
+                Console.WriteLine(MESSAGE_ERREUR + Environment.NewLine + exception.Message);
             }
         }
 
@@ -275,7 +271,7 @@ namespace Client
             }
             catch (Exception exception)
             {
-                MessageBox.Show(exception.Message);
+                Console.WriteLine(exception.Message);
             }
             UpdateGroupInformation();
         }
@@ -288,7 +284,7 @@ namespace Client
             }
             catch (Exception exception)
             {
-                MessageBox.Show(MESSAGE_ERREUR + Environment.NewLine + exception.Message);
+                Console.WriteLine(MESSAGE_ERREUR + Environment.NewLine + exception.Message);
             }
         }
 
@@ -309,7 +305,7 @@ namespace Client
             }
             catch (Exception exception)
             {
-                MessageBox.Show(MESSAGE_ERREUR + Environment.NewLine + exception.Message);
+                Console.WriteLine(MESSAGE_ERREUR + Environment.NewLine + exception.Message);
             }
         }
     }
