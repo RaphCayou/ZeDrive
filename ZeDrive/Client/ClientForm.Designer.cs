@@ -113,7 +113,7 @@
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(835, 16);
+            this.label13.Location = new System.Drawing.Point(825, 16);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(100, 13);
             this.label13.TabIndex = 16;
@@ -122,7 +122,7 @@
             // TimeUntilNextSync
             // 
             this.TimeUntilNextSync.AutoSize = true;
-            this.TimeUntilNextSync.Location = new System.Drawing.Point(931, 16);
+            this.TimeUntilNextSync.Location = new System.Drawing.Point(921, 16);
             this.TimeUntilNextSync.Name = "TimeUntilNextSync";
             this.TimeUntilNextSync.Size = new System.Drawing.Size(19, 13);
             this.TimeUntilNextSync.TabIndex = 15;
