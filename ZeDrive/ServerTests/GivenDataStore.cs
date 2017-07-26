@@ -112,7 +112,7 @@ namespace ServerTests
             var notifs = _business.GetNotification("noSoyElAdmin");
 
             Assert.IsTrue(notifs.Count == 1);
-            Assert.IsTrue(notifs.FirstOrDefault()?.ActionType == ActionTypes.Invite);
+            Assert.IsTrue(notifs.FirstOrDefault()?.ActionType == ActionType.Invite);
             Assert.IsTrue(notifs.FirstOrDefault()?.ClientName == "noSoyElAdmin");
             Assert.IsTrue(notifs.FirstOrDefault()?.GroupName == "LosBanditos");
         }
@@ -147,7 +147,7 @@ namespace ServerTests
             var notifs = _business.GetNotification("soyElAdmin");
 
             Assert.IsTrue(notifs.Count == 1);
-            Assert.IsTrue(notifs.FirstOrDefault()?.ActionType == ActionTypes.Request);
+            Assert.IsTrue(notifs.FirstOrDefault()?.ActionType == ActionType.Request);
             Assert.IsTrue(notifs.FirstOrDefault()?.ClientName == "noSoyElAdmin");
             Assert.IsTrue(notifs.FirstOrDefault()?.GroupName == "LosBanditos");
         }

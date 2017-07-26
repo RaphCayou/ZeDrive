@@ -7,5 +7,5 @@ using System.Threading.Tasks;
 namespace ShareLibrary.Models
 {
     [Serializable]
-    public enum ActionTypes { Invite, Request }
+    public enum ActionType { Invite, Request }
 }

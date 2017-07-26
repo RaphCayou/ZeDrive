@@ -8,6 +8,6 @@ namespace ShareLibrary.Models
     {
         public string ClientName { get; set; }
         public string GroupName { get; set; }
-        public ActionTypes ActionType { get; set; }
+        public ActionType ActionType { get; set; }
     }
 }

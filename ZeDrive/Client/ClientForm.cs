@@ -57,7 +57,7 @@ namespace Client
                 UpdateConnectedUser(client.GetOnlineClients());
                 foreach (PendingAction action in client.GetPendingActions())
                 {
-                    if (action.ActionType == ActionTypes.Invite)
+                    if (action.ActionType == ActionType.Invite)
                     {
                         DialogResult dialogResult =
                             MessageBox.Show($"Voulez-vous rejoindre le group \"{action.GroupName}\" ?",

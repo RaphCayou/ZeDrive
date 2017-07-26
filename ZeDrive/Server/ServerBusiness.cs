@@ -223,13 +223,13 @@ namespace Server
                 if (!_dataStore.CheckUserInGroup(invitedUser, groupName))
                 {
                     if (!_pendingActions.Exists(pa => pa.ClientName == invitedUser && pa.GroupName == groupName &&
-                                                      pa.ActionType == ActionTypes.Invite))
+                                                      pa.ActionType == ActionType.Invite))
                     {
                         _pendingActions.Add(new PendingAction
                         {
                             ClientName = invitedUser,
                             GroupName = groupName,
-                            ActionType = ActionTypes.Invite
+                            ActionType = ActionType.Invite
                         });
                     }
                 }
@@ -250,13 +250,13 @@ namespace Server
                 if (!_dataStore.CheckUserInGroup(username, groupName))
                 {
                     if (!_pendingActions.Exists(pa => pa.ClientName == username && pa.GroupName == groupName &&
-                                                      pa.ActionType == ActionTypes.Request))
+                                                      pa.ActionType == ActionType.Request))
                     {
                         _pendingActions.Add(new PendingAction
                         {
                             ClientName = username,
                             GroupName = groupName,
-                            ActionType = ActionTypes.Request
+                            ActionType = ActionType.Request
                         });
                     }
                 }
@@ -294,10 +294,10 @@ namespace Server
             if (!ParametersHasEmpty(username))
             {
                 //Invites sent to the user
-                userPendingActions.AddRange(_pendingActions.Where(p => p.ActionType == ActionTypes.Invite && p.ClientName == username));
+                userPendingActions.AddRange(_pendingActions.Where(p => p.ActionType == ActionType.Invite && p.ClientName == username));
 
                 //Requests by ClientName towards admin of GroupName
-                userPendingActions.AddRange(_pendingActions.Where(p => p.ActionType == ActionTypes.Request && username == _dataStore.GetGroupAdmin(p.GroupName)));
+                userPendingActions.AddRange(_pendingActions.Where(p => p.ActionType == ActionType.Request && username == _dataStore.GetGroupAdmin(p.GroupName)));
             }
             else throw new ArgumentException("Les paramètres ne doivent pas être vides.");
             return userPendingActions;
@@ -322,7 +322,7 @@ namespace Server
                         _dataStore.AddUserToGroup(username, groupName);
                     }
                 }
-                _pendingActions.RemoveAll(p => p.ActionType == ActionTypes.Request && p.GroupName == groupName && p.ClientName == username);
+                _pendingActions.RemoveAll(p => p.ActionType == ActionType.Request && p.GroupName == groupName && p.ClientName == username);
             }
             else throw new ArgumentException("Les paramètres ne doivent pas être vides.");
         }
@@ -345,7 +345,7 @@ namespace Server
                     }
                 }
                 else throw new ArgumentException("Vous êtes déjà dans le groupe.");
-                _pendingActions.RemoveAll(p => p.ActionType == ActionTypes.Invite && p.GroupName == groupName && p.ClientName == username);
+                _pendingActions.RemoveAll(p => p.ActionType == ActionType.Invite && p.GroupName == groupName && p.ClientName == username);
             }
             else throw new ArgumentException("Les paramètres ne doivent pas être vides.");
         }
