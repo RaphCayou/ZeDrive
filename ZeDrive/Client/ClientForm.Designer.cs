@@ -482,9 +482,9 @@
             this.label7.ForeColor = System.Drawing.SystemColors.ControlText;
             this.label7.Location = new System.Drawing.Point(818, 119);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(132, 13);
+            this.label7.Size = new System.Drawing.Size(137, 13);
             this.label7.TabIndex = 15;
-            this.label7.Text = "Nom des usagers en ligne:";
+            this.label7.Text = "Noms des usagers en ligne:";
             // 
             // OnlineUsers
             // 
