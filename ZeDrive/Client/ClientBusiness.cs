@@ -166,6 +166,11 @@ namespace Client
             return access.GetClientList();
         }
 
+        public List<ShareLibrary.Models.Client> GetOnlineClients()
+        {
+            return access.GetOnlineClientsList();
+        }
+
         public void Save()
         {
             //We do not want to save an empty list.

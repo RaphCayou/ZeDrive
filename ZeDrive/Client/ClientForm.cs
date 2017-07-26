@@ -54,7 +54,7 @@ namespace Client
             {
                 syncTimer.Stop();
                 client.SyncWithServer();
-                UpdateConnectedUser(client.GetClientsList());
+                UpdateConnectedUser(client.GetOnlineClients());
                 foreach (PendingAction action in client.GetPendingActions())
                 {
                     if (action.ActionType == ActionTypes.Invite)
