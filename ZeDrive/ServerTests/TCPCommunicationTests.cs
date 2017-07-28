@@ -24,7 +24,7 @@ namespace ServerTests
             {
                 clientLinkToServer.CreateUser("Henry", "hunter2");
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 Assert.IsTrue(true);
             }

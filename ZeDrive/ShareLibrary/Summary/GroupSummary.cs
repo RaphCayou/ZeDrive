@@ -129,35 +129,6 @@ namespace ShareLibrary.Summary
         }
 
         /// <summary>
-        /// Equality test of two instance of GroupSummary. Based on the group name
-        /// </summary>
-        /// <param name="a">Fisrt instance of a GroupSummary</param>
-        /// <param name="b">Second instance of a GroupSummary</param>
-        /// <returns>Return true if they have the same name.</returns>
-        public static bool operator ==(GroupSummary a, GroupSummary b)
-        {
-            // If both are null, or both are same instance, return true.
-            if (ReferenceEquals(a, b))
-            {
-                return true;
-            }
-
-            // If one is null, but not both, return false.
-            if ((object)a == null || (object)b == null)
-            {
-                return false;
-            }
-
-            // Return true if the fields match:
-            return a.GroupName == b.GroupName;
-        }
-
-        public static bool operator !=(GroupSummary a, GroupSummary b)
-        {
-            return !(a == b);
-        }
-
-        /// <summary>
         /// Read the bytes of a file
         /// </summary>
         /// <param name="fileName">The name of the file to read the bytes.</param>

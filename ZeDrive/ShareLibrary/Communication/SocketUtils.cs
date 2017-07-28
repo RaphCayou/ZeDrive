@@ -32,7 +32,7 @@ namespace ShareLibrary.Communication
                     ReceiveAllBuffer(s, SocketFlags.Partial, messageLengthArray.Length, ref messageLengthArray);
                     break;
                 }
-                catch (SocketException e)
+                catch (SocketException)
                 {
                     // receive timeout exceded, we cancel the reception
                     throw new NoNewMessageException();
@@ -51,7 +51,7 @@ namespace ShareLibrary.Communication
             {
                 ReceiveAllBuffer(s, SocketFlags.Partial, messageTypeArray.Length, ref messageTypeArray);
             }
-            catch (SocketException e)
+            catch (SocketException)
             {
                 throw new MessageInterruptedException();
             }
@@ -65,7 +65,7 @@ namespace ShareLibrary.Communication
                 {
                     ReceiveAllBuffer(s, SocketFlags.None, messageLength, ref messageContent);
                 }
-                catch (SocketException e)
+                catch (SocketException)
                 {
                     // Timeout occured. Message is incomplete
                     throw new MessageInterruptedException();

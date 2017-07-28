@@ -21,5 +21,16 @@ namespace ShareLibrary.Models
                 CreationDate.Equals(f.CreationDate) &&
                 LastModificationDate.Equals(f.LastModificationDate);
         }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = (Name != null ? Name.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ CreationDate.GetHashCode();
+                hashCode = (hashCode * 397) ^ LastModificationDate.GetHashCode();
+                return hashCode;
+            }
+        }
     }
 }

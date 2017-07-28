@@ -53,11 +53,23 @@ namespace ShareLibrary.Models
                 return false;
 
             Revision r = (Revision)obj;
-            return 
-                Action.Equals(r.Action) && 
-                Data.SequenceEqual(r.Data) && 
-                File.Equals(r.File) && 
+            return
+                Action.Equals(r.Action) &&
+                Data.SequenceEqual(r.Data) &&
+                File.Equals(r.File) &&
                 GroupName.Equals(r.GroupName);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = (int) Action;
+                hashCode = (hashCode * 397) ^ (File != null ? File.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (GroupName != null ? GroupName.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (Data != null ? Data.GetHashCode() : 0);
+                return hashCode;
+            }
         }
     }
 }

@@ -87,11 +87,11 @@ namespace Client
             {
                 response = SocketUtils.ReceiveMessage(socketListener, 30000, 30000);
             }
-            catch (NoNewMessageException ex)
+            catch (NoNewMessageException)
             {
                 throw new ServerTimeoutException();
             }
-            catch (MessageInterruptedException ex)
+            catch (MessageInterruptedException)
             {
                 throw new ServerTimeoutException();
             }

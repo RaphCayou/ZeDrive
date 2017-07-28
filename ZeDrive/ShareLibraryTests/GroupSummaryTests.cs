@@ -101,30 +101,6 @@ namespace ShareLibraryTests
         }
 
         [TestMethod]
-        public void EqualValidation()
-        {
-            string fileAdded = Path.Combine(TESTING_PATH, GROUP1, Path.GetRandomFileName());
-
-            GroupSummary sum1g1 = new GroupSummary(GROUP1, TESTING_PATH);
-            //When we create a file, a stream is created, so we need to close the stream because we are done with it.
-            File.Create(fileAdded).Close();
-            GroupSummary sum2g1 = new GroupSummary(GROUP1, TESTING_PATH);
-            GroupSummary sum1g2 = new GroupSummary(GROUP2, TESTING_PATH);
-
-            Assert.IsTrue(sum1g1 == sum1g1);
-            Assert.IsFalse(sum1g1 != sum1g1);
-            Assert.IsTrue(sum1g1 == sum2g1);
-            Assert.IsFalse(sum1g1 != sum2g1);
-
-            Assert.IsTrue(sum1g1 != sum1g2);
-            Assert.IsFalse(sum1g1 == sum1g2);
-
-            Assert.IsFalse(sum1g1 == null);
-            Assert.IsTrue(sum1g1 != null);
-            File.Delete(fileAdded);
-        }
-
-        [TestMethod]
         public void GenerateRevision()
         {
             string fileAdded = Path.Combine(TESTING_PATH, GROUP1, Path.GetRandomFileName());
