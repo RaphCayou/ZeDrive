@@ -2,11 +2,6 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using ShareLibrary;
 using ShareLibrary.Models;
 using ShareLibrary.Summary;
 using Action = ShareLibrary.Models.Action;
@@ -37,7 +32,7 @@ namespace Server
             // Blocking call
             foreach (Job job in syncJobs.GetConsumingEnumerable())
             {
-                Console.WriteLine("Execute Job {0}", ++executionCount);
+                Console.WriteLine(@"Execute Job {0}", ++executionCount);
                 List<Revision> returnRevisions = new List<Revision>();
 
                 // For each client group revision
