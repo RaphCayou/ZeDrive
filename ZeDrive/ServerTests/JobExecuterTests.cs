@@ -91,7 +91,12 @@ namespace ServerTests
         [TestInitialize]
         public void SetUp()
         {
-            business = new ServerBusiness("groupSave","clientSave");
+            // Delete last test data
+            string rootPath = "Server Root Test";
+            if (Directory.Exists(rootPath))
+                Directory.Delete(rootPath, true);
+
+            business = new ServerBusiness("groupSave","clientSave", rootPath);
             business.CreateUser("Bob", "psw");
             business.CreateGroup("A", "Desc", "Bob");
         }
